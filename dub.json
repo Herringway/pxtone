@@ -1,0 +1,17 @@
+{
+	"description": "pxtone",
+	"license": "proprietary",
+	"name": "pxtone",
+	"targetType": "executable",
+	"dependencies": {
+		"bindbc-sdl": "~>0.19.2"
+	},
+	"configurations": [
+		{
+			"name": "win32",
+			"targetType": "executable",
+			"libs": ["comdlg32", "comctl32", "shlwapi", "vcruntime", "user32", "ole32", "xaudio2"],
+			"versions": ["win32"]
+		}
+	]
+}

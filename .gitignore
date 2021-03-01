@@ -1,0 +1,7 @@
+*.lib
+.vs
+.dub
+*.exe
+*.obj
+*.dll
+dub.selections.json
