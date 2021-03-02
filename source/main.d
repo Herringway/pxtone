@@ -1,12 +1,8 @@
 import core.sys.windows.windows;
 import core.sys.windows.shlwapi;
 
-import pxtone.pxtn;
-import pxtone.descriptor;
-import pxtone.service;
-import pxtone.error;
+import pxtone;
 
-import core.stdc.stdint;
 import core.stdc.stdlib;
 import core.stdc.string;
 
