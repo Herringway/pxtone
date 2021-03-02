@@ -10,14 +10,13 @@ import pxtone.pulse.noisebuilder;
 import pxtone.pulse.noise;
 import pxtone.pulse.pcm;
 import pxtone.error;
-import core.stdc.stdint;
 import core.stdc.stdlib;
 
 struct pxtoneNoise {
 	void *_bldr ;
-	int32_t  _ch_num = 2;
-	int32_t  _sps = 44100;
-	int32_t  _bps = 16;
+	int  _ch_num = 2;
+	int  _sps = 44100;
+	int  _bps = 16;
 
 	~this()
 	{
@@ -32,7 +31,7 @@ struct pxtoneNoise {
 		return true;
 	}
 
-	bool quality_set( int32_t ch_num, int32_t sps, int32_t bps )
+	bool quality_set( int ch_num, int sps, int bps )
 	{
 		switch( ch_num )
 		{
@@ -59,7 +58,7 @@ struct pxtoneNoise {
 		return false;
 	}
 
-	void quality_get( int32_t *p_ch_num, int32_t *p_sps, int32_t *p_bps ) const
+	void quality_get( int *p_ch_num, int *p_sps, int *p_bps ) const
 	{
 		if( p_ch_num ) *p_ch_num = _ch_num;
 		if( p_sps    ) *p_sps    = _sps   ;
@@ -67,7 +66,7 @@ struct pxtoneNoise {
 	}
 
 
-	bool generate( pxtnDescriptor *p_doc, void **pp_buf, int32_t *p_size ) const
+	bool generate( pxtnDescriptor *p_doc, void **pp_buf, int *p_size ) const
 	{
 		bool                   b_ret  = false;
 		pxtnPulse_NoiseBuilder *bldr  = cast(pxtnPulse_NoiseBuilder*)_bldr;

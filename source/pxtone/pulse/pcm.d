@@ -6,41 +6,40 @@ import pxtone.error;
 import pxtone.descriptor;
 import pxtone.mem;
 
-import core.stdc.stdint;
 import core.stdc.stdlib;
 import core.stdc.string;
 
 struct WAVEFORMATCHUNK
 {
-	uint16_t formatID;     // PCM:0x0001
-	uint16_t ch;           //
-	uint32_t sps;          //
-	uint32_t byte_per_sec; // byte per sec.
-	uint16_t block_size;   //
-	uint16_t bps;          // bit per sample.
-	uint16_t ext;          // no use for pcm.
+	ushort formatID;     // PCM:0x0001
+	ushort ch;           //
+	uint sps;          //
+	uint byte_per_sec; // byte per sec.
+	ushort block_size;   //
+	ushort bps;          // bit per sample.
+	ushort ext;          // no use for pcm.
 }
 
 struct pxtnPulse_PCM
 {
 private:
-	int32_t _ch      ;
-	int32_t _sps     ;
-	int32_t _bps     ;
-	int32_t _smp_head; // no use. 0
-	int32_t _smp_body;
-	int32_t _smp_tail; // no use. 0
-	uint8_t  *_p_smp  ;
+	int _ch      ;
+	int _sps     ;
+	int _bps     ;
+	int _smp_head; // no use. 0
+	int _smp_body;
+	int _smp_tail; // no use. 0
+	ubyte  *_p_smp  ;
 
 	// stereo / mono
-	bool _Convert_ChannelNum( int32_t new_ch )
+	bool _Convert_ChannelNum( int new_ch )
 	{
 		ubyte* p_work = null;
-		int32_t           sample_size;
-		int32_t           work_size;
-		int32_t           a,b;
-		int32_t           temp1;
-		int32_t           temp2;
+		int           sample_size;
+		int           work_size;
+		int           a,b;
+		int           temp1;
+		int           temp2;
 
 		sample_size = ( _smp_head + _smp_body + _smp_tail ) * _ch * _bps / 8;
 
@@ -94,8 +93,8 @@ private:
 				b = 0;
 				for( a = 0; a < sample_size; a+= 2 )
 				{
-					temp1       = cast(int32_t)_p_smp[a] + cast(int32_t)_p_smp[a+1];
-					p_work[b  ] = cast(uint8_t)( temp1 / 2 );
+					temp1       = cast(int)_p_smp[a] + cast(int)_p_smp[a+1];
+					p_work[b  ] = cast(ubyte)( temp1 / 2 );
 					b++;
 				}
 				break;
@@ -103,9 +102,9 @@ private:
 				b = 0;
 				for( a = 0; a < sample_size; a += 4 )
 				{
-					temp1                = *(cast(int16_t *)(&_p_smp[a  ]));
-					temp2                = *(cast(int16_t *)(&_p_smp[a+2]));
-					*cast(int16_t *)(&p_work[b]) =   cast(int16_t)( ( temp1 + temp2 ) / 2 );
+					temp1                = *(cast(short *)(&_p_smp[a  ]));
+					temp2                = *(cast(short *)(&_p_smp[a+2]));
+					*cast(short *)(&p_work[b]) =   cast(short)( ( temp1 + temp2 ) / 2 );
 					b += 2;
 				}
 				break;
@@ -117,7 +116,7 @@ private:
 		free( _p_smp );
 		_p_smp = null;
 
-		_p_smp = cast(uint8_t*)malloc( work_size );
+		_p_smp = cast(ubyte*)malloc( work_size );
 		if( !( _p_smp ) ){ free( p_work ); return false; }
 		memcpy( _p_smp, p_work, work_size );
 		free( p_work );
@@ -129,13 +128,13 @@ private:
 	}
 
 	// change bps
-	bool _Convert_BitPerSample( int32_t new_bps )
+	bool _Convert_BitPerSample( int new_bps )
 	{
 		ubyte* p_work;
-		int32_t           sample_size;
-		int32_t           work_size;
-		int32_t           a,b;
-		int32_t           temp1;
+		int           sample_size;
+		int           work_size;
+		int           a,b;
+		int           temp1;
 
 		if( !_p_smp         ) return false;
 		if( _bps == new_bps ) return true ;
@@ -147,28 +146,28 @@ private:
 		// 16 to 8 --------
 		case  8:
 			work_size = sample_size / 2;
-			p_work     = cast(uint8_t*)malloc( work_size );
+			p_work     = cast(ubyte*)malloc( work_size );
 			if( !p_work ) return false;
 			b = 0;
 			for( a = 0; a < sample_size; a += 2 )
 			{
-				temp1 = *(cast(int16_t*)(&_p_smp[a]));
+				temp1 = *(cast(short*)(&_p_smp[a]));
 				temp1 = (temp1/0x100) + 128;
-				p_work[b] = cast(uint8_t)temp1;
+				p_work[b] = cast(ubyte)temp1;
 				b++;
 			}
 			break;
 		//  8 to 16 --------
 		case 16:
 			work_size = sample_size * 2;
-			p_work     = cast(uint8_t*)malloc( work_size );
+			p_work     = cast(ubyte*)malloc( work_size );
 			if( !p_work ) return false;
 			b = 0;
 			for( a = 0; a < sample_size; a++ )
 			{
 				temp1 = _p_smp[a];
 				temp1 = ( temp1 - 128 ) * 0x100;
-				*(cast(int16_t *)(&p_work[b])) = cast(int16_t)temp1;
+				*(cast(short *)(&p_work[b])) = cast(short)temp1;
 				b += 2;
 			}
 			break;
@@ -180,7 +179,7 @@ private:
 		free( _p_smp );
 		_p_smp = null;
 
-		_p_smp = cast(uint8_t*)malloc( work_size );
+		_p_smp = cast(ubyte*)malloc( work_size );
 		if( !( _p_smp ) ){ free( p_work ); return false; }
 		memcpy( _p_smp, p_work, work_size );
 		free( p_work );
@@ -191,24 +190,24 @@ private:
 		return true;
 	}
 	// sps
-	bool _Convert_SamplePerSecond( int32_t new_sps )
+	bool _Convert_SamplePerSecond( int new_sps )
 	{
 		bool     b_ret = false;
-		int32_t  sample_num;
-		int32_t  work_size;
+		int  sample_num;
+		int  work_size;
 
-		int32_t  head_size, body_size, tail_size;
+		int  head_size, body_size, tail_size;
 
-		uint8_t  *p1byte_data;
-		uint16_t *p2byte_data;
-		uint32_t *p4byte_data;
+		ubyte  *p1byte_data;
+		ushort *p2byte_data;
+		uint *p4byte_data;
 
-		uint8_t  *p1byte_work = null;
-		uint16_t *p2byte_work = null;
-		uint32_t *p4byte_work = null;
+		ubyte  *p1byte_work = null;
+		ushort *p2byte_work = null;
+		uint *p4byte_work = null;
 
 
-		int32_t a, b;
+		int a, b;
 
 		if( !_p_smp         ) return false;
 		if( _sps == new_sps ) return true ;
@@ -217,9 +216,9 @@ private:
 		body_size = _smp_body * _ch * _bps / 8;
 		tail_size = _smp_tail * _ch * _bps / 8;
 
-		head_size = cast(int32_t)( ( cast(double)head_size * cast(double)new_sps + cast(double)(_sps) - 1 ) / _sps );
-		body_size = cast(int32_t)( ( cast(double)body_size * cast(double)new_sps + cast(double)(_sps) - 1 ) / _sps );
-		tail_size = cast(int32_t)( ( cast(double)tail_size * cast(double)new_sps + cast(double)(_sps) - 1 ) / _sps );
+		head_size = cast(int)( ( cast(double)head_size * cast(double)new_sps + cast(double)(_sps) - 1 ) / _sps );
+		body_size = cast(int)( ( cast(double)body_size * cast(double)new_sps + cast(double)(_sps) - 1 ) / _sps );
+		tail_size = cast(int)( ( cast(double)tail_size * cast(double)new_sps + cast(double)(_sps) - 1 ) / _sps );
 
 		work_size = head_size + body_size + tail_size;
 
@@ -231,11 +230,11 @@ private:
 			_smp_tail   = tail_size  / 4;
 			sample_num  = work_size  / 4;
 			work_size   = sample_num * 4;
-			p4byte_data = cast(uint32_t *)_p_smp;
+			p4byte_data = cast(uint *)_p_smp;
 			if( !pxtnMem_zero_alloc( cast(void **)&p4byte_work, work_size ) ) goto End;
 			for( a = 0; a < sample_num; a++ )
 			{
-				b = cast(int32_t)( cast(double)a * cast(double)(_sps) / cast(double)new_sps );
+				b = cast(int)( cast(double)a * cast(double)(_sps) / cast(double)new_sps );
 				p4byte_work[a] = p4byte_data[b];
 			}
 		}
@@ -247,11 +246,11 @@ private:
 			_smp_tail = tail_size  / 1;
 			sample_num      = work_size  / 1;
 			work_size       = sample_num * 1;
-			p1byte_data     = cast(uint8_t*)_p_smp;
+			p1byte_data     = cast(ubyte*)_p_smp;
 			if( !pxtnMem_zero_alloc( cast(void **)&p1byte_work, work_size ) ) goto End;
 			for( a = 0; a < sample_num; a++ )
 			{
-				b = cast(int32_t)( cast(double)a * cast(double)(_sps) / cast(double)(new_sps) );
+				b = cast(int)( cast(double)a * cast(double)(_sps) / cast(double)(new_sps) );
 				p1byte_work[a] = p1byte_data[b];
 			}
 		}
@@ -263,11 +262,11 @@ private:
 			_smp_tail = tail_size  / 2;
 			sample_num      = work_size  / 2;
 			work_size       = sample_num * 2;
-			p2byte_data     = cast(uint16_t*)_p_smp;
+			p2byte_data     = cast(ushort*)_p_smp;
 			if( !pxtnMem_zero_alloc( cast(void**)&p2byte_work, work_size ) ) goto End;
 			for( a = 0; a < sample_num; a++ )
 			{
-				b = cast(int32_t)( cast(double)a * cast(double)(_sps) / cast(double)new_sps );
+				b = cast(int)( cast(double)a * cast(double)(_sps) / cast(double)new_sps );
 				p2byte_work[a] = p2byte_data[b];
 			}
 		}
@@ -308,13 +307,13 @@ public:
 		Release();
 	}
 
-	pxtnERR Create( int32_t ch, int32_t sps, int32_t bps, int32_t sample_num )
+	pxtnERR Create( int ch, int sps, int bps, int sample_num )
 	{
 		Release();
 
 		if( bps != 8 && bps != 16 ) return pxtnERR.pxtnERR_pcm_unknown;
 
-		int32_t size = 0;
+		int size = 0;
 
 		_p_smp    = null;
 		_ch       = ch  ;
@@ -327,7 +326,7 @@ public:
 		// bit / sample is 8 or 16
 		size = _smp_body * _bps * _ch / 8;
 
-		_p_smp = cast(uint8_t*)malloc( size );
+		_p_smp = cast(ubyte*)malloc( size );
 		if( !( _p_smp ) ) return pxtnERR.pxtnERR_memory;
 
 		if( _bps == 8 ) memset( _p_smp, 128, size );
@@ -351,7 +350,7 @@ public:
 	{
 		pxtnERR        res       = pxtnERR.pxtnERR_VOID;
 		char[ 16 ]            buf =  0;
-		uint32_t        size      =   0  ;
+		uint        size      =   0  ;
 		WAVEFORMATCHUNK format    = { 0 };
 
 		_p_smp = null;
@@ -367,7 +366,7 @@ public:
 		}
 
 		// read format.
-		if( !doc.r( &size  , uint32_t.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r     ; goto term; }
+		if( !doc.r( &size  , uint.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r     ; goto term; }
 		if( !doc.r( &format,               18, 1 ) ){ res = pxtnERR.pxtnERR_desc_r     ; goto term; }
 
 		if( format.formatID != 0x0001               ){ res = pxtnERR.pxtnERR_pcm_unknown; goto term; }
@@ -380,7 +379,7 @@ public:
 		while( 1 )
 		{
 			if( !doc.r( buf.ptr  , char.sizeof, 4 )      ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
-			if( !doc.r( &size, uint32_t.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
+			if( !doc.r( &size, uint.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 			if( buf[0] == 'd' && buf[1] == 'a' && buf[2] == 't' && buf[3] == 'a' ) break;
 			if( !doc.seek( pxtnSEEK.pxtnSEEK_cur, size )       ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 		}
@@ -388,7 +387,7 @@ public:
 		res = Create( format.ch, format.sps, format.bps, size * 8 / format.bps / format.ch );
 		if( res !=pxtnERR. pxtnOK ) goto term;
 
-		if( !doc.r( _p_smp, uint8_t.sizeof, size )   ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
+		if( !doc.r( _p_smp, ubyte.sizeof, size )   ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 
 		res = pxtnERR.pxtnOK;
 	term:
@@ -403,11 +402,11 @@ public:
 
 		WAVEFORMATCHUNK format;
 		bool            b_ret = false;
-		uint32_t   riff_size;
-		uint32_t   fact_size; // num sample.
-		uint32_t   list_size; // num list text.
-		uint32_t   isft_size;
-		uint32_t   sample_size;
+		uint   riff_size;
+		uint   fact_size; // num sample.
+		uint   list_size; // num list text.
+		uint   isft_size;
+		uint   sample_size;
 
 		bool bText;
 
@@ -426,11 +425,11 @@ public:
 		sample_size         = ( _smp_head + _smp_body + _smp_tail ) * _ch * _bps / 8;
 
 		format.formatID     = 0x0001;// PCM
-		format.ch           = cast(uint16_t) _ch;
-		format.sps          = cast(uint32_t) _sps;
-		format.bps          = cast(uint16_t) _bps;
-		format.byte_per_sec = cast(uint32_t)(_sps * _bps * _ch / 8);
-		format.block_size   = cast(uint16_t)(             _bps * _ch / 8);
+		format.ch           = cast(ushort) _ch;
+		format.sps          = cast(uint) _sps;
+		format.bps          = cast(ushort) _bps;
+		format.byte_per_sec = cast(uint)(_sps * _bps * _ch / 8);
+		format.block_size   = cast(ushort)(             _bps * _ch / 8);
 		format.ext          = 0;
 
 		fact_size = ( _smp_head + _smp_body + _smp_tail );
@@ -442,7 +441,7 @@ public:
 
 		if( bText )
 		{
-			isft_size = cast(uint32_t)strlen( pstrLIST );
+			isft_size = cast(uint)strlen( pstrLIST );
 			list_size = 4 + 4 + 4 + isft_size; // "INFO" + "ISFT" + size + ver_Text;
 			riff_size +=  8 + list_size;// 'LIST'
 		}
@@ -455,7 +454,7 @@ public:
 		// open file..
 
 		if( !doc.w_asfile( tag_RIFF.ptr,     char.sizeof, 4 ) ) goto End;
-		if( !doc.w_asfile( &riff_size,   uint32_t.sizeof, 1 ) ) goto End;
+		if( !doc.w_asfile( &riff_size,   uint.sizeof, 1 ) ) goto End;
 		if( !doc.w_asfile( tag_WAVE.ptr,     char.sizeof, 4 ) ) goto End;
 		if( !doc.w_asfile( tag_fmt_.ptr,     char.sizeof, 8 ) ) goto End;
 		if( !doc.w_asfile( &format,                    18, 1 ) ) goto End;
@@ -463,16 +462,16 @@ public:
 		if( bText )
 		{
 			if( !doc.w_asfile( tag_LIST.ptr,     char.sizeof, 4 ) ) goto End;
-			if( !doc.w_asfile( &list_size,   uint32_t.sizeof, 1 ) ) goto End;
+			if( !doc.w_asfile( &list_size,   uint.sizeof, 1 ) ) goto End;
 			if( !doc.w_asfile( tag_INFO.ptr,     char.sizeof, 8 ) ) goto End;
-			if( !doc.w_asfile( &isft_size,   uint32_t.sizeof, 1 ) ) goto End;
+			if( !doc.w_asfile( &isft_size,   uint.sizeof, 1 ) ) goto End;
 			if( !doc.w_asfile( pstrLIST,     char.sizeof, isft_size ) ) goto End;
 		}
 
 		if( !doc.w_asfile( tag_fact.ptr,     char.sizeof, 8 ) ) goto End;
-		if( !doc.w_asfile( &fact_size,   uint32_t.sizeof, 1 ) ) goto End;
+		if( !doc.w_asfile( &fact_size,   uint.sizeof, 1 ) ) goto End;
 		if( !doc.w_asfile( tag_data.ptr,     char.sizeof, 4 ) ) goto End;
-		if( !doc.w_asfile( &sample_size, int32_t.sizeof, 1 ) ) goto End;
+		if( !doc.w_asfile( &sample_size, int.sizeof, 1 ) ) goto End;
 		if( !doc.w_asfile( _p_smp, char.sizeof, sample_size ) ) goto End;
 
 		b_ret = true;
@@ -484,7 +483,7 @@ public:
 
 
 	// convert..
-	bool Convert( int32_t new_ch, int32_t new_sps, int32_t new_bps )
+	bool Convert( int new_ch, int new_sps, int new_bps )
 	{
 		if( !_Convert_ChannelNum     ( new_ch  ) ) return false;
 		if( !_Convert_BitPerSample   ( new_bps ) ) return false;
@@ -496,26 +495,26 @@ public:
 	{
 		if( !_p_smp ) return false;
 
-		int32_t sample_num = ( _smp_head + _smp_body + _smp_tail ) * _ch;
+		int sample_num = ( _smp_head + _smp_body + _smp_tail ) * _ch;
 
 		switch( _bps )
 		{
 		case  8:
 			{
-				uint8_t *p8 = cast(uint8_t*)_p_smp;
-				for( int32_t i = 0; i < sample_num; i++ )
+				ubyte *p8 = cast(ubyte*)_p_smp;
+				for( int i = 0; i < sample_num; i++ )
 				{
-					*p8 = cast(uint8_t)( ( ( cast(float)(*p8) - 128 ) * v ) + 128 );
+					*p8 = cast(ubyte)( ( ( cast(float)(*p8) - 128 ) * v ) + 128 );
 					p8++;
 				}
 				break;
 			}
 		case 16:
 			{
-				short *p16 = cast(int16_t *)_p_smp;
-				for( int32_t i = 0; i < sample_num; i++ )
+				short *p16 = cast(short *)_p_smp;
+				for( int i = 0; i < sample_num; i++ )
 				{
-					*p16 = cast(int16_t)( cast(float)*p16 * v );
+					*p16 = cast(short)( cast(float)*p16 * v );
 					p16++;
 				}
 				break;
@@ -533,9 +532,9 @@ public:
 		memcpy( p_dst._p_smp, _p_smp, ( _smp_head + _smp_body + _smp_tail ) * _ch * _bps / 8 );
 		return pxtnERR.pxtnOK;
 	}
-	bool Copy_( pxtnPulse_PCM *p_dst, int32_t start, int32_t end ) const
+	bool Copy_( pxtnPulse_PCM *p_dst, int start, int end ) const
 	{
-		int32_t size, offset;
+		int size, offset;
 
 		if( _smp_head || _smp_tail     ) return false;
 		if( !_p_smp ){ p_dst.Release(); return true; }
@@ -562,14 +561,14 @@ public:
 		return cast(float)(_smp_body+_smp_head+_smp_tail) / cast(float)_sps;
 	}
 
-	int32_t     get_ch            () const{ return _ch      ; }
-	int32_t     get_bps           () const{ return _bps     ; }
-	int32_t     get_sps           () const{ return _sps     ; }
-	int32_t     get_smp_body      () const{ return _smp_body; }
-	int32_t     get_smp_head      () const{ return _smp_head; }
-	int32_t     get_smp_tail      () const{ return _smp_tail; }
+	int     get_ch            () const{ return _ch      ; }
+	int     get_bps           () const{ return _bps     ; }
+	int     get_sps           () const{ return _sps     ; }
+	int     get_smp_body      () const{ return _smp_body; }
+	int     get_smp_head      () const{ return _smp_head; }
+	int     get_smp_tail      () const{ return _smp_tail; }
 
-	int32_t get_buf_size() const
+	int get_buf_size() const
 	{
 		return ( _smp_head + _smp_body + _smp_tail ) * _ch * _bps / 8;
 	}

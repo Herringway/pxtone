@@ -5,11 +5,10 @@ import pxtone.pxtn;
 
 import pxtone.descriptor;
 
-import core.stdc.stdint;
 import core.stdc.stdlib;
 import core.stdc.string;
 
-static bool _read4_malloc( char **pp, int32_t* p_buf_size, pxtnDescriptor *p_doc )
+static bool _read4_malloc( char **pp, int* p_buf_size, pxtnDescriptor *p_doc )
 {
 	if( !pp ) return false;
 	if( !p_doc.r( p_buf_size, 4, 1 ) ) return false;
@@ -34,7 +33,7 @@ term:
 	return b_ret;
 }
 
-static bool _write4( const char *p, int32_t buf_size, pxtnDescriptor *p_doc )
+static bool _write4( const char *p, int buf_size, pxtnDescriptor *p_doc )
 {
 	if( !p_doc.w_asfile( &buf_size, 4,        1 ) ) return false;
 	if( !p_doc.w_asfile(  p,        1, buf_size ) ) return false;
@@ -45,10 +44,10 @@ struct pxtnText
 {
 private:
 	char*   _p_comment_buf;
-	int32_t _comment_size ;
+	int _comment_size ;
 
 	char*   _p_name_buf   ;
-	int32_t _name_size    ;
+	int _name_size    ;
 
 public :
 	~this()
@@ -57,7 +56,7 @@ public :
 		SAFE_DELETE( _p_name_buf); _name_size    = 0;
 	}
 
-	bool set_comment_buf( const(char) *comment, int32_t buf_size )
+	bool set_comment_buf( const(char) *comment, int buf_size )
 	{
 		if( !comment ) return false;
 		if( _p_comment_buf ) free( _p_comment_buf ); _p_comment_buf = null;
@@ -69,14 +68,14 @@ public :
 		_comment_size = buf_size;
 		return true;
 	}
-	const(char)* get_comment_buf( int32_t* p_buf_size ) const
+	const(char)* get_comment_buf( int* p_buf_size ) const
 	{
 		if( p_buf_size ) *p_buf_size = _comment_size;
 		return _p_comment_buf;
 	}
 	bool is_comment_buf() const{ if( _comment_size > 0 ) return true; return false; }
 
-	bool set_name_buf( const(char) *name, int32_t buf_size )
+	bool set_name_buf( const(char) *name, int buf_size )
 	{
 		if( !name    ) return false;
 		if( _p_name_buf ) free( _p_name_buf ); _p_name_buf = null;
@@ -88,7 +87,7 @@ public :
 		_name_size = buf_size;
 		return true;
 	}
-	const(char)* get_name_buf( int32_t* p_buf_size ) const
+	const(char)* get_name_buf( int* p_buf_size ) const
 	{
 		if( p_buf_size ) *p_buf_size = _name_size;
 		return _p_name_buf;

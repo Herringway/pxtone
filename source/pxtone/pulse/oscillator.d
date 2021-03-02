@@ -2,20 +2,19 @@
 
 import pxtone.pxtn;
 
-import core.stdc.stdint;
 import core.stdc.math;
 
 struct pxtnPulse_Oscillator
 {
 private:
 	pxtnPOINT *_p_point = null  ;
-	int32_t   _point_num = 0 ;
-	int32_t   _point_reso = 0;
-	int32_t   _volume = 0    ;
-	int32_t   _sample_num = 0;
+	int   _point_num = 0 ;
+	int   _point_reso = 0;
+	int   _volume = 0    ;
+	int   _sample_num = 0;
 
 public:
-	void ReadyGetSample( pxtnPOINT *p_point, int32_t point_num, int32_t volume, int32_t sample_num, int32_t point_reso )
+	void ReadyGetSample( pxtnPOINT *p_point, int point_num, int volume, int sample_num, int point_reso )
 	{
 		_volume      = volume;
 		_p_point     = p_point;
@@ -24,9 +23,9 @@ public:
 		_point_reso  = point_reso;
 	}
 
-	double GetOneSample_Overtone( int32_t index )
+	double GetOneSample_Overtone( int index )
 	{
-		int32_t    o;
+		int    o;
 		double work_double;
 		double pi = 3.1415926535897932;
 		double sss;
@@ -42,12 +41,12 @@ public:
 		return work_double;
 	}
 
-	double GetOneSample_Coodinate( int32_t index )
+	double GetOneSample_Coodinate( int index )
 	{
-		int32_t  i;
-		int32_t  c;
-		int32_t  x1, y1, x2, y2;
-		int32_t  w, h;
+		int  i;
+		int  c;
+		int  x1, y1, x2, y2;
+		int  w, h;
 		double work;
 
 		i = _point_reso * index / _sample_num;

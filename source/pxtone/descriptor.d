@@ -1,14 +1,13 @@
 ﻿module pxtone.descriptor;
 // '11/08/12 pxFile.h
 // '16/01/22 pxFile.h
-// '16/04/27 pxtnFile. (int32_t)
+// '16/04/27 pxtnFile. (int)
 // '16/09/09 pxtnDescriptor.
 
 import pxtone.pxtn;
 
 import core.stdc.stdio : fwrite, fread, fseek, fpos_t, fgetpos, SEEK_END, SEEK_SET, SEEK_CUR;
 import core.stdc.stdio : REALFILE = FILE;
-import core.stdc.stdint;
 import core.stdc.stdlib;
 import core.stdc.string;
 
@@ -37,8 +36,8 @@ private:
 	void    *_p_desc;
 	bool    _b_file ;
 	bool    _b_read ;
-	int32_t _size   ;
-	int32_t _cur    ;
+	int _size   ;
+	int _cur    ;
 
 public:
 
@@ -53,9 +52,9 @@ public:
 		_p_desc = fd  ;
 
 	static if(pxSCE) {
-		_size   = cast(int32_t)sz._Off;
+		_size   = cast(int)sz._Off;
 	} else {
-		_size   = cast(int32_t)sz;
+		_size   = cast(int)sz;
 	}
 
 		_b_file = true;
@@ -146,7 +145,7 @@ public:
 			for( int  i = 0; i < num; i++ )
 			{
 				if( _cur + size > _size ) goto End;
-				memcpy( &(cast(char*)p)[ i ], cast(uint8_t*)_p_desc + _cur, size );
+				memcpy( &(cast(char*)p)[ i ], cast(ubyte*)_p_desc + _cur, size );
 				_cur += size;
 			}
 		}
@@ -156,22 +155,22 @@ public:
 		return b_ret;
 	}
 
-	// ..uint32_t
+	// ..uint
 	int  v_w_asfile( int val, int *p_add )
 	{
 		if( !_p_desc ) return 0;
 		if( !_b_file ) return 0;
 		if(  _b_read ) return 0;
 
-		uint8_t[ 5 ]  a = 0;
-		uint8_t[ 5 ]  b = 0;
-		uint32_t us     = cast(uint32_t )val;
-		int32_t  bytes  = 0;
+		ubyte[ 5 ]  a = 0;
+		ubyte[ 5 ]  b = 0;
+		uint us     = cast(uint )val;
+		int  bytes  = 0;
 
-		a[ 0 ] = *( cast(uint8_t *)(&us) + 0 );
-		a[ 1 ] = *( cast(uint8_t *)(&us) + 1 );
-		a[ 2 ] = *( cast(uint8_t *)(&us) + 2 );
-		a[ 3 ] = *( cast(uint8_t *)(&us) + 3 );
+		a[ 0 ] = *( cast(ubyte *)(&us) + 0 );
+		a[ 1 ] = *( cast(ubyte *)(&us) + 1 );
+		a[ 2 ] = *( cast(ubyte *)(&us) + 2 );
+		a[ 3 ] = *( cast(ubyte *)(&us) + 3 );
 		a[ 4 ] = 0;
 
 		// 1byte(7bit)
@@ -225,15 +224,15 @@ public:
 
 		//return false;
 	}
-	// 可変長読み込み（int32_t  までを保証）
+	// 可変長読み込み（int  までを保証）
 	bool v_r  ( int *p  )
 	{
 		if( !_p_desc ) return false;
 		if( !_b_read ) return false;
 
 		int          i;
-		uint8_t[ 5 ] a = 0;
-		uint8_t[ 5 ] b = 0;
+		ubyte[ 5 ] a = 0;
+		ubyte[ 5 ] b = 0;
 
 		for( i = 0; i < 5; i++ )
 		{
@@ -272,7 +271,7 @@ public:
 		default: break;
 		}
 
-		*p = *(cast(int32_t*)b);
+		*p = *(cast(int*)b);
 
 		return true;
 	}
@@ -282,9 +281,9 @@ public:
 
 int  pxtnDescriptor_v_chk( int val )
 {
-	uint32_t  us;
+	uint  us;
 
-	us = cast(uint32_t)val;
+	us = cast(uint)val;
 	if( us <        0x80 ) return 1;	// 1byte( 7bit)
 	if( us <      0x4000 ) return 2;	// 2byte(14bit)
 	if( us <    0x200000 ) return 3;	// 3byte(21bit)

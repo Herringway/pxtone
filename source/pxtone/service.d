@@ -17,7 +17,6 @@ import pxtone.pulse.frequency;
 import pxtone.unit;
 import pxtone.evelist;
 
-import core.stdc.stdint;
 import core.stdc.stdio;
 import core.stdc.stdlib;
 import core.stdc.string;
@@ -133,23 +132,23 @@ static _enum_Tag _CheckTagCode( const char *p_code )
 
 struct _ASSIST_WOICE
 {
-	uint16_t  woice_index;
-	uint16_t  rrr;
+	ushort  woice_index;
+	ushort  rrr;
 	char[ pxtnMAX_TUNEWOICENAME ] name;
 }
 
 
 struct _ASSIST_UNIT
 {
-	uint16_t  unit_index;
-	uint16_t  rrr;
+	ushort  unit_index;
+	ushort  rrr;
 	char[ pxtnMAX_TUNEUNITNAME ]      name;
 }
 
 struct _NUM_UNIT
 {
-	int16_t num;
-	int16_t rrr;
+	short num;
+	short rrr;
 }
 
 enum _MAX_FMTVER_x1x_EVENTNUM = 10000;
@@ -165,26 +164,26 @@ struct _x1x_PROJECT
 	char[_MAX_PROJECTNAME_x1x]  x1x_name;
 
 	float x1x_beat_tempo;
-	uint16_t   x1x_beat_clock;
-	uint16_t   x1x_beat_num;
-	uint16_t   x1x_beat_note;
-	uint16_t   x1x_meas_num;
-	uint16_t   x1x_channel_num;
-	uint16_t   x1x_bps;
-	uint32_t   x1x_sps;
+	ushort   x1x_beat_clock;
+	ushort   x1x_beat_num;
+	ushort   x1x_beat_note;
+	ushort   x1x_meas_num;
+	ushort   x1x_channel_num;
+	ushort   x1x_bps;
+	uint   x1x_sps;
 }
 
 struct pxtnVOMITPREPARATION
 {
-	int32_t   start_pos_meas  ;
-	int32_t   start_pos_sample;
+	int   start_pos_meas  ;
+	int   start_pos_sample;
 	float     start_pos_float ;
 
-	int32_t   meas_end        ;
-	int32_t   meas_repeat     ;
+	int   meas_end        ;
+	int   meas_repeat     ;
 	float     fadein_sec      ;
 
-	uint32_t  flags           ;
+	uint  flags           ;
 	float     master_volume   ;
 }
 
@@ -208,23 +207,23 @@ private:
 	bool _b_edit;
 	bool _b_fix_evels_num;
 
-	int32_t _dst_ch_num, _dst_sps, _dst_byte_per_smp;
+	int _dst_ch_num, _dst_sps, _dst_byte_per_smp;
 
 	pxtnPulse_NoiseBuilder *_ptn_bldr;
 
-	int32_t _delay_max;	int32_t _delay_num;	pxtnDelay     **_delays;
-	int32_t _ovdrv_max;	int32_t _ovdrv_num;	pxtnOverDrive **_ovdrvs;
-	int32_t _woice_max;	int32_t _woice_num;	pxtnWoice     **_woices;
-	int32_t _unit_max ;	int32_t _unit_num ;	pxtnUnit      **_units ;
+	int _delay_max;	int _delay_num;	pxtnDelay     **_delays;
+	int _ovdrv_max;	int _ovdrv_num;	pxtnOverDrive **_ovdrvs;
+	int _woice_max;	int _woice_num;	pxtnWoice     **_woices;
+	int _unit_max ;	int _unit_num ;	pxtnUnit      **_units ;
 
-	int32_t _group_num;
+	int _group_num;
 
-	pxtnERR _ReadVersion( pxtnDescriptor *p_doc, _enum_FMTVER *p_fmt_ver, uint16_t *p_exe_ver )
+	pxtnERR _ReadVersion( pxtnDescriptor *p_doc, _enum_FMTVER *p_fmt_ver, ushort *p_exe_ver )
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 
 		char[ _VERSIONSIZE  ]     version_ = '\0';
-		uint16_t dummy;
+		ushort dummy;
 
 		if( !p_doc.r( version_.ptr, 1, _VERSIONSIZE ) )return pxtnERR.pxtnERR_desc_r;
 
@@ -241,8 +240,8 @@ private:
 		else return pxtnERR.pxtnERR_fmt_unknown;
 
 		// exe version
-		if( !p_doc.r( p_exe_ver, uint16_t.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
-		if( !p_doc.r( &dummy   , uint16_t.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
+		if( !p_doc.r( p_exe_ver, ushort.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
+		if( !p_doc.r( &dummy   , ushort.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
 
 		return pxtnERR.pxtnOK;
 	}
@@ -272,9 +271,9 @@ private:
 			// new -------
 			case _enum_Tag._TAG_num_UNIT    :
 				{
-					int32_t num = 0;
+					int num = 0;
 					res = _io_UNIT_num_r( p_doc, &num ); if( res != pxtnERR.pxtnOK ) goto term;
-					for( int32_t i = 0; i < num; i++ ) _units[ i ] = allocate!pxtnUnit();
+					for( int i = 0; i < num; i++ ) _units[ i ] = allocate!pxtnUnit();
 					_unit_num = num;
 					break;
 				}
@@ -328,8 +327,8 @@ private:
 		if( !_b_init ) return false;
 
 		_x1x_PROJECT prjc = {0};
-		int32_t  beat_num, beat_clock;
-		int32_t  size;
+		int  beat_num, beat_clock;
+		int  size;
 		float    beat_tempo;
 
 		if( !p_doc.r( &size, 4,                      1 ) ) return false;
@@ -339,7 +338,7 @@ private:
 		beat_tempo = prjc.x1x_beat_tempo;
 		beat_clock = prjc.x1x_beat_clock;
 
-		int32_t  ns = 0;
+		int  ns = 0;
 		for( /+ns+/; ns <  _MAX_PROJECTNAME_x1x; ns++ ){ if( !prjc.x1x_name[ ns ] ) break; }
 
 		text.set_name_buf( prjc.x1x_name.ptr, ns );
@@ -415,7 +414,7 @@ private:
 		return res;
 	}
 
-	pxtnERR _io_Read_OldUnit( pxtnDescriptor *p_doc, int32_t ver        )
+	pxtnERR _io_Read_OldUnit( pxtnDescriptor *p_doc, int ver        )
 	{
 		if( !_b_init               ) return pxtnERR.pxtnERR_INIT;
 		if( !_units                ) return pxtnERR.pxtnERR_INIT;
@@ -423,7 +422,7 @@ private:
 
 		pxtnERR   res   = pxtnERR.pxtnERR_VOID  ;
 		pxtnUnit* unit  = allocate!pxtnUnit();
-		int32_t   group =              0;
+		int   group =              0;
 
 		switch( ver )
 		{
@@ -434,9 +433,9 @@ private:
 
 		if( group >= _group_num ) group = _group_num - 1;
 
-		evels.x4x_Read_Add( 0, cast(uint8_t)_unit_num, EVENTKIND_GROUPNO, cast(int32_t)group     );
+		evels.x4x_Read_Add( 0, cast(ubyte)_unit_num, EVENTKIND_GROUPNO, cast(int)group     );
 		evels.x4x_Read_NewKind();
-		evels.x4x_Read_Add( 0, cast(uint8_t)_unit_num, EVENTKIND_VOICENO, cast(int32_t)_unit_num );
+		evels.x4x_Read_Add( 0, cast(ubyte)_unit_num, EVENTKIND_VOICENO, cast(int)_unit_num );
 		evels.x4x_Read_NewKind();
 
 		res = pxtnERR.pxtnOK;
@@ -452,22 +451,22 @@ private:
 	/////////////
 
 
-	bool _io_assiWOIC_w( pxtnDescriptor *p_doc, int32_t idx ) const
+	bool _io_assiWOIC_w( pxtnDescriptor *p_doc, int idx ) const
 	{
 		if( !_b_init ) return false;
 
 		_ASSIST_WOICE assi = {0};
-		int32_t       size;
-		int32_t       name_size = 0;
+		int       size;
+		int       name_size = 0;
 		const char*   p_name = _woices[ idx ].get_name_buf( &name_size );
 
 		if( name_size > pxtnMAX_TUNEWOICENAME ) return false;
 
 		memcpy( assi.name.ptr, p_name, name_size );
-		assi.woice_index = cast(uint16_t)idx;
+		assi.woice_index = cast(ushort)idx;
 
 		size =  _ASSIST_WOICE.sizeof;
-		if( !p_doc.w_asfile( &size, uint32_t.sizeof, 1 ) ) return false;
+		if( !p_doc.w_asfile( &size, uint.sizeof, 1 ) ) return false;
 		if( !p_doc.w_asfile( &assi, size,             1 ) ) return false;
 
 		return true;
@@ -478,7 +477,7 @@ private:
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 
 		_ASSIST_WOICE assi = {0};
-		int32_t       size =  0 ;
+		int       size =  0 ;
 
 		if( !p_doc.r( &size,    4, 1 )    ) return pxtnERR.pxtnERR_desc_r     ;
 		if( size != assi.sizeof           ) return pxtnERR.pxtnERR_fmt_unknown;
@@ -494,20 +493,20 @@ private:
 	// assi unit.
 	// -----
 
-	bool _io_assiUNIT_w( pxtnDescriptor *p_doc, int32_t idx ) const
+	bool _io_assiUNIT_w( pxtnDescriptor *p_doc, int idx ) const
 	{
 		if( !_b_init ) return false;
 
 		_ASSIST_UNIT assi = {0};
-		int32_t      size;
-		int32_t      name_size;
+		int      size;
+		int      name_size;
 		const char*  p_name = _units[ idx ].get_name_buf( &name_size );
 
 		memcpy( assi.name.ptr, p_name, name_size );
-		assi.unit_index = cast(uint16_t)idx;
+		assi.unit_index = cast(ushort)idx;
 
 		size = assi.sizeof;
-		if( !p_doc.w_asfile( &size, uint32_t.sizeof, 1 ) ) return false;
+		if( !p_doc.w_asfile( &size, uint.sizeof, 1 ) ) return false;
 		if( !p_doc.w_asfile( &assi, size            , 1 ) ) return false;
 
 		return true;
@@ -518,7 +517,7 @@ private:
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 
 		_ASSIST_UNIT assi = {0};
-		int32_t      size;
+		int      size;
 
 		if( !p_doc.r( &size, 4,            1 ) ) return pxtnERR.pxtnERR_desc_r     ;
 		if( size != assi.sizeof                ) return pxtnERR.pxtnERR_fmt_unknown;
@@ -539,25 +538,25 @@ private:
 		if( !_b_init ) return false;
 
 		_NUM_UNIT data;
-		int32_t   size;
+		int   size;
 
 		memset( &data, 0,  _NUM_UNIT.sizeof );
 
-		data.num = cast(int16_t)_unit_num;
+		data.num = cast(short)_unit_num;
 
 		size = _NUM_UNIT.sizeof;
-		if( !p_doc.w_asfile( &size, int32_t.sizeof, 1 ) ) return false;
+		if( !p_doc.w_asfile( &size, int.sizeof, 1 ) ) return false;
 		if( !p_doc.w_asfile( &data, size       , 1 ) ) return false;
 
 		return true;
 	}
 
-	pxtnERR _io_UNIT_num_r    ( pxtnDescriptor *p_doc, int32_t* p_num )
+	pxtnERR _io_UNIT_num_r    ( pxtnDescriptor *p_doc, int* p_num )
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 
 		_NUM_UNIT data = {0};
-		int32_t   size =  0 ;
+		int   size =  0 ;
 
 		if( !p_doc.r( &size, 4,                   1 ) ) return pxtnERR.pxtnERR_desc_r     ;
 		if( size !=  _NUM_UNIT.sizeof                ) return pxtnERR.pxtnERR_fmt_unknown;
@@ -578,17 +577,17 @@ private:
 
 		if( _unit_num > _woice_num ) return false;
 
-		for( int32_t u = 0; u < _unit_num; u++ )
+		for( int u = 0; u < _unit_num; u++ )
 		{
 			if( u >= _woice_num ) return false;
 
-			int32_t change_value = _woices[ u ].get_x3x_basic_key() - EVENTDEFAULT_BASICKEY;
+			int change_value = _woices[ u ].get_x3x_basic_key() - EVENTDEFAULT_BASICKEY;
 
-			if( !evels.get_Count( cast(uint8_t)u, cast(uint8_t)EVENTKIND_KEY ) )
+			if( !evels.get_Count( cast(ubyte)u, cast(ubyte)EVENTKIND_KEY ) )
 			{
-				evels.Record_Add_i( 0, cast(uint8_t)u, EVENTKIND_KEY, cast(int32_t)0x6000 );
+				evels.Record_Add_i( 0, cast(ubyte)u, EVENTKIND_KEY, cast(int)0x6000 );
 			}
-			evels.Record_Value_Change( 0, -1, cast(uint8_t)u, EVENTKIND_KEY, change_value );
+			evels.Record_Value_Change( 0, -1, cast(ubyte)u, EVENTKIND_KEY, change_value );
 		}
 		return true;
 	}
@@ -600,10 +599,10 @@ private:
 
 		if( _unit_num > _woice_num ) return false;
 
-		for( int32_t u = 0; u < _unit_num; u++ )
+		for( int u = 0; u < _unit_num; u++ )
 		{
 			float tuning = _woices[ u ].get_x3x_tuning();
-			if( tuning ) evels.Record_Add_f( 0, cast(uint8_t)u, EVENTKIND_TUNING, tuning );
+			if( tuning ) evels.Record_Add_f( 0, cast(ubyte)u, EVENTKIND_TUNING, tuning );
 		}
 
 		return true;
@@ -613,7 +612,7 @@ private:
 	{
 		if( !_b_init ) return false;
 
-		for( int32_t i = 0; i < _woice_num; i++ )
+		for( int i = 0; i < _woice_num; i++ )
 		{
 			char[ pxtnMAX_TUNEWOICENAME + 1 ] name;
 			sprintf( name.ptr, "voice_%02d", i );
@@ -632,41 +631,41 @@ private:
 	bool     _moo_b_mute_by_unit;
 	bool     _moo_b_loop = true;
 
-	int32_t  _moo_smp_smooth  ;
+	int  _moo_smp_smooth  ;
 	float    _moo_clock_rate  ; // as the sample
-	int32_t  _moo_smp_count   ;
-	int32_t  _moo_smp_start   ;
-	int32_t  _moo_smp_end     ;
-	int32_t  _moo_smp_repeat  ;
+	int  _moo_smp_count   ;
+	int  _moo_smp_start   ;
+	int  _moo_smp_end     ;
+	int  _moo_smp_repeat  ;
 
-	int32_t  _moo_fade_count  ;
-	int32_t  _moo_fade_max    ;
-	int32_t  _moo_fade_fade   ;
+	int  _moo_fade_count  ;
+	int  _moo_fade_max    ;
+	int  _moo_fade_fade   ;
 	float    _moo_master_vol = 1.0f ;
 
-	int32_t  _moo_top;
+	int  _moo_top;
 	float    _moo_smp_stride  ;
-	int32_t  _moo_time_pan_index;
+	int  _moo_time_pan_index;
 
 	float    _moo_bt_tempo    ;
 
 	// for make now-meas
-	int32_t  _moo_bt_clock    ;
-	int32_t  _moo_bt_num      ;
+	int  _moo_bt_clock    ;
+	int  _moo_bt_num      ;
 
-	int32_t* _moo_group_smps  ;
+	int* _moo_group_smps  ;
 
 	const(EVERECORD)*     _moo_p_eve;
 
 	pxtnPulse_Frequency* _moo_freq ;
 
 
-	pxtnERR _init( int32_t fix_evels_num, bool b_edit )
+	pxtnERR _init( int fix_evels_num, bool b_edit )
 	{
 		if( _b_init ) return pxtnERR.pxtnERR_INIT;
 
 		pxtnERR res       = pxtnERR.pxtnERR_VOID;
-		int32_t byte_size =            0;
+		int byte_size =            0;
 
 		text      = allocate!pxtnText();
 		if( !( text ) ){ res = pxtnERR.pxtnERR_INIT    ; goto End; }
@@ -741,14 +740,14 @@ private:
 		SAFE_DELETE( master    );
 		SAFE_DELETE( evels     );
 		SAFE_DELETE( _ptn_bldr );
-		if( _delays ){ for( int32_t i = 0; i < _delay_num; i++ ) SAFE_DELETE( _delays[ i ] ); free( _delays ); _delays = null; }
-		if( _ovdrvs ){ for( int32_t i = 0; i < _ovdrv_num; i++ ) SAFE_DELETE( _ovdrvs[ i ] ); free( _ovdrvs ); _ovdrvs = null; }
-		if( _woices ){ for( int32_t i = 0; i < _woice_num; i++ ) SAFE_DELETE( _woices[ i ] ); free( _woices ); _woices = null; }
-		if( _units  ){ for( int32_t i = 0; i < _unit_num ; i++ ) SAFE_DELETE( _units [ i ] ); free( _units  ); _units  = null; }
+		if( _delays ){ for( int i = 0; i < _delay_num; i++ ) SAFE_DELETE( _delays[ i ] ); free( _delays ); _delays = null; }
+		if( _ovdrvs ){ for( int i = 0; i < _ovdrv_num; i++ ) SAFE_DELETE( _ovdrvs[ i ] ); free( _ovdrvs ); _ovdrvs = null; }
+		if( _woices ){ for( int i = 0; i < _woice_num; i++ ) SAFE_DELETE( _woices[ i ] ); free( _woices ); _woices = null; }
+		if( _units  ){ for( int i = 0; i < _unit_num ; i++ ) SAFE_DELETE( _units [ i ] ); free( _units  ); _units  = null; }
 		return true;
 	}
 
-	pxtnERR _pre_count_event( pxtnDescriptor *p_doc, int32_t* p_count )
+	pxtnERR _pre_count_event( pxtnDescriptor *p_doc, int* p_count )
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT ;
 		if( !p_count ) return pxtnERR.pxtnERR_param;
@@ -756,12 +755,12 @@ private:
 		pxtnERR      res   = pxtnERR.pxtnERR_VOID;
 		bool         b_end = false;
 
-		int32_t      count = 0;
-		int32_t      c     = 0;
-		int32_t      size  = 0;
+		int      count = 0;
+		int      c     = 0;
+		int      size  = 0;
 		char[ _CODESIZE + 1 ]         code = '\0';
 
-		uint16_t     exe_ver = 0;
+		ushort     exe_ver = 0;
 		_enum_FMTVER fmt_ver = _enum_FMTVER._enum_FMTVER_unknown;
 
 		res = _ReadVersion( p_doc, &fmt_ver, &exe_ver ); if( res != pxtnERR.pxtnOK ) goto term;
@@ -800,7 +799,7 @@ private:
 			case _enum_Tag._TAG_assiUNIT    :
 			case _enum_Tag._TAG_assiWOIC    :
 
-				if( !p_doc.r( &size, int32_t.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
+				if( !p_doc.r( &size, int.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 				if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur, size )     ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 				break;
 
@@ -837,7 +836,7 @@ private:
 
 		_moo_freq = allocate!pxtnPulse_Frequency();
 		if( !( _moo_freq ) ||  !_moo_freq.Init() ) goto term;
-		if( !pxtnMem_zero_alloc( cast(void **)&_moo_group_smps, int32_t.sizeof * _group_num ) ) goto term;
+		if( !pxtnMem_zero_alloc( cast(void **)&_moo_group_smps, int.sizeof * _group_num ) ) goto term;
 
 		_moo_b_init = true;
 		b_ret       = true;
@@ -860,7 +859,7 @@ private:
 	// Units   ////////////////////////////////////
 	////////////////////////////////////////////////
 
-	bool _moo_ResetVoiceOn( pxtnUnit *p_u, int32_t  w ) const
+	bool _moo_ResetVoiceOn( pxtnUnit *p_u, int  w ) const
 	{
 		if( !_moo_b_init ) return false;
 
@@ -872,7 +871,7 @@ private:
 
 		p_u.set_woice( p_wc );
 
-		for( int32_t v = 0; v < p_wc.get_voice_num(); v++ )
+		for( int v = 0; v < p_wc.get_voice_num(); v++ )
 		{
 			p_inst = p_wc.get_instance( v );
 			p_vc   = p_wc.get_voice   ( v );
@@ -886,7 +885,7 @@ private:
 			{
 				ofs_freq = _moo_freq.Get( EVENTDEFAULT_BASICKEY - p_vc.basic_key ) * p_vc.tuning;
 			}
-			p_u.Tone_Reset_and_2prm( v, cast(int32_t)( p_inst.env_release / _moo_clock_rate ), ofs_freq );
+			p_u.Tone_Reset_and_2prm( v, cast(int)( p_inst.env_release / _moo_clock_rate ), ofs_freq );
 		}
 		return true;
 	}
@@ -895,7 +894,7 @@ private:
 	bool _moo_InitUnitTone()
 	{
 		if( !_moo_b_init ) return false;
-		for( int32_t u = 0; u < _unit_num; u++ )
+		for( int u = 0; u < _unit_num; u++ )
 		{
 			pxtnUnit *p_u = Unit_Get_variable( u );
 			p_u.Tone_Init();
@@ -910,14 +909,14 @@ private:
 		if( !_moo_b_init ) return false;
 
 		// envelope..
-		for( int32_t u = 0; u < _unit_num;  u++ ) _units[ u ].Tone_Envelope();
+		for( int u = 0; u < _unit_num;  u++ ) _units[ u ].Tone_Envelope();
 
-		int32_t  clock = cast(int32_t)( _moo_smp_count / _moo_clock_rate );
+		int  clock = cast(int)( _moo_smp_count / _moo_clock_rate );
 
 		// events..
 		for( ; _moo_p_eve && _moo_p_eve.clock <= clock; _moo_p_eve = _moo_p_eve.next )
 		{
-			int32_t                  u   = _moo_p_eve.unit_no;
+			int                  u   = _moo_p_eve.unit_no;
 			pxtnUnit*                p_u = _units[ u ];
 			pxtnVOICETONE*           p_tone;
 			const(pxtnWoice)*         p_wc  ;
@@ -927,14 +926,14 @@ private:
 			{
 			case EVENTKIND_ON       :
 				{
-					int32_t on_count = cast(int32_t)( (_moo_p_eve.clock + _moo_p_eve.value - clock) * _moo_clock_rate );
+					int on_count = cast(int)( (_moo_p_eve.clock + _moo_p_eve.value - clock) * _moo_clock_rate );
 					if( on_count <= 0 ){ p_u.Tone_ZeroLives(); break; }
 
 					p_u.Tone_KeyOn();
 
 					p_wc = p_u.get_woice();
 					if( !( p_wc ) ) break;
-					for( int32_t v = 0; v < p_wc.get_voice_num(); v++ )
+					for( int v = 0; v < p_wc.get_voice_num(); v++ )
 					{
 						p_tone = p_u .get_tone    ( v );
 						p_vi   = p_wc.get_instance( v );
@@ -942,24 +941,24 @@ private:
 						// release..
 						if( p_vi.env_release )
 						{
-							int32_t        max_life_count1 = cast(int32_t)( ( _moo_p_eve.value - ( clock - _moo_p_eve.clock ) ) * _moo_clock_rate ) + p_vi.env_release;
-							int32_t        max_life_count2;
-							int32_t        c    = _moo_p_eve.clock + _moo_p_eve.value + p_tone.env_release_clock;
+							int        max_life_count1 = cast(int)( ( _moo_p_eve.value - ( clock - _moo_p_eve.clock ) ) * _moo_clock_rate ) + p_vi.env_release;
+							int        max_life_count2;
+							int        c    = _moo_p_eve.clock + _moo_p_eve.value + p_tone.env_release_clock;
 							const(EVERECORD)* next = null;
 							for( const(EVERECORD)* p = _moo_p_eve.next; p; p = p.next )
 							{
 								if( p.clock > c ) break;
 								if( p.unit_no == u && p.kind == EVENTKIND_ON ){ next = p; break; }
 							}
-							if( !next ) max_life_count2 = _moo_smp_end - cast(int32_t)( clock   * _moo_clock_rate );
-							else        max_life_count2 = cast(int32_t)( ( next.clock -      clock ) * _moo_clock_rate );
+							if( !next ) max_life_count2 = _moo_smp_end - cast(int)( clock   * _moo_clock_rate );
+							else        max_life_count2 = cast(int)( ( next.clock -      clock ) * _moo_clock_rate );
 							if( max_life_count1 < max_life_count2 ) p_tone.life_count = max_life_count1;
 							else                                    p_tone.life_count = max_life_count2;
 						}
 						// no-release..
 						else
 						{
-							p_tone.life_count = cast(int32_t)( ( _moo_p_eve.value - ( clock - _moo_p_eve.clock ) ) * _moo_clock_rate );
+							p_tone.life_count = cast(int)( ( _moo_p_eve.value - ( clock - _moo_p_eve.clock ) ) * _moo_clock_rate );
 						}
 
 						if( p_tone.life_count > 0 )
@@ -979,7 +978,7 @@ private:
 			case EVENTKIND_PAN_TIME  : p_u.Tone_Pan_Time  ( _dst_ch_num, _moo_p_eve.value, _dst_sps ); break;
 			case EVENTKIND_VELOCITY  : p_u.Tone_Velocity  (              _moo_p_eve.value ); break;
 			case EVENTKIND_VOLUME    : p_u.Tone_Volume    (              _moo_p_eve.value ); break;
-			case EVENTKIND_PORTAMENT : p_u.Tone_Portament ( cast(int32_t)(   _moo_p_eve.value * _moo_clock_rate ) ); break;
+			case EVENTKIND_PORTAMENT : p_u.Tone_Portament ( cast(int)(   _moo_p_eve.value * _moo_clock_rate ) ); break;
 			case EVENTKIND_BEATCLOCK : break;
 			case EVENTKIND_BEATTEMPO : break;
 			case EVENTKIND_BEATNUM   : break;
@@ -993,32 +992,32 @@ private:
 		}
 
 		// sampling..
-		for( int32_t u = 0; u < _unit_num; u++ )
+		for( int u = 0; u < _unit_num; u++ )
 		{
 			_units[ u ].Tone_Sample( _moo_b_mute_by_unit, _dst_ch_num, _moo_time_pan_index, _moo_smp_smooth );
 		}
 
-		for( int32_t ch = 0; ch < _dst_ch_num; ch++ )
+		for( int ch = 0; ch < _dst_ch_num; ch++ )
 		{
-			for( int32_t g = 0; g < _group_num; g++ ) _moo_group_smps[ g ] = 0;
-			for( int32_t u = 0; u < _unit_num ; u++ ) _units [ u ].Tone_Supple(     _moo_group_smps, ch, _moo_time_pan_index );
-			for( int32_t o = 0; o < _ovdrv_num; o++ ) _ovdrvs[ o ].Tone_Supple(     _moo_group_smps );
-			for( int32_t d = 0; d < _delay_num; d++ ) _delays[ d ].Tone_Supple( ch, _moo_group_smps );
+			for( int g = 0; g < _group_num; g++ ) _moo_group_smps[ g ] = 0;
+			for( int u = 0; u < _unit_num ; u++ ) _units [ u ].Tone_Supple(     _moo_group_smps, ch, _moo_time_pan_index );
+			for( int o = 0; o < _ovdrv_num; o++ ) _ovdrvs[ o ].Tone_Supple(     _moo_group_smps );
+			for( int d = 0; d < _delay_num; d++ ) _delays[ d ].Tone_Supple( ch, _moo_group_smps );
 
 			// collect.
-			int32_t  work = 0;
-			for( int32_t g = 0; g < _group_num; g++ ) work += _moo_group_smps[ g ];
+			int  work = 0;
+			for( int g = 0; g < _group_num; g++ ) work += _moo_group_smps[ g ];
 
 			// fade..
 			if( _moo_fade_fade ) work = work * ( _moo_fade_count >> 8 ) / _moo_fade_max;
 
 			// master volume
-			work = cast(int32_t)( work * _moo_master_vol );
+			work = cast(int)( work * _moo_master_vol );
 
 			// to buffer..
 			if( work >  _moo_top ) work =  _moo_top;
 			if( work < -_moo_top ) work = -_moo_top;
-			*( cast(int16_t*)p_data + ch ) = cast(int16_t)( work );
+			*( cast(short*)p_data + ch ) = cast(short)( work );
 		}
 
 		// --------------
@@ -1027,14 +1026,14 @@ private:
 		_moo_smp_count++;
 		_moo_time_pan_index = ( _moo_time_pan_index + 1 ) & ( pxtnBUFSIZE_TIMEPAN - 1 );
 
-		for( int32_t u = 0; u < _unit_num;  u++ )
+		for( int u = 0; u < _unit_num;  u++ )
 		{
-			int32_t  key_now = _units[ u ].Tone_Increment_Key();
+			int  key_now = _units[ u ].Tone_Increment_Key();
 			_units[ u ].Tone_Increment_Sample( _moo_freq.Get2( key_now ) *_moo_smp_stride );
 		}
 
 		// delay
-		for( int32_t d = 0; d < _delay_num; d++ ) _delays[ d ].Tone_Increment();
+		for( int d = 0; d < _delay_num; d++ ) _delays[ d ].Tone_Increment();
 
 		// fade out
 		if( _moo_fade_fade < 0 )
@@ -1074,7 +1073,7 @@ public :
 	pxtnEvelist *evels ;
 
 	pxtnERR init_        (){ return _init( 0, false ); }
-	pxtnERR init_collage( int32_t fix_evels_num ){ return _init( fix_evels_num, true ); }
+	pxtnERR init_collage( int fix_evels_num ){ return _init( fix_evels_num, true ); }
 	bool clear()
 	{
 		if( !_b_init ) return false;
@@ -1086,10 +1085,10 @@ public :
 
 		evels.Clear();
 
-		for( int32_t i = 0; i < _delay_num; i++ ) SAFE_DELETE( _delays[ i ] ); _delay_num = 0;
-		for( int32_t i = 0; i < _delay_num; i++ ) SAFE_DELETE( _ovdrvs[ i ] ); _ovdrv_num = 0;
-		for( int32_t i = 0; i < _woice_num; i++ ) SAFE_DELETE( _woices[ i ] ); _woice_num = 0;
-		for( int32_t i = 0; i < _unit_num ; i++ ) SAFE_DELETE( _units [ i ] ); _unit_num  = 0;
+		for( int i = 0; i < _delay_num; i++ ) SAFE_DELETE( _delays[ i ] ); _delay_num = 0;
+		for( int i = 0; i < _delay_num; i++ ) SAFE_DELETE( _ovdrvs[ i ] ); _ovdrv_num = 0;
+		for( int i = 0; i < _woice_num; i++ ) SAFE_DELETE( _woices[ i ] ); _woice_num = 0;
+		for( int i = 0; i < _unit_num ; i++ ) SAFE_DELETE( _units [ i ] ); _unit_num  = 0;
 
 		master.Reset();
 
@@ -1102,13 +1101,13 @@ public :
 	// save               //////////////////
 	////////////////////////////////////////
 
-	pxtnERR write( pxtnDescriptor *p_doc, bool b_tune, uint16_t exe_ver )
+	pxtnERR write( pxtnDescriptor *p_doc, bool b_tune, ushort exe_ver )
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 
 		bool     b_ret = false;
-		int32_t  rough = b_tune ? 10 : 1;
-		uint16_t rrr   =            0;
+		int  rough = b_tune ? 10 : 1;
+		ushort rrr   =            0;
 		pxtnERR  res   = pxtnERR.pxtnERR_VOID;
 
 		// format version
@@ -1116,8 +1115,8 @@ public :
 		else        { if( !p_doc.w_asfile( _code_proj_v5, 1, _VERSIONSIZE ) ){ res = pxtnERR.pxtnERR_desc_w; goto End; } }
 
 		// exe version
-		if( !p_doc.w_asfile( &exe_ver, uint16_t.sizeof, 1 )                ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
-		if( !p_doc.w_asfile( &rrr    , uint16_t.sizeof, 1 )                ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
+		if( !p_doc.w_asfile( &exe_ver, ushort.sizeof, 1 )                ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
+		if( !p_doc.w_asfile( &rrr    , ushort.sizeof, 1 )                ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 
 		// master
 		if( !p_doc.w_asfile( _code_MasterV5    , 1, _CODESIZE ) ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
@@ -1142,21 +1141,21 @@ public :
 		}
 
 		// delay
-		for( int32_t d = 0; d < _delay_num; d++ )
+		for( int d = 0; d < _delay_num; d++ )
 		{
 			if( !p_doc.w_asfile( _code_effeDELA, 1, _CODESIZE ) ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 			if( !_delays[ d ].Write( p_doc )                    ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 		}
 
 		// overdrive
-		for( int32_t o = 0; o < _ovdrv_num; o++ )
+		for( int o = 0; o < _ovdrv_num; o++ )
 		{
 			if( !p_doc.w_asfile( _code_effeOVER, 1, _CODESIZE ) ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 			if( !_ovdrvs[ o ].Write( p_doc )                    ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 		}
 
 		// woice
-		for( int32_t w = 0; w < _woice_num; w++ )
+		for( int w = 0; w < _woice_num; w++ )
 		{
 			pxtnWoice * p_w = _woices[ w ];
 
@@ -1198,7 +1197,7 @@ public :
 		if( !p_doc.w_asfile( _code_num_UNIT, 1, _CODESIZE ) ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 		if( !_io_UNIT_num_w( p_doc )                         ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 
-		for( int32_t u = 0; u < _unit_num; u++ )
+		for( int u = 0; u < _unit_num; u++ )
 		{
 			if( !b_tune && _units[ u ].is_name_buf() )
 			{
@@ -1208,7 +1207,7 @@ public :
 		}
 
 		{
-			int32_t end_size = 0;
+			int end_size = 0;
 			if( !p_doc.w_asfile( _code_pxtoneND, 1, _CODESIZE ) ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 			if( !p_doc.w_asfile( &end_size     , 4,         1 ) ){ res = pxtnERR.pxtnERR_desc_w; goto End; }
 		}
@@ -1223,9 +1222,9 @@ public :
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 
 		pxtnERR      res       = pxtnERR.pxtnERR_VOID;
-		uint16_t     exe_ver   =            0;
+		ushort     exe_ver   =            0;
 		_enum_FMTVER fmt_ver   = _enum_FMTVER._enum_FMTVER_unknown;
-		int32_t      event_num =            0;
+		int      event_num =            0;
 
 		clear();
 
@@ -1261,8 +1260,8 @@ public :
 		if( _b_edit && master.get_beat_clock() != EVENTDEFAULT_BEATCLOCK ){ res = pxtnERR.pxtnERR_deny_beatclock; goto term; }
 
 		{
-			int32_t clock1 = evels .get_Max_Clock ();
-			int32_t clock2 = master.get_last_clock();
+			int clock1 = evels .get_Max_Clock ();
+			int clock2 = master.get_last_clock();
 
 			if( clock1 > clock2 ) master.AdjustMeasNum( clock1 );
 			else                  master.AdjustMeasNum( clock2 );
@@ -1284,26 +1283,26 @@ public :
 		return true;
 	}
 
-	int32_t get_last_error_id() const;
+	int get_last_error_id() const;
 
 	pxtnERR tones_ready()
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 
 		pxtnERR res        = pxtnERR.pxtnERR_VOID;
-		int32_t beat_num   = master.get_beat_num  ();
+		int beat_num   = master.get_beat_num  ();
 		float   beat_tempo = master.get_beat_tempo();
 
-		for( int32_t i = 0; i < _delay_num; i++ )
+		for( int i = 0; i < _delay_num; i++ )
 		{
 			res = _delays[ i ].Tone_Ready( beat_num, beat_tempo, _dst_sps );
 			if( res != pxtnERR.pxtnOK ) return res;
 		}
-		for( int32_t i = 0; i < _ovdrv_num; i++ )
+		for( int i = 0; i < _ovdrv_num; i++ )
 		{
 			_ovdrvs[ i ].Tone_Ready();
 		}
-		for( int32_t i = 0; i < _woice_num; i++ )
+		for( int i = 0; i < _woice_num; i++ )
 		{
 			res = _woices[ i ].Tone_Ready( _ptn_bldr, _dst_sps );
 			if( res != pxtnERR.pxtnOK ) return res;
@@ -1313,27 +1312,27 @@ public :
 	bool tones_clear()
 	{
 		if( !_b_init ) return false;
-		for( int32_t i = 0; i < _delay_num; i++ ) _delays[ i ].Tone_Clear();
-		for( int32_t i = 0; i < _unit_num;  i++ ) _units [ i ].Tone_Clear();
+		for( int i = 0; i < _delay_num; i++ ) _delays[ i ].Tone_Clear();
+		for( int i = 0; i < _unit_num;  i++ ) _units [ i ].Tone_Clear();
 		return true;
 	}
 
-	int32_t  Group_Num() const{ return _b_init ? _group_num : 0; }
+	int  Group_Num() const{ return _b_init ? _group_num : 0; }
 
 	// ---------------------------
 	// Delay..
 	// ---------------------------
 
-	int32_t  Delay_Num() const{ return _b_init ? _delay_num : 0; }
-	int32_t  Delay_Max() const{ return _b_init ? _delay_max : 0; }
-	bool Delay_Set( int32_t idx, DELAYUNIT unit, float freq, float rate, int32_t group )
+	int  Delay_Num() const{ return _b_init ? _delay_num : 0; }
+	int  Delay_Max() const{ return _b_init ? _delay_max : 0; }
+	bool Delay_Set( int idx, DELAYUNIT unit, float freq, float rate, int group )
 	{
 		if( !_b_init ) return false;
 		if( idx >= _delay_num ) return false;
 		_delays[ idx ].Set( unit, freq, rate, group );
 		return true;
 	}
-	bool Delay_Add( DELAYUNIT unit, float freq, float rate, int32_t group )
+	bool Delay_Add( DELAYUNIT unit, float freq, float rate, int group )
 	{
 		if( !_b_init ) return false;
 		if( _delay_num >= _delay_max ) return false;
@@ -1342,24 +1341,24 @@ public :
 		_delay_num++;
 		return true;
 	}
-	bool Delay_Remove( int32_t idx )
+	bool Delay_Remove( int idx )
 	{
 		if( !_b_init ) return false;
 		if( idx >= _delay_num ) return false;
 
 		SAFE_DELETE( _delays[ idx ] );
 		_delay_num--;
-		for( int32_t i = idx; i < _delay_num; i++ ) _delays[ i ] = _delays[ i + 1 ];
+		for( int i = idx; i < _delay_num; i++ ) _delays[ i ] = _delays[ i + 1 ];
 		_delays[ _delay_num ] = null;
 		return true;
 	}
-	pxtnERR Delay_ReadyTone( int32_t idx )
+	pxtnERR Delay_ReadyTone( int idx )
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 		if( idx < 0 || idx >= _delay_num ) return pxtnERR.pxtnERR_param;
 		return _delays[ idx ].Tone_Ready( master.get_beat_num(), master.get_beat_tempo(), _dst_sps );
 	}
-	pxtnDelay *Delay_Get( int32_t idx )
+	pxtnDelay *Delay_Get( int idx )
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _delay_num ) return null;
@@ -1370,10 +1369,10 @@ public :
 	// Over Drive..
 	// ---------------------------
 
-	int32_t  OverDrive_Num() const{ return _b_init ? _ovdrv_num : 0; }
-	int32_t  OverDrive_Max() const{ return _b_init ? _ovdrv_max : 0; }
+	int  OverDrive_Num() const{ return _b_init ? _ovdrv_num : 0; }
+	int  OverDrive_Max() const{ return _b_init ? _ovdrv_max : 0; }
 
-	bool OverDrive_Set( int32_t idx, float cut, float amp, int32_t group )
+	bool OverDrive_Set( int idx, float cut, float amp, int group )
 	{
 		if( !_b_init ) return false;
 		if( idx >= _ovdrv_num ) return false;
@@ -1381,7 +1380,7 @@ public :
 		return true;
 	}
 
-	bool OverDrive_Add( float cut, float amp, int32_t group )
+	bool OverDrive_Add( float cut, float amp, int group )
 	{
 		if( !_b_init ) return false;
 		if( _ovdrv_num >= _ovdrv_max ) return false;
@@ -1391,19 +1390,19 @@ public :
 		return true;
 	}
 
-	bool OverDrive_Remove( int32_t idx )
+	bool OverDrive_Remove( int idx )
 	{
 		if( !_b_init ) return false;
 		if( idx >= _ovdrv_num ) return false;
 
 		SAFE_DELETE( _ovdrvs[ idx ] );
 		_ovdrv_num--;
-		for( int32_t i = idx; i < _ovdrv_num; i++ ) _ovdrvs[ i ] = _ovdrvs[ i + 1 ];
+		for( int i = idx; i < _ovdrv_num; i++ ) _ovdrvs[ i ] = _ovdrvs[ i + 1 ];
 		_ovdrvs[ _ovdrv_num ] = null;
 		return true;
 	}
 
-	bool OverDrive_ReadyTone( int32_t idx )
+	bool OverDrive_ReadyTone( int idx )
 	{
 		if( !_b_init ) return false;
 		if( idx < 0 || idx >= _ovdrv_num ) return false;
@@ -1411,7 +1410,7 @@ public :
 		return true;
 	}
 
-	pxtnOverDrive *OverDrive_Get( int32_t idx )
+	pxtnOverDrive *OverDrive_Get( int idx )
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _ovdrv_num ) return null;
@@ -1422,16 +1421,16 @@ public :
 	// Woice..
 	// ---------------------------
 
-	int32_t  Woice_Num() const{ return _b_init ? _woice_num : 0; }
-	int32_t  Woice_Max() const{ return _b_init ? _woice_max : 0; }
+	int  Woice_Num() const{ return _b_init ? _woice_num : 0; }
+	int  Woice_Max() const{ return _b_init ? _woice_max : 0; }
 
-	const(pxtnWoice) *Woice_Get( int32_t idx ) const
+	const(pxtnWoice) *Woice_Get( int idx ) const
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _woice_num ) return null;
 		return _woices[ idx ];
 	}
-	pxtnWoice* Woice_Get_variable( int32_t idx )
+	pxtnWoice* Woice_Get_variable( int idx )
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _woice_num ) return null;
@@ -1439,7 +1438,7 @@ public :
 	}
 
 
-	pxtnERR Woice_read( int32_t idx, pxtnDescriptor* desc, pxtnWOICETYPE type )
+	pxtnERR Woice_read( int idx, pxtnDescriptor* desc, pxtnWOICETYPE type )
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 		if( idx < 0 || idx >= _woice_max ) return pxtnERR.pxtnERR_param;
@@ -1451,41 +1450,41 @@ public :
 		return res;
 	}
 
-	pxtnERR Woice_ReadyTone( int32_t idx )
+	pxtnERR Woice_ReadyTone( int idx )
 	{
 		if( !_b_init ) return pxtnERR.pxtnERR_INIT;
 		if( idx < 0 || idx >= _woice_num ) return pxtnERR.pxtnERR_param;
 		return _woices[ idx ].Tone_Ready( _ptn_bldr, _dst_sps );
 	}
 
-	bool Woice_Remove( int32_t idx )
+	bool Woice_Remove( int idx )
 	{
 		if( !_b_init ) return false;
 		if( idx < 0 || idx >= _woice_num ) return false;
 		SAFE_DELETE( _woices[ idx ] );
 		_woice_num--;
-		for( int32_t i = idx; i < _woice_num; i++ ) _woices[ i ] = _woices[ i + 1 ];
+		for( int i = idx; i < _woice_num; i++ ) _woices[ i ] = _woices[ i + 1 ];
 		_woices[ _woice_num ] = null;
 		return true;
 	}
 
-	bool Woice_Replace( int32_t old_place, int32_t new_place )
+	bool Woice_Replace( int old_place, int new_place )
 	{
 		if( !_b_init ) return false;
 
 		pxtnWoice* p_w       = _woices[ old_place ];
-		int32_t    max_place = _woice_num - 1;
+		int    max_place = _woice_num - 1;
 
 		if( new_place >  max_place ) new_place = max_place;
 		if( new_place == old_place ) return true;
 
 		if( old_place < new_place )
 		{
-			for( int32_t w = old_place; w < new_place; w++ ){ if( _woices[ w ] ) _woices[ w ] = _woices[ w + 1 ]; }
+			for( int w = old_place; w < new_place; w++ ){ if( _woices[ w ] ) _woices[ w ] = _woices[ w + 1 ]; }
 		}
 		else
 		{
-			for( int32_t w = old_place; w > new_place; w-- ){ if( _woices[ w ] ) _woices[ w ] = _woices[ w - 1 ]; }
+			for( int w = old_place; w > new_place; w-- ){ if( _woices[ w ] ) _woices[ w ] = _woices[ w - 1 ]; }
 		}
 
 		_woices[ new_place ] = p_w;
@@ -1496,50 +1495,50 @@ public :
 	// Unit..
 	// ---------------------------
 
-	int32_t  Unit_Num() const{ return _b_init ? _unit_num : 0; }
-	int32_t  Unit_Max() const{ return _b_init ? _unit_max : 0; }
+	int  Unit_Num() const{ return _b_init ? _unit_num : 0; }
+	int  Unit_Max() const{ return _b_init ? _unit_max : 0; }
 
-	const(pxtnUnit) *Unit_Get( int32_t idx ) const
+	const(pxtnUnit) *Unit_Get( int idx ) const
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _unit_num ) return null;
 		return _units[ idx ];
 	}
-	pxtnUnit       *Unit_Get_variable( int32_t idx )
+	pxtnUnit       *Unit_Get_variable( int idx )
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _unit_num ) return null;
 		return _units[ idx ];
 	}
 
-	bool Unit_Remove( int32_t idx )
+	bool Unit_Remove( int idx )
 	{
 		if( !_b_init ) return false;
 		if( idx < 0 || idx >= _unit_num ) return false;
 		SAFE_DELETE( _units[ idx ] );
 		_unit_num--;
-		for( int32_t i = idx; i < _unit_num; i++ ) _units[ i ] = _units[ i + 1 ];
+		for( int i = idx; i < _unit_num; i++ ) _units[ i ] = _units[ i + 1 ];
 		_units[ _unit_num ] = null;
 		return true;
 	}
 
-	bool Unit_Replace( int32_t old_place, int32_t new_place )
+	bool Unit_Replace( int old_place, int new_place )
 	{
 		if( !_b_init ) return false;
 
 		pxtnUnit* p_w        = _units[ old_place ];
-		int32_t   max_place  = _unit_num - 1;
+		int   max_place  = _unit_num - 1;
 
 		if( new_place >  max_place ) new_place = max_place;
 		if( new_place == old_place ) return true;
 
 		if( old_place < new_place )
 		{
-			for( int32_t w = old_place; w < new_place; w++ ){ if( _units[ w ] ) _units[ w ] = _units[ w + 1 ]; }
+			for( int w = old_place; w < new_place; w++ ){ if( _units[ w ] ) _units[ w ] = _units[ w + 1 ]; }
 		}
 		else
 		{
-			for( int32_t w = old_place; w > new_place; w-- ){ if( _units[ w ] ) _units[ w ] = _units[ w - 1 ]; }
+			for( int w = old_place; w > new_place; w-- ){ if( _units[ w ] ) _units[ w ] = _units[ w - 1 ]; }
 		}
 		_units[ new_place ] = p_w;
 		return true;
@@ -1556,7 +1555,7 @@ public :
 	bool Unit_SetOpratedAll( bool b )
 	{
 		if( !_b_init ) return false;
-		for( int32_t u = 0; u < _unit_num; u++ )
+		for( int u = 0; u < _unit_num; u++ )
 		{
 			_units[ u ].set_operated( b );
 			if( b ) _units[ u ].set_played( true );
@@ -1567,7 +1566,7 @@ public :
 	bool Unit_Solo( int idx )
 	{
 		if( !_b_init ) return false;
-		for( int32_t u = 0; u < _unit_num; u++ )
+		for( int u = 0; u < _unit_num; u++ )
 		{
 			if( u == idx ) _units[ u ].set_played( true  );
 			else           _units[ u ].set_played( false );
@@ -1580,7 +1579,7 @@ public :
 	// Quality..
 	// ---------------------------
 
-	bool set_destination_quality( int32_t ch_num, int32_t sps )
+	bool set_destination_quality( int ch_num, int sps )
 	{
 		if( !_b_init ) return false;
 		switch( ch_num )
@@ -1596,7 +1595,7 @@ public :
 		return true;
 	}
 
-	bool get_destination_quality( int32_t *p_ch_num, int32_t *p_sps ) const
+	bool get_destination_quality( int *p_ch_num, int *p_sps ) const
 	{
 		if( !_b_init ) return false;
 		if( p_ch_num ) *p_ch_num = _dst_ch_num;
@@ -1633,10 +1632,10 @@ public :
 
 	bool moo_set_mute_by_unit( bool b ){ if( !_moo_b_init ) return false; _moo_b_mute_by_unit = b; return true; }
 	bool moo_set_loop        ( bool b ){ if( !_moo_b_init ) return false; _moo_b_loop         = b; return true; }
-	bool moo_set_fade( int32_t  fade, float sec )
+	bool moo_set_fade( int  fade, float sec )
 	{
 		if( !_moo_b_init ) return false;
-		_moo_fade_max = cast(int32_t)( cast(float)_dst_sps * sec ) >> 8;
+		_moo_fade_max = cast(int)( cast(float)_dst_sps * sec ) >> 8;
 		if(      fade < 0 ){ _moo_fade_fade  = -1; _moo_fade_count = _moo_fade_max << 8; } // out
 		else if( fade > 0 ){ _moo_fade_fade  =  1; _moo_fade_count =  0;                 } // in
 		else               { _moo_fade_fade =   0; _moo_fade_count =  0;                 } // off
@@ -1650,39 +1649,39 @@ public :
 		_moo_master_vol = v;
 		return true;
 	}
-	int32_t moo_get_total_sample   () const
+	int moo_get_total_sample   () const
 	{
 		if( !_b_init           ) return 0;
 		if( !_moo_b_valid_data ) return 0;
 
-		int32_t meas_num  ;
-		int32_t beat_num  ;
+		int meas_num  ;
+		int beat_num  ;
 		float   beat_tempo;
 		master.Get( &beat_num, &beat_tempo, null, &meas_num );
 		return pxtnService_moo_CalcSampleNum( meas_num, beat_num, _dst_sps, master.get_beat_tempo() );
 	}
 
-	int32_t moo_get_now_clock() const
+	int moo_get_now_clock() const
 	{
 		if( !_moo_b_init ) return 0;
-		if( _moo_clock_rate ) return cast(int32_t)( _moo_smp_count / _moo_clock_rate );
+		if( _moo_clock_rate ) return cast(int)( _moo_smp_count / _moo_clock_rate );
 		return 0;
 	}
-	int32_t moo_get_end_clock() const
+	int moo_get_end_clock() const
 	{
 		if( !_moo_b_init ) return 0;
-		if( _moo_clock_rate ) return cast(int32_t)( _moo_smp_end / _moo_clock_rate );
+		if( _moo_clock_rate ) return cast(int)( _moo_smp_end / _moo_clock_rate );
 		return 0;
 	}
 
-	int32_t moo_get_sampling_offset() const
+	int moo_get_sampling_offset() const
 	{
 		if( !_moo_b_init     ) return 0;
 		if( _moo_b_end_vomit ) return 0;
 		return _moo_smp_count;
 	}
 
-	int32_t moo_get_sampling_end() const
+	int moo_get_sampling_end() const
 	{
 		if( !_moo_b_init     ) return 0;
 		if( _moo_b_end_vomit ) return 0;
@@ -1701,12 +1700,12 @@ public :
 		}
 
 		bool    b_ret        = false;
-		int32_t start_meas   =     0;
-		int32_t start_sample =     0;
+		int start_meas   =     0;
+		int start_sample =     0;
 		float   start_float  =     0;
 
-		int32_t meas_end     = master.get_play_meas  ();
-		int32_t meas_repeat  = master.get_repeat_meas();
+		int meas_end     = master.get_play_meas  ();
+		int meas_repeat  = master.get_repeat_meas();
 		float   fadein_sec   =     0;
 
 		if( p_prep )
@@ -1736,12 +1735,12 @@ public :
 
 		_moo_time_pan_index = 0;
 
-		_moo_smp_end    = cast(int32_t)( cast(double)meas_end    * cast(double)_moo_bt_num * cast(double)_moo_bt_clock * _moo_clock_rate );
-		_moo_smp_repeat = cast(int32_t)( cast(double)meas_repeat * cast(double)_moo_bt_num * cast(double)_moo_bt_clock * _moo_clock_rate );
+		_moo_smp_end    = cast(int)( cast(double)meas_end    * cast(double)_moo_bt_num * cast(double)_moo_bt_clock * _moo_clock_rate );
+		_moo_smp_repeat = cast(int)( cast(double)meas_repeat * cast(double)_moo_bt_num * cast(double)_moo_bt_clock * _moo_clock_rate );
 
-		if     ( start_float  ){ _moo_smp_start = cast(int32_t)( cast(float)moo_get_total_sample() * start_float ); }
+		if     ( start_float  ){ _moo_smp_start = cast(int)( cast(float)moo_get_total_sample() * start_float ); }
 		else if( start_sample ){ _moo_smp_start = start_sample; }
-		else                   { _moo_smp_start = cast(int32_t)( cast(double)start_meas  * cast(double)_moo_bt_num * cast(double)_moo_bt_clock * _moo_clock_rate ); }
+		else                   { _moo_smp_start = cast(int)( cast(double)start_meas  * cast(double)_moo_bt_num * cast(double)_moo_bt_clock * _moo_clock_rate ); }
 
 		_moo_smp_count  = _moo_smp_start;
 		_moo_smp_smooth = _dst_sps / 250; // (0.004sec) // (0.010sec)
@@ -1766,7 +1765,7 @@ public :
 	//
 	////////////////////
 
-	bool Moo( void* p_buf, int32_t  size )
+	bool Moo( void* p_buf, int  size )
 	{
 		if( !_moo_b_init       ) return false;
 		if( !_moo_b_valid_data ) return false;
@@ -1774,15 +1773,15 @@ public :
 
 		bool b_ret = false;
 
-		int32_t  smp_w = 0;
+		int  smp_w = 0;
 
 		if( size % _dst_byte_per_smp ) return false;
 
-		int32_t  smp_num = size / _dst_byte_per_smp;
+		int  smp_num = size / _dst_byte_per_smp;
 
 		{
-			int16_t  *p16 = cast(int16_t*)p_buf;
-			int16_t[ 2 ]  sample;
+			short  *p16 = cast(short*)p_buf;
+			short[ 2 ]  sample;
 
 			for( smp_w = 0; smp_w < smp_num; smp_w++ )
 			{
@@ -1797,7 +1796,7 @@ public :
 
 		if( _sampled_proc )
 		{
-			int32_t clock = cast(int32_t)( _moo_smp_count / _moo_clock_rate );
+			int clock = cast(int)( _moo_smp_count / _moo_clock_rate );
 			if( !_sampled_proc( _sampled_user, &this ) ){ _moo_b_end_vomit = true; goto term; }
 		}
 
@@ -1808,12 +1807,12 @@ public :
 };
 
 
-int32_t pxtnService_moo_CalcSampleNum( int32_t meas_num, int32_t beat_num, int32_t sps, float beat_tempo )
+int pxtnService_moo_CalcSampleNum( int meas_num, int beat_num, int sps, float beat_tempo )
 {
-	uint32_t  total_beat_num;
-	uint32_t  sample_num    ;
+	uint  total_beat_num;
+	uint  sample_num    ;
 	if( !beat_tempo ) return 0;
 	total_beat_num = meas_num * beat_num;
-	sample_num     = cast(uint32_t )( cast(double)sps * 60 * cast(double)total_beat_num / cast(double)beat_tempo );
+	sample_num     = cast(uint )( cast(double)sps * 60 * cast(double)total_beat_num / cast(double)beat_tempo );
 	return sample_num;
 }

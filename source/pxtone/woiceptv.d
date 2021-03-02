@@ -8,16 +8,15 @@ import pxtone.error;
 import pxtone.pulse.noise;
 import pxtone.mem;
 import pxtone.woice;
-import core.stdc.stdint;
 
-__gshared int32_t _version  =  20060111; // support no-envelope
+__gshared int _version  =  20060111; // support no-envelope
 
 bool _Write_Wave( pxtnDescriptor *p_doc, const(pxtnVOICEUNIT) *p_vc, int *p_total )
 {
 	bool    b_ret = false;
-	int32_t num, i, size;
-	int8_t  sc;
-	uint8_t uc;
+	int num, i, size;
+	byte  sc;
+	ubyte uc;
 
 	if( !p_doc.v_w_asfile( p_vc.type, p_total ) ) goto End;
 
@@ -30,8 +29,8 @@ bool _Write_Wave( pxtnDescriptor *p_doc, const(pxtnVOICEUNIT) *p_vc, int *p_tota
 		num = p_vc.wave.num;
 		for( i = 0; i < num; i++ )
 		{
-			uc = cast(int8_t)p_vc.wave.points[ i ].x; if( !p_doc.w_asfile( &uc, 1, 1 ) ) goto End; (*p_total)++;
-			sc = cast(int8_t)p_vc.wave.points[ i ].y; if( !p_doc.w_asfile( &sc, 1, 1 ) ) goto End; (*p_total)++;
+			uc = cast(byte)p_vc.wave.points[ i ].x; if( !p_doc.w_asfile( &uc, 1, 1 ) ) goto End; (*p_total)++;
+			sc = cast(byte)p_vc.wave.points[ i ].y; if( !p_doc.w_asfile( &sc, 1, 1 ) ) goto End; (*p_total)++;
 		}
 		break;
 
@@ -75,7 +74,7 @@ End:
 bool _Write_Envelope( pxtnDescriptor *p_doc, const(pxtnVOICEUNIT) *p_vc, int *p_total )
 {
 	bool b_ret = false;
-	int32_t num, i;
+	int num, i;
 
 	// envelope. (5)
 	if( !p_doc.v_w_asfile( p_vc.envelope.fps,      p_total ) ) goto End;
@@ -100,9 +99,9 @@ End:
 
 pxtnERR _Read_Wave( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc )
 {
-	int32_t i, num;
-	int8_t  sc;
-	uint8_t uc;
+	int i, num;
+	byte  sc;
+	ubyte uc;
 
 	if( !p_doc.v_r( cast(int*)&p_vc.type ) ) return pxtnERR.pxtnERR_desc_r;
 
@@ -157,7 +156,7 @@ pxtnERR _Read_Wave( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc )
 pxtnERR _Read_Envelope( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc )
 {
 	pxtnERR res = pxtnERR.pxtnOK;
-	int32_t  num, i;
+	int  num, i;
 
 	//p_vc.envelope. (5)
 	if( !p_doc.v_r( &p_vc.envelope.fps      ) ){ res = pxtnERR.pxtnERR_desc_r     ; goto term; }

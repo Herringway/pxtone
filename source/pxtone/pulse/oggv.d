@@ -7,13 +7,11 @@ import pxtone.pxtn;
 import pxtone.descriptor;
 import pxtone.pulse.pcm;
 
-import core.stdc.stdint;
-
 struct OVMEM
 {
     char*   p_buf; // ogg vorbis-data on memory.s
-    int32_t size ; //
-    int32_t pos  ; // reading position.
+    int size ; //
+    int pos  ; // reading position.
 }
 
 // 4 callbacks below:
@@ -26,9 +24,9 @@ size_t _mread( void *p, size_t size, size_t nmemb, void* p_void )
 	if( pom.pos >= pom.size ) return  0;
 	if( pom.pos == -1        ) return  0;
 
-	int32_t left = pom.size - pom.pos;
+	int left = pom.size - pom.pos;
 
-	if( cast(int32_t)(size * nmemb) >= left )
+	if( cast(int)(size * nmemb) >= left )
 	{
 		memcpy( p, &pom.p_buf[ pom.pos ], pom.size - pom.pos );
 		pom.pos = pom.size;
@@ -36,14 +34,14 @@ size_t _mread( void *p, size_t size, size_t nmemb, void* p_void )
 	}
 
 	memcpy( p, &pom.p_buf[ pom.pos ], nmemb * size );
-	pom.pos += cast(int32_t)( nmemb * size );
+	pom.pos += cast(int)( nmemb * size );
 
 	return nmemb;
 }
 
-int _mseek( void* p_void, ogg_int64_t offset, int32_t mode )
+int _mseek( void* p_void, ogg_int64_t offset, int mode )
 {
-	int32_t newpos;
+	int newpos;
 	OVMEM *pom = cast(OVMEM*)p_void;
 
 	if( !pom || pom.pos < 0 )       return -1;
@@ -51,9 +49,9 @@ int _mseek( void* p_void, ogg_int64_t offset, int32_t mode )
 
 	switch( mode )
 	{
-	case SEEK_SET: newpos =             cast(int32_t)offset; break;
-	case SEEK_CUR: newpos = pom.pos  + cast(int32_t)offset; break;
-	case SEEK_END: newpos = pom.size + cast(int32_t)offset; break;
+	case SEEK_SET: newpos =             cast(int)offset; break;
+	case SEEK_CUR: newpos = pom.pos  + cast(int)offset; break;
+	case SEEK_END: newpos = pom.size + cast(int)offset; break;
 	default: return -1;
 	}
 	if( newpos < 0 ) return -1;
@@ -84,10 +82,10 @@ int _mclose_dummy( void* p_void )
 struct pxtnPulse_Oggv
 {
 private:
-	int32_t _ch     ;
-	int32_t _sps2   ;
-	int32_t _smp_num;
-	int32_t _size   ;
+	int _ch     ;
+	int _sps2   ;
+	int _smp_num;
+	int _size   ;
 	char*   _p_data ;
 
 	bool _SetInformation()
@@ -125,7 +123,7 @@ private:
 
 		_ch      = vi.channels;
 		_sps2    = vi.rate    ;
-		_smp_num = cast(int32_t)ov_pcm_total( &vf, -1 );
+		_smp_num = cast(int)ov_pcm_total( &vf, -1 );
 
 	    // end.
 	    ov_clear( &vf );
@@ -175,11 +173,11 @@ public :
 
 	    vi    = ov_info( &vf,-1 );
 
-		int32_t current_section;
+		int current_section;
 		char[ 4096 ]    pcmout = 0; //take 4k out of the data segment, not the stack
 		{
-			int32_t smp_num = cast(int32_t)ov_pcm_total( &vf, -1 );
-			uint32_t bytes;
+			int smp_num = cast(int)ov_pcm_total( &vf, -1 );
+			uint bytes;
 
 			bytes = vi.channels * 2 * smp_num;
 
@@ -188,7 +186,7 @@ public :
 		}
 	    // decode..
 		{
-			int32_t ret = 0;
+			int ret = 0;
 			uint8_t  *p  = cast(uint8_t*)p_pcm.get_p_buf_variable();
 			do
 			{
@@ -225,10 +223,10 @@ public :
 
 		return true;
 	}
-	int32_t  GetSize() const
+	int  GetSize() const
 	{
 		if( !_p_data ) return 0;
-		return int32_t.sizeof*4 + _size;
+		return int.sizeof*4 + _size;
 	}
 
 	bool    ogg_write ( pxtnDescriptor *p_doc ) const;
@@ -264,10 +262,10 @@ public :
 	{
 		if( !_p_data ) return false;
 
-		if( !p_doc.w_asfile( &_ch     , int32_t.sizeof,    1 ) ) return false;
-		if( !p_doc.w_asfile( &_sps2   , int32_t.sizeof,    1 ) ) return false;
-		if( !p_doc.w_asfile( &_smp_num, int32_t.sizeof,    1 ) ) return false;
-		if( !p_doc.w_asfile( &_size   , int32_t.sizeof,    1 ) ) return false;
+		if( !p_doc.w_asfile( &_ch     , int.sizeof,    1 ) ) return false;
+		if( !p_doc.w_asfile( &_sps2   , int.sizeof,    1 ) ) return false;
+		if( !p_doc.w_asfile( &_smp_num, int.sizeof,    1 ) ) return false;
+		if( !p_doc.w_asfile( &_size   , int.sizeof,    1 ) ) return false;
 		if( !p_doc.w_asfile(  _p_data , char.sizeof,_size ) ) return false;
 
 		return true;
@@ -276,10 +274,10 @@ public :
 	{
 		bool  b_ret  = false;
 
-		if( !p_doc.r( &_ch     , int32_t.sizeof, 1 ) ) goto End;
-		if( !p_doc.r( &_sps2   , int32_t.sizeof, 1 ) ) goto End;
-		if( !p_doc.r( &_smp_num, int32_t.sizeof, 1 ) ) goto End;
-		if( !p_doc.r( &_size   , int32_t.sizeof, 1 ) ) goto End;
+		if( !p_doc.r( &_ch     , int.sizeof, 1 ) ) goto End;
+		if( !p_doc.r( &_sps2   , int.sizeof, 1 ) ) goto End;
+		if( !p_doc.r( &_smp_num, int.sizeof, 1 ) ) goto End;
+		if( !p_doc.r( &_size   , int.sizeof, 1 ) ) goto End;
 
 		if( !_size ) goto End;
 

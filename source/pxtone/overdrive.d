@@ -5,7 +5,6 @@ import pxtone.pxtn;
 import pxtone.error;
 import pxtone.descriptor;
 
-import core.stdc.stdint;
 import core.stdc.string;
 
 enum TUNEOVERDRIVE_CUT_MAX = 99.9f;
@@ -18,17 +17,17 @@ enum TUNEOVERDRIVE_DEFAULT_AMP = 2.0f;
 struct pxtnOverDrive {
 	bool  _b_played = true;
 
-	int32_t   _group   ;
+	int   _group   ;
 	float _cut_f   ;
 	float _amp_f   ;
 
-	int32_t   _cut_16bit_top;
+	int   _cut_16bit_top;
 
 	float   get_cut  ()const{ return _cut_f; }
 	float   get_amp  ()const{ return _amp_f; }
-	int32_t get_group()const{ return _group; }
+	int get_group()const{ return _group; }
 
-	void  Set( float cut, float amp, int32_t group )
+	void  Set( float cut, float amp, int group )
 	{
 		_cut_f = cut  ;
 		_amp_f = amp  ;
@@ -41,30 +40,30 @@ struct pxtnOverDrive {
 
 	void Tone_Ready()
 	{
-		_cut_16bit_top  = cast(int32_t)( 32767 * ( 100 - _cut_f ) / 100 );
+		_cut_16bit_top  = cast(int)( 32767 * ( 100 - _cut_f ) / 100 );
 	}
 
-	void Tone_Supple( int32_t *group_smps ) const
+	void Tone_Supple( int *group_smps ) const
 	{
 		if( !_b_played ) return;
-		int32_t work = group_smps[ _group ];
+		int work = group_smps[ _group ];
 		if(      work >  _cut_16bit_top ) work =   _cut_16bit_top;
 		else if( work < -_cut_16bit_top ) work =  -_cut_16bit_top;
-		group_smps[ _group ] = cast(int32_t)( cast(float)work * _amp_f );
+		group_smps[ _group ] = cast(int)( cast(float)work * _amp_f );
 	}
 	bool Write( pxtnDescriptor *p_doc ) const
 	{
 		_OVERDRIVESTRUCT over;
-		int32_t              size;
+		int              size;
 
 		memset( &over, 0,  _OVERDRIVESTRUCT.sizeof );
 		over.cut   = _cut_f;
 		over.amp   = _amp_f;
-		over.group = cast(uint16_t)_group;
+		over.group = cast(ushort)_group;
 
 		// dela ----------
 		size = _OVERDRIVESTRUCT.sizeof;
-		if( !p_doc.w_asfile( &size, uint32_t.sizeof, 1 ) ) return false;
+		if( !p_doc.w_asfile( &size, uint.sizeof, 1 ) ) return false;
 		if( !p_doc.w_asfile( &over, size,        1 ) ) return false;
 
 		return true;
@@ -73,7 +72,7 @@ struct pxtnOverDrive {
 	pxtnERR Read( pxtnDescriptor *p_doc )
 	{
 		_OVERDRIVESTRUCT over = {0};
-		int32_t          size =  0 ;
+		int          size =  0 ;
 
 		memset( &over, 0, _OVERDRIVESTRUCT.sizeof );
 		if( !p_doc.r( &size, 4,                        1 ) ) return pxtnERR.pxtnERR_desc_r;
@@ -95,8 +94,8 @@ struct pxtnOverDrive {
 // (8byte) =================
 struct _OVERDRIVESTRUCT
 {
-	uint16_t   xxx  ;
-	uint16_t   group;
+	ushort   xxx  ;
+	ushort   group;
 	float cut  ;
 	float amp  ;
 	float yyy  ;

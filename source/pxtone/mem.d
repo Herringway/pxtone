@@ -1,10 +1,9 @@
 ﻿module pxtone.mem;
 
-import core.stdc.stdint;
 import core.stdc.stdlib;
 import core.stdc.string;
 
-bool pxtnMem_zero_alloc( void** pp, uint32_t byte_size )
+bool pxtnMem_zero_alloc( void** pp, size_t byte_size )
 {
 	*pp = malloc( byte_size );
 	if( !( *pp  ) ) return false;
@@ -19,7 +18,7 @@ bool pxtnMem_free( void** pp )
 	return true;
 }
 
-bool pxtnMem_zero( void*  p , uint32_t byte_size )
+bool pxtnMem_zero( void*  p , size_t byte_size )
 {
 	(cast(ubyte*)p)[0 .. byte_size] = 0;
 	return true;

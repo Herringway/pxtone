@@ -13,7 +13,6 @@ import pxtone.pulse.oscillator;
 import pxtone.pulse.pcm;
 import pxtone.pulse.oggv;
 import pxtone.woiceptv;
-import core.stdc.stdint;
 
 import core.stdc.stdlib;
 import core.stdc.string;
@@ -54,14 +53,14 @@ enum pxtnVOICETYPE
 
 struct pxtnVOICEINSTANCE
 {
-	int32_t  smp_head_w ;
-	int32_t  smp_body_w ;
-	int32_t  smp_tail_w ;
-	uint8_t* p_smp_w    ;
+	int  smp_head_w ;
+	int  smp_body_w ;
+	int  smp_tail_w ;
+	ubyte* p_smp_w    ;
 
-	uint8_t* p_env      ;
-	int32_t  env_size   ;
-	int32_t  env_release;
+	ubyte* p_env      ;
+	int  env_size   ;
+	int  env_release;
 }
 
 
@@ -89,8 +88,8 @@ struct pxtnVOICEUNIT
 	int           volume     ;
 	int           pan        ;
 	float             tuning     ;
-	uint32_t          voice_flags;
-	uint32_t          data_flags ;
+	uint          voice_flags;
+	uint          data_flags ;
 
 	pxtnVOICETYPE     type       ;
 	pxtnPulse_PCM     *p_pcm     ;
@@ -108,16 +107,16 @@ struct pxtnVOICETONE
 {
 	double  smp_pos    ;
 	float   offset_freq;
-	int32_t env_volume ;
-	int32_t life_count ;
-	int32_t on_count   ;
+	int env_volume ;
+	int life_count ;
+	int on_count   ;
 
-	int32_t smp_count  ;
-	int32_t env_start  ;
-	int32_t env_pos    ;
-	int32_t env_release_clock;
+	int smp_count  ;
+	int env_start  ;
+	int env_pos    ;
+	int env_release_clock;
 
-	int32_t smooth_volume;
+	int smooth_volume;
 }
 
 
@@ -143,11 +142,11 @@ version(pxINCLUDE_OGGVORBIS) {
 }
 
 
-void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int32_t  ch, int32_t  sps, int32_t  bps )
+void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int  ch, int  sps, int  bps )
 {
 	double  work, osc;
-	int32_t long_;
-	int32_t[ 2 ] pan_volume = [64, 64];
+	int long_;
+	int[ 2 ] pan_volume = [64, 64];
 	bool    b_ovt;
 
 	pxtnPulse_Oscillator osci;
@@ -166,18 +165,18 @@ void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int32_t  ch, 
 	//  8bit
 	if( bps ==  8 )
 	{
-		uint8_t* p = cast(uint8_t*)p_vi.p_smp_w;
-		for( int32_t s = 0; s < p_vi.smp_body_w; s++ )
+		ubyte* p = cast(ubyte*)p_vi.p_smp_w;
+		for( int s = 0; s < p_vi.smp_body_w; s++ )
 		{
 			if( b_ovt ) osc = osci.GetOneSample_Overtone ( s );
 			else        osc = osci.GetOneSample_Coodinate( s );
-			for( int32_t c = 0; c < ch; c++ )
+			for( int c = 0; c < ch; c++ )
 			{
 				work = osc * pan_volume[ c ] / 64;
 				if( work >  1.0 ) work =  1.0;
 				if( work < -1.0 ) work = -1.0;
-				long_  = cast(int32_t )( work * 127 );
-				p[ s * ch + c ] = cast(uint8_t)(long_ + 128);
+				long_  = cast(int )( work * 127 );
+				p[ s * ch + c ] = cast(ubyte)(long_ + 128);
 			}
 		}
 
@@ -185,18 +184,18 @@ void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int32_t  ch, 
 	}
 	else
 	{
-		int16_t* p = cast(int16_t*)p_vi.p_smp_w;
-		for( int32_t s = 0; s < p_vi.smp_body_w; s++ )
+		short* p = cast(short*)p_vi.p_smp_w;
+		for( int s = 0; s < p_vi.smp_body_w; s++ )
 		{
 			if( b_ovt ) osc = osci.GetOneSample_Overtone ( s );
 			else        osc = osci.GetOneSample_Coodinate( s );
-			for( int32_t c = 0; c < ch; c++ )
+			for( int c = 0; c < ch; c++ )
 			{
 				work = osc * pan_volume[ c ] / 64;
 				if( work >  1.0 ) work =  1.0;
 				if( work < -1.0 ) work = -1.0;
-				long_  = cast(int32_t )( work * 32767 );
-				p[ s * ch + c ] = cast(int16_t)long_;
+				long_  = cast(int )( work * 32767 );
+				p[ s * ch + c ] = cast(short)long_;
 			}
 		}
 	}
@@ -207,14 +206,14 @@ void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int32_t  ch, 
 // 24byte =================
 struct _MATERIALSTRUCT_PCM
 {
-	uint16_t x3x_unit_no;
-	uint16_t basic_key  ;
-	uint32_t voice_flags;
-	uint16_t ch         ;
-	uint16_t bps        ;
-	uint32_t sps        ;
+	ushort x3x_unit_no;
+	ushort basic_key  ;
+	uint voice_flags;
+	ushort ch         ;
+	ushort bps        ;
+	uint sps        ;
 	float    tuning     ;
-	uint32_t data_size  ;
+	uint data_size  ;
 }
 
 
@@ -225,11 +224,11 @@ struct _MATERIALSTRUCT_PCM
 // 16byte =================
 struct _MATERIALSTRUCT_PTN
 {
-	uint16_t x3x_unit_no;
-	uint16_t basic_key  ;
-	uint32_t voice_flags;
+	ushort x3x_unit_no;
+	ushort basic_key  ;
+	uint voice_flags;
 	float    tuning     ;
-	int32_t  rrr        ; // 0: -v.0.9.2.3
+	int  rrr        ; // 0: -v.0.9.2.3
 	                      // 1:  v.0.9.2.4-
 }
 
@@ -241,10 +240,10 @@ struct _MATERIALSTRUCT_PTN
 // 24byte =================
 struct _MATERIALSTRUCT_PTV
 {
-	uint16_t x3x_unit_no;
-	uint16_t rrr        ;
+	ushort x3x_unit_no;
+	ushort rrr        ;
 	float    x3x_tuning ;
-	int32_t  size       ;
+	int  size       ;
 }
 
 
@@ -256,9 +255,9 @@ struct _MATERIALSTRUCT_PTV
 // 16byte =================
 struct _MATERIALSTRUCT_OGGV
 {
-	uint16_t xxx        ; //ch;
-	uint16_t basic_key  ;
-	uint32_t voice_flags;
+	ushort xxx        ; //ch;
+	ushort basic_key  ;
+	uint voice_flags;
 	float    tuning     ;
 }
 
@@ -271,10 +270,10 @@ struct _MATERIALSTRUCT_OGGV
 struct pxtnWoice
 {
 private:
-	int32_t            _voice_num;
+	int            _voice_num;
 
 	char[ pxtnMAX_TUNEWOICENAME + 1 ]               _name_buf;
-	int32_t            _name_size    ;
+	int            _name_size    ;
 
 	pxtnWOICETYPE      _type = pxtnWOICETYPE.pxtnWOICE_None;
 	pxtnVOICEUNIT*     _voices       ;
@@ -290,30 +289,30 @@ public :
 		Voice_Release();
 	}
 
-	int32_t       get_voice_num    () const{ return _voice_num    ; }
+	int       get_voice_num    () const{ return _voice_num    ; }
 	float         get_x3x_tuning   () const{ return _x3x_tuning   ; }
 	int       get_x3x_basic_key() const{ return _x3x_basic_key; }
 	pxtnWOICETYPE get_type         () const{ return _type         ; }
 
-	const(pxtnVOICEUNIT)*get_voice( int32_t idx ) const
+	const(pxtnVOICEUNIT)*get_voice( int idx ) const
 	{
 		if( idx < 0 || idx >= _voice_num ) return null;
 		return &_voices[ idx ];
 	}
-	pxtnVOICEUNIT *get_voice_variable( int32_t idx )
+	pxtnVOICEUNIT *get_voice_variable( int idx )
 	{
 		if( idx < 0 || idx >= _voice_num ) return null;
 		return &_voices[ idx ];
 	}
 
 
-	const(pxtnVOICEINSTANCE) *get_instance( int32_t idx ) const
+	const(pxtnVOICEINSTANCE) *get_instance( int idx ) const
 	{
 		if( idx < 0 || idx >= _voice_num ) return null;
 		return &_voinsts[ idx ];
 	}
 
-	bool set_name_buf( const(char) *name, int32_t buf_size )
+	bool set_name_buf( const(char) *name, int buf_size )
 	{
 		if( !name || buf_size < 0 || buf_size > pxtnMAX_TUNEWOICENAME ) return false;
 		memset( _name_buf.ptr, 0, _name_buf.sizeof );
@@ -322,7 +321,7 @@ public :
 		return true;
 	}
 
-	const(char)* get_name_buf( int32_t* p_buf_size ) const return
+	const(char)* get_name_buf( int* p_buf_size ) const return
 	{
 		if( p_buf_size ) *p_buf_size = _name_size;
 		return _name_buf.ptr;
@@ -335,7 +334,7 @@ public :
 	}
 
 
-	bool Voice_Allocate( int32_t voice_num )
+	bool Voice_Allocate( int voice_num )
 	{
 		bool b_ret = false;
 
@@ -345,7 +344,7 @@ public :
 		if( !pxtnMem_zero_alloc( cast(void**)&_voinsts, pxtnVOICEINSTANCE.sizeof * voice_num ) ) goto End;
 		_voice_num = voice_num;
 
-		for( int32_t i = 0; i < voice_num; i++ )
+		for( int i = 0; i < voice_num; i++ )
 		{
 			pxtnVOICEUNIT *p_vc = &_voices[ i ];
 			p_vc.basic_key   = EVENTDEFAULT_BASICKEY;
@@ -372,7 +371,7 @@ public :
 
 	void Voice_Release ()
 	{
-		for( int32_t v = 0; v < _voice_num; v++ ) _Voice_Release( &_voices[ v ], &_voinsts[ v ] );
+		for( int v = 0; v < _voice_num; v++ ) _Voice_Release( &_voices[ v ], &_voinsts[ v ] );
 		pxtnMem_free( cast(void**)&_voices  );
 		pxtnMem_free( cast(void**)&_voinsts );
 		_voice_num = 0;
@@ -381,7 +380,8 @@ public :
 	bool Copy( pxtnWoice *p_dst ) const
 	{
 		bool           b_ret = false;
-		int32_t        v, size, num;
+		int        v, num;
+		size_t size;
 		const(pxtnVOICEUNIT)* p_vc1 = null ;
 		pxtnVOICEUNIT* p_vc2 = null ;
 
@@ -438,7 +438,7 @@ public :
 
 	void Slim()
 	{
-		for( int32_t i = _voice_num - 1; i >= 0; i-- )
+		for( int i = _voice_num - 1; i >= 0; i-- )
 		{
 			bool b_remove = false;
 
@@ -450,7 +450,7 @@ public :
 			{
 				_Voice_Release( &_voices[ i ], &_voinsts[ i ] );
 				_voice_num--;
-				for( int32_t j = i; j < _voice_num; j++ ) _voices[ j ] = _voices[ j + 1 ];
+				for( int j = i; j < _voice_num; j++ ) _voices[ j ] = _voices[ j + 1 ];
 				memset( &_voices[ _voice_num ], 0, pxtnVOICEUNIT.sizeof );
 			}
 		}
@@ -513,7 +513,7 @@ public :
 
 		return res;
 	}
-	bool PTV_Write( pxtnDescriptor *p_doc, int32_t *p_total ) const
+	bool PTV_Write( pxtnDescriptor *p_doc, int *p_total ) const
 	{
 		bool           b_ret = false;
 		const(pxtnVOICEUNIT)* p_vc  = null ;
@@ -522,8 +522,8 @@ public :
 		int        total =     0;
 
 		if( !p_doc.w_asfile  ( _code     ,                1, 8 ) ) goto End;
-		if( !p_doc.w_asfile  ( &_version , uint32_t.sizeof, 1 ) ) goto End;
-		if( !p_doc.w_asfile  ( &total    , int32_t.sizeof, 1 ) ) goto End;
+		if( !p_doc.w_asfile  ( &_version , uint.sizeof, 1 ) ) goto End;
+		if( !p_doc.w_asfile  ( &total    , int.sizeof, 1 ) ) goto End;
 
 		work = 0;
 
@@ -553,7 +553,7 @@ public :
 
 		// total size
 		if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur, -(total + 4)     ) ) goto End;
-		if( !p_doc.w_asfile( &total, int32_t.sizeof, 1 ) ) goto End;
+		if( !p_doc.w_asfile( &total, int.sizeof, 1 ) ) goto End;
 		if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur,  (total    )     ) ) goto End;
 
 		if( p_total ) *p_total = 16 + total;
@@ -566,7 +566,7 @@ public :
 	{
 		pxtnERR        res       = pxtnERR.pxtnERR_VOID;
 		pxtnVOICEUNIT* p_vc      = null ;
-		uint8_t[ 8 ]        code =  0;
+		ubyte[ 8 ]        code =  0;
 		int        version_   =     0;
 		int        work1     =     0;
 		int        work2     =     0;
@@ -574,9 +574,9 @@ public :
 		int        num       =     0;
 
 		if( !p_doc.r( code.ptr    ,               1, 8 ) ){ res = pxtnERR.pxtnERR_desc_r  ; goto term; }
-		if( !p_doc.r( &version_, int32_t.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r  ; goto term; }
+		if( !p_doc.r( &version_, int.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r  ; goto term; }
 		if( memcmp( code.ptr, _code, 8 )                  ){ res = pxtnERR.pxtnERR_inv_code; goto term; }
-		if( !p_doc.r( &total  , int32_t.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r  ; goto term; }
+		if( !p_doc.r( &total  , int.sizeof, 1 ) ){ res = pxtnERR.pxtnERR_desc_r  ; goto term; }
 		if( version_ > _version                        ){ res = pxtnERR.pxtnERR_fmt_new ; goto term; }
 
 		// p_ptv. (5)
@@ -587,7 +587,7 @@ public :
 		if( !p_doc.v_r    ( &num )        ){ res = pxtnERR.pxtnERR_desc_r     ; goto term; }
 		if( !Voice_Allocate(  num )        ){ res = pxtnERR.pxtnERR_memory     ; goto term; }
 
-		for( int32_t v = 0; v < _voice_num; v++ )
+		for( int v = 0; v < _voice_num; v++ )
 		{
 			// p_ptvv. (8)
 			p_vc = &_voices[ v ];
@@ -596,7 +596,7 @@ public :
 			if( !p_doc.v_r( &p_vc.volume    )             ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 			if( !p_doc.v_r( &p_vc.pan       )             ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 			if( !p_doc.v_r( &work1           )             ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
-			memcpy( &p_vc.tuning, &work1,  4.sizeof     );
+			memcpy( &p_vc.tuning, &work1,  4     );
 			if( !p_doc.v_r( cast(int*)&p_vc.voice_flags )     ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 			if( !p_doc.v_r( cast(int*)&p_vc.data_flags  )     ){ res = pxtnERR.pxtnERR_desc_r; goto term; }
 
@@ -622,17 +622,17 @@ public :
 
 		memset( &pcm, 0,  _MATERIALSTRUCT_PCM.sizeof );
 
-		pcm.sps         = cast(uint32_t)p_pcm.get_sps     ();
-		pcm.bps         = cast(uint16_t)p_pcm.get_bps     ();
-		pcm.ch          = cast(uint16_t)p_pcm.get_ch      ();
-		pcm.data_size   = cast(uint32_t)p_pcm.get_buf_size();
-		pcm.x3x_unit_no = cast(uint16_t)0;
+		pcm.sps         = cast(uint)p_pcm.get_sps     ();
+		pcm.bps         = cast(ushort)p_pcm.get_bps     ();
+		pcm.ch          = cast(ushort)p_pcm.get_ch      ();
+		pcm.data_size   = cast(uint)p_pcm.get_buf_size();
+		pcm.x3x_unit_no = cast(ushort)0;
 		pcm.tuning      =           p_vc.tuning     ;
 		pcm.voice_flags =           p_vc.voice_flags;
-		pcm.basic_key   = cast(uint16_t)p_vc.basic_key  ;
+		pcm.basic_key   = cast(ushort)p_vc.basic_key  ;
 
-		uint32_t size =  _MATERIALSTRUCT_PCM.sizeof + pcm.data_size;
-		if( !p_doc.w_asfile( &size, uint32_t.sizeof, 1 ) ) return false;
+		uint size =  cast(uint)(_MATERIALSTRUCT_PCM.sizeof + pcm.data_size);
+		if( !p_doc.w_asfile( &size, uint.sizeof, 1 ) ) return false;
 		if( !p_doc.w_asfile( &pcm , _MATERIALSTRUCT_PCM.sizeof, 1 ) ) return false;
 		if( !p_doc.w_asfile( p_pcm.get_p_buf(), 1, pcm.data_size  ) ) return false;
 
@@ -643,12 +643,12 @@ public :
 	{
 		pxtnERR             res  = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PCM pcm  = {0};
-		int32_t             size =  0 ;
+		int             size =  0 ;
 
 		if( !p_doc.r( &size, 4,                            1 ) ) return pxtnERR.pxtnERR_desc_r;
 		if( !p_doc.r( &pcm,  _MATERIALSTRUCT_PCM.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
 
-		if( (cast(int32_t)pcm.voice_flags) & PTV_VOICEFLAG_UNCOVERED )return pxtnERR.pxtnERR_fmt_unknown;
+		if( (cast(int)pcm.voice_flags) & PTV_VOICEFLAG_UNCOVERED )return pxtnERR.pxtnERR_fmt_unknown;
 
 		if( !Voice_Allocate( 1 ) ){ res = pxtnERR.pxtnERR_memory; goto term; }
 
@@ -679,25 +679,25 @@ public :
 	{
 		_MATERIALSTRUCT_PTN ptn ;
 		const(pxtnVOICEUNIT)*      p_vc;
-		int32_t                 size = 0;
+		int size = 0;
 
 		// ptv -------------------------
 		memset( &ptn, 0,  _MATERIALSTRUCT_PTN.sizeof );
-		ptn.x3x_unit_no   = cast(uint16_t)0;
+		ptn.x3x_unit_no   = cast(ushort)0;
 
 		p_vc = &_voices[ 0 ];
 		ptn.tuning      =           p_vc.tuning     ;
 		ptn.voice_flags =           p_vc.voice_flags;
-		ptn.basic_key   = cast(uint16_t)p_vc.basic_key  ;
+		ptn.basic_key   = cast(ushort)p_vc.basic_key  ;
 		ptn.rrr         =                           1;
 
 		// pre
-		if( !p_doc.w_asfile( &size, int32_t.sizeof,             1 ) ) return false;
+		if( !p_doc.w_asfile( &size, int.sizeof,             1 ) ) return false;
 		if( !p_doc.w_asfile( &ptn,  _MATERIALSTRUCT_PTN.sizeof, 1 ) ) return false;
 		size += _MATERIALSTRUCT_PTN.sizeof;
 		if( !p_vc.p_ptn.write( p_doc, &size )                       ) return false;
-		if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur, -size - int32_t.sizeof )     ) return false;
-		if( !p_doc.w_asfile( &size, int32_t.sizeof,             1 ) ) return false;
+		if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur, cast(int)(-size - int.sizeof) )     ) return false;
+		if( !p_doc.w_asfile( &size, int.sizeof,             1 ) ) return false;
 		if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur, size )                        ) return false;
 
 		return true;
@@ -708,9 +708,9 @@ public :
 	{
 		pxtnERR             res  = pxtnERR.pxtnERR_VOID; 
 		_MATERIALSTRUCT_PTN ptn  = {0};
-		int32_t             size =  0 ;
+		int             size =  0 ;
 
-		if( !p_doc.r( &size, int32_t.sizeof,               1 ) ) return pxtnERR.pxtnERR_desc_r;
+		if( !p_doc.r( &size, int.sizeof,               1 ) ) return pxtnERR.pxtnERR_desc_r;
 		if( !p_doc.r( &ptn,   _MATERIALSTRUCT_PTN.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
 
 		if     ( ptn.rrr > 1 ) return pxtnERR.pxtnERR_fmt_unknown;
@@ -740,24 +740,24 @@ public :
 	bool io_matePTV_w( pxtnDescriptor *p_doc ) const
 	{
 		_MATERIALSTRUCT_PTV ptv;
-		int32_t                 head_size = _MATERIALSTRUCT_PTV.sizeof + int32_t.sizeof;
-		int32_t                 size = 0;
+		int head_size = _MATERIALSTRUCT_PTV.sizeof + int.sizeof;
+		int size = 0;
 
 		// ptv -------------------------
 		memset( &ptv, 0,  _MATERIALSTRUCT_PTV.sizeof );
-		ptv.x3x_unit_no = cast(uint16_t)0;
+		ptv.x3x_unit_no = cast(ushort)0;
 		ptv.x3x_tuning  =           0;//1.0f;//p_w.tuning;
 		ptv.size        =           0;
 
 		// pre write
-		if( !p_doc.w_asfile( &size, int32_t.sizeof,             1 ) ) return false;
+		if( !p_doc.w_asfile( &size, int.sizeof,             1 ) ) return false;
 		if( !p_doc.w_asfile( &ptv,  _MATERIALSTRUCT_PTV.sizeof, 1 ) ) return false;
 		if( !PTV_Write( p_doc, &ptv.size )       ) return false;
 
 		if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur, -( ptv.size + head_size ) ) ) return false;
 
-		size = ptv.size +  _MATERIALSTRUCT_PTV.sizeof;
-		if( !p_doc.w_asfile( &size, int32_t.sizeof,             1 ) ) return false;
+		size = cast(int)(ptv.size +  _MATERIALSTRUCT_PTV.sizeof);
+		if( !p_doc.w_asfile( &size, int.sizeof,             1 ) ) return false;
 		if( !p_doc.w_asfile( &ptv,  _MATERIALSTRUCT_PTV.sizeof, 1 ) ) return false;
 
 		if( !p_doc.seek( pxtnSEEK.pxtnSEEK_cur, ptv.size )                    ) return false;
@@ -769,9 +769,9 @@ public :
 	{
 		pxtnERR             res  = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PTV ptv  = {0};
-		int32_t             size =  0 ;
+		int             size =  0 ;
 
-		if( !p_doc.r( &size, int32_t.sizeof,               1 ) ) return pxtnERR.pxtnERR_desc_r;
+		if( !p_doc.r( &size, int.sizeof,               1 ) ) return pxtnERR.pxtnERR_desc_r;
 		if( !p_doc.r( &ptv,   _MATERIALSTRUCT_PTV.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
 		if( ptv.rrr ) return pxtnERR.pxtnERR_fmt_unknown;
 		res = PTV_Read( p_doc ); if( res != pxtnERR.pxtnOK ) goto term;
@@ -794,14 +794,14 @@ version(pxINCLUDE_OGGVORBIS) {
 
 		if( !p_vc.p_oggv ) return false;
 
-		int32_t oggv_size = p_vc.p_oggv.GetSize();
+		int oggv_size = p_vc.p_oggv.GetSize();
 
 		mate.tuning      =           p_vc.tuning     ;
 		mate.voice_flags =           p_vc.voice_flags;
-		mate.basic_key   = cast(uint16_t)p_vc.basic_key  ;
+		mate.basic_key   = cast(ushort)p_vc.basic_key  ;
 
-		uint32_t size =  _MATERIALSTRUCT_OGGV.sizeof + oggv_size;
-		if( !p_doc.w_asfile( &size, uint32_t.sizeof            , 1 ) ) return false;
+		uint size =  _MATERIALSTRUCT_OGGV.sizeof + oggv_size;
+		if( !p_doc.w_asfile( &size, uint.sizeof            , 1 ) ) return false;
 		if( !p_doc.w_asfile( &mate, _MATERIALSTRUCT_OGGV.sizeof, 1 ) ) return false;
 		if( !p_vc.p_oggv.pxtn_write( p_doc ) ) return false;
 
@@ -812,12 +812,12 @@ version(pxINCLUDE_OGGVORBIS) {
 	{
 		pxtnERR              res  = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_OGGV mate = {0};
-		int32_t              size =  0 ;
+		int              size =  0 ;
 
 		if( !p_doc.r( &size, 4,                              1 ) ) return pxtnERR.pxtnERR_desc_r;
 		if( !p_doc.r( &mate,  _MATERIALSTRUCT_OGGV.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
 
-		if( (cast(int32_t)mate.voice_flags) & PTV_VOICEFLAG_UNCOVERED ) return pxtnERR.pxtnERR_fmt_unknown;
+		if( (cast(int)mate.voice_flags) & PTV_VOICEFLAG_UNCOVERED ) return pxtnERR.pxtnERR_fmt_unknown;
 
 		if( !Voice_Allocate( 1 ) ) goto End;
 
@@ -850,11 +850,11 @@ version(pxINCLUDE_OGGVORBIS) {
 		pxtnVOICEUNIT*     p_vc  = null ;
 		pxtnPulse_PCM      pcm_work;
 
-		int32_t            ch    =     2;
-		int32_t            sps   = 44100;
-		int32_t            bps   =    16;
+		int            ch    =     2;
+		int            sps   = 44100;
+		int            bps   =    16;
 
-		for( int32_t v = 0; v < _voice_num; v++ )
+		for( int v = 0; v < _voice_num; v++ )
 		{
 			p_vi = &_voinsts[ v ];
 			pxtnMem_free( cast(void **)&p_vi.p_smp_w );
@@ -863,7 +863,7 @@ version(pxINCLUDE_OGGVORBIS) {
 			p_vi.smp_tail_w = 0;
 		}
 
-		for( int32_t v = 0; v < _voice_num; v++ )
+		for( int v = 0; v < _voice_num; v++ )
 		{
 			p_vi = &_voinsts[ v ];
 			p_vc = &_voices [ v ];
@@ -879,7 +879,7 @@ version(pxINCLUDE_OGGVORBIS) {
 				p_vi.smp_head_w = pcm_work.get_smp_head();
 				p_vi.smp_body_w = pcm_work.get_smp_body();
 				p_vi.smp_tail_w = pcm_work.get_smp_tail();
-				p_vi.p_smp_w    = cast(uint8_t*)pcm_work.Devolve_SamplingBuffer();
+				p_vi.p_smp_w    = cast(ubyte*)pcm_work.Devolve_SamplingBuffer();
 				break;
 	} else {
 				res = pxtnERR.pxtnERR_ogg_no_supported; goto term;
@@ -892,15 +892,15 @@ version(pxINCLUDE_OGGVORBIS) {
 				p_vi.smp_head_w = pcm_work.get_smp_head();
 				p_vi.smp_body_w = pcm_work.get_smp_body();
 				p_vi.smp_tail_w = pcm_work.get_smp_tail();
-				p_vi.p_smp_w    = cast(uint8_t*)pcm_work.Devolve_SamplingBuffer();
+				p_vi.p_smp_w    = cast(ubyte*)pcm_work.Devolve_SamplingBuffer();
 				break;
 
 			case pxtnVOICETYPE.pxtnVOICE_Overtone :
 			case pxtnVOICETYPE.pxtnVOICE_Coodinate:
 				{
 					p_vi.smp_body_w =  400;
-					int32_t size = p_vi.smp_body_w * ch * bps / 8;
-					p_vi.p_smp_w = cast(uint8_t*)malloc( size );
+					int size = p_vi.smp_body_w * ch * bps / 8;
+					p_vi.p_smp_w = cast(ubyte*)malloc( size );
 					if( !( p_vi.p_smp_w ) ){ res = pxtnERR.pxtnERR_memory; goto term; }
 					memset( p_vi.p_smp_w, 0x00, size );
 					_UpdateWavePTV( p_vc, p_vi, ch, sps, bps );
@@ -913,7 +913,7 @@ version(pxINCLUDE_OGGVORBIS) {
 					if( !ptn_bldr ){ res = pxtnERR.pxtnERR_ptn_init; goto term; }
 					p_pcm = ptn_bldr.BuildNoise( p_vc.p_ptn, ch, sps, bps );
 					if( !( p_pcm ) ){ res = pxtnERR.pxtnERR_ptn_build; goto term; }
-					p_vi.p_smp_w = cast(uint8_t*)p_pcm.Devolve_SamplingBuffer();
+					p_vi.p_smp_w = cast(ubyte*)p_pcm.Devolve_SamplingBuffer();
 					p_vi.smp_body_w = p_vc.p_ptn.get_smp_num_44k();
 					break;
 				}
@@ -925,7 +925,7 @@ version(pxINCLUDE_OGGVORBIS) {
 	term:
 		if( res != pxtnERR.pxtnOK )
 		{
-			for( int32_t v = 0; v < _voice_num; v++ )
+			for( int v = 0; v < _voice_num; v++ )
 			{
 				p_vi = &_voinsts[ v ];
 				pxtnMem_free( cast(void **)&p_vi.p_smp_w );
@@ -938,38 +938,38 @@ version(pxINCLUDE_OGGVORBIS) {
 		return res;
 	}
 
-	pxtnERR Tone_Ready_envelope( int32_t sps )
+	pxtnERR Tone_Ready_envelope( int sps )
 	{
 		pxtnERR    res     = pxtnERR.pxtnERR_VOID;
-		int32_t    e       =            0;
+		int    e       =            0;
 		pxtnPOINT* p_point = null        ;
 
-		for( int32_t v = 0; v < _voice_num; v++ )
+		for( int v = 0; v < _voice_num; v++ )
 		{
 			pxtnVOICEINSTANCE* p_vi   = &_voinsts[ v ] ;
 			pxtnVOICEUNIT*     p_vc   = &_voices [ v ] ;
 			pxtnVOICEENVELOPE* p_enve = &p_vc.envelope;
-			int32_t            size   =               0;
+			int            size   =               0;
 
 			pxtnMem_free( cast(void**)&p_vi.p_env );
 
 			if( p_enve.head_num )
 			{
 				for( e = 0; e < p_enve.head_num; e++ ) size += p_enve.points[ e ].x;
-				p_vi.env_size = cast(int32_t)( cast(double)size * sps / p_enve.fps );
+				p_vi.env_size = cast(int)( cast(double)size * sps / p_enve.fps );
 				if( !p_vi.env_size ) p_vi.env_size = 1;
 
 				if( !pxtnMem_zero_alloc( cast(void**)&p_vi.p_env, p_vi.env_size                       ) ){ res = pxtnERR.pxtnERR_memory; goto term; }
 				if( !pxtnMem_zero_alloc( cast(void**)&p_point    , pxtnPOINT.sizeof * p_enve.head_num ) ){ res = pxtnERR.pxtnERR_memory; goto term; }
 
 				// convert points.
-				int32_t  offset   = 0;
-				int32_t  head_num = 0;
+				int  offset   = 0;
+				int  head_num = 0;
 				for( e = 0; e < p_enve.head_num; e++ )
 				{
 					if( !e || p_enve.points[ e ].x ||  p_enve.points[ e ].y )
 					{
-						offset        += cast(int32_t)( cast(double)p_enve.points[ e ].x * sps / p_enve.fps );
+						offset        += cast(int)( cast(double)p_enve.points[ e ].x * sps / p_enve.fps );
 						p_point[ e ].x = offset;
 						p_point[ e ].y =                p_enve.points[ e ].y;
 						head_num++;
@@ -978,7 +978,7 @@ version(pxINCLUDE_OGGVORBIS) {
 
 				pxtnPOINT start;
 				e = start.x = start.y = 0;
-				for( int32_t  s = 0; s < p_vi.env_size; s++ )
+				for( int  s = 0; s < p_vi.env_size; s++ )
 				{
 					while( e < head_num && s >= p_point[ e ].x )
 					{
@@ -989,14 +989,14 @@ version(pxINCLUDE_OGGVORBIS) {
 
 					if(    e < head_num )
 					{
-						p_vi.p_env[ s ] = cast(uint8_t)(
+						p_vi.p_env[ s ] = cast(ubyte)(
 													start.y + ( p_point[ e ].y - start.y ) *
 													(              s - start.x ) /
 													( p_point[ e ].x - start.x ) );
 					}
 					else
 					{
-						p_vi.p_env[ s ] = cast(uint8_t)start.y;
+						p_vi.p_env[ s ] = cast(ubyte)start.y;
 					}
 				}
 
@@ -1005,7 +1005,7 @@ version(pxINCLUDE_OGGVORBIS) {
 
 			if( p_enve.tail_num )
 			{
-				p_vi.env_release = cast(int32_t)( cast(double)p_enve.points[ p_enve.head_num ].x * sps / p_enve.fps );
+				p_vi.env_release = cast(int)( cast(double)p_enve.points[ p_enve.head_num ].x * sps / p_enve.fps );
 			}
 			else
 			{
@@ -1018,11 +1018,11 @@ version(pxINCLUDE_OGGVORBIS) {
 
 		pxtnMem_free( cast(void**)&p_point );
 
-		if( res != pxtnERR.pxtnOK ){ for( int32_t v = 0; v < _voice_num; v++ ) pxtnMem_free( cast(void**)&_voinsts[ v ].p_env ); }
+		if( res != pxtnERR.pxtnOK ){ for( int v = 0; v < _voice_num; v++ ) pxtnMem_free( cast(void**)&_voinsts[ v ].p_env ); }
 
 		return res;
 	}
-	pxtnERR Tone_Ready( const pxtnPulse_NoiseBuilder* ptn_bldr, int32_t sps )
+	pxtnERR Tone_Ready( const pxtnPulse_NoiseBuilder* ptn_bldr, int sps )
 	{
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		res = Tone_Ready_sample  ( ptn_bldr ); if( res != pxtnERR.pxtnOK ) return res;

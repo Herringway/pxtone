@@ -2,7 +2,6 @@
 
 import pxtone.pxtn;
 
-import core.stdc.stdint;
 import core.stdc.stdlib;
 
 enum _OCTAVE_NUM = 16;   // octave num.
@@ -15,13 +14,13 @@ enum _TABLE_SIZE = ( _OCTAVE_NUM    * _KEY_PER_OCTAVE * _FREQUENCY_PER_KEY );
 
 struct pxtnPulse_Frequency {
 	float* _freq_table;
-	double _GetDivideOctaveRate( int32_t  divi )
+	double _GetDivideOctaveRate( int  divi )
 	{
 		double parameter = 1.0;
 		double work;
 		double result;
 		double add;
-		int32_t  i, j, k;
+		int  i, j, k;
 
 		// double is 17keta.
 		for( i = 0; i < 17; i++ )
@@ -81,8 +80,8 @@ struct pxtnPulse_Frequency {
 			128,        //f   7
 		];
 
-		int32_t    key ;
-		int32_t    f   ;
+		int    key ;
+		int    f   ;
 		double oct_x24;
 		double work;
 
@@ -105,9 +104,9 @@ struct pxtnPulse_Frequency {
 		return b_ret;
 	}
 
-	float Get( int32_t key ) const
+	float Get( int key ) const
 	{
-		int32_t  i;
+		int  i;
 
 		i = (key + 0x6000) * _FREQUENCY_PER_KEY / 0x100;
 		if     ( i <            0 ) i = 0;
@@ -115,15 +114,15 @@ struct pxtnPulse_Frequency {
 		return _freq_table[ i ];
 	}
 
-	float Get2( int32_t key )
+	float Get2( int key )
 	{
-		int32_t  i = key >> 4;
+		int  i = key >> 4;
 		if     ( i <            0 ) i = 0;
 		else if( i >= _TABLE_SIZE ) i = _TABLE_SIZE - 1;
 		return _freq_table[ i ];
 	}
 
-	const(float)* GetDirect( int32_t  *p_size )
+	const(float)* GetDirect( int  *p_size )
 	{
 		*p_size = _TABLE_SIZE;
 		return _freq_table;

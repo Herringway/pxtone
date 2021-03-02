@@ -5,7 +5,6 @@ import pxtone.pxtn;
 import pxtone.descriptor;
 import pxtone.error;
 
-import core.stdc.stdint;
 import core.stdc.stdlib;
 import core.stdc.string;
 
@@ -13,7 +12,7 @@ import core.stdc.string;
 // global
 ///////////////////////
 
-bool Evelist_Kind_IsTail( int32_t kind )
+bool Evelist_Kind_IsTail( int kind )
 {
 	if( kind == EVENTKIND_ON || kind == EVENTKIND_PORTAMENT ) return true;
 	return false;
@@ -59,17 +58,17 @@ enum EVENTDEFAULT_BEATCLOCK = 480;
 
 struct EVERECORD
 {
-	uint8_t    kind    ;
-	uint8_t    unit_no ;
-	uint8_t    reserve1;
-	uint8_t    reserve2;
-	int32_t    value   ;
-	int32_t    clock   ;
+	ubyte    kind    ;
+	ubyte    unit_no ;
+	ubyte    reserve1;
+	ubyte    reserve2;
+	int    value   ;
+	int    clock   ;
 	EVERECORD* prev    ;
 	EVERECORD* next    ;
 }
 
-static int32_t _DefaultKindValue( uint8_t kind )
+static int _DefaultKindValue( ubyte kind )
 {
 	switch( kind )
 	{
@@ -90,16 +89,16 @@ static int32_t _DefaultKindValue( uint8_t kind )
 		{
 			float tuning;
 			tuning = EVENTDEFAULT_TUNING;
-			return *( cast(int32_t*)&tuning );
+			return *( cast(int*)&tuning );
 		}
 	case EVENTKIND_PAN_TIME  : return EVENTDEFAULT_PAN_TIME ;
 	default: break;
 	}
 	return 0;
 }
-static int32_t _ComparePriority( uint8_t kind1, uint8_t kind2 )
+static int _ComparePriority( ubyte kind1, ubyte kind2 )
 {
-	static const int32_t[ EVENTKIND_NUM ] priority_table =
+	static const int[ EVENTKIND_NUM ] priority_table =
 	[
 		  0, // EVENTKIND_null  = 0
 		 50, // EVENTKIND_ON
@@ -125,11 +124,11 @@ static int32_t _ComparePriority( uint8_t kind1, uint8_t kind2 )
 // event struct(12byte) =================
 struct _x4x_EVENTSTRUCT
 {
-	uint16_t unit_index;
-	uint16_t event_kind;
-	uint16_t data_num;        // １イベントのデータ数。現在は 2 ( clock / volume ）
-	uint16_t rrr;
-	uint32_t  event_num;
+	ushort unit_index;
+	ushort event_kind;
+	ushort data_num;        // １イベントのデータ数。現在は 2 ( clock / volume ）
+	ushort rrr;
+	uint  event_num;
 }
 
 //--------------------------------
@@ -139,14 +138,14 @@ struct pxtnEvelist
 
 private:
 
-	int32_t    _eve_allocated_num;
+	int    _eve_allocated_num;
 	EVERECORD* _eves     ;
 	EVERECORD* _start    ;
-	int32_t    _linear   ;
+	int    _linear   ;
 
 	EVERECORD* _p_x4x_rec;
 
-	void _rec_set( EVERECORD* p_rec, EVERECORD* prev, EVERECORD* next, int32_t clock, uint8_t unit_no, uint8_t kind, int32_t value )
+	void _rec_set( EVERECORD* p_rec, EVERECORD* prev, EVERECORD* next, int clock, ubyte unit_no, ubyte kind, int value )
 	{
 		if( prev ) prev.next = p_rec;
 		else       _start     = p_rec;
@@ -188,7 +187,7 @@ public:
 	}
 
 
-	bool Allocate( int32_t max_event_num )
+	bool Allocate( int max_event_num )
 	{
 		Release();
 		_eves = cast(EVERECORD*)malloc( EVERECORD.sizeof * max_event_num );
@@ -198,16 +197,16 @@ public:
 		return true;
 	}
 
-	int32_t  get_Num_Max() const
+	int  get_Num_Max() const
 	{
 		if( !_eves ) return 0;
 		return _eve_allocated_num;
 	}
 
-	int32_t  get_Max_Clock() const
+	int  get_Max_Clock() const
 	{
-		int32_t max_clock = 0;
-		int32_t clock;
+		int max_clock = 0;
+		int clock;
 
 		for( const(EVERECORD)* p = _start; p; p = p.next )
 		{
@@ -220,43 +219,43 @@ public:
 
 	}
 
-	int32_t  get_Count() const
+	int  get_Count() const
 	{
 		if( !_eves || !_start ) return 0;
 
-		int32_t    count = 0;
+		int    count = 0;
 		for( const(EVERECORD)* p = _start; p; p = p.next ) count++;
 		return count;
 	}
 
-	int32_t  get_Count( uint8_t kind, int32_t value ) const
+	int  get_Count( ubyte kind, int value ) const
 	{
 		if( !_eves ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 		for( const(EVERECORD)* p = _start; p; p = p.next ){ if( p.kind == kind && p.value == value ) count++; }
 		return count;
 	}
 
-	int32_t  get_Count( uint8_t unit_no ) const
+	int  get_Count( ubyte unit_no ) const
 	{
 		if( !_eves ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 		for( const(EVERECORD)* p = _start; p; p = p.next ){ if( p.unit_no == unit_no ) count++; }
 		return count;
 	}
 
-	int32_t  get_Count( uint8_t unit_no, uint8_t kind ) const
+	int  get_Count( ubyte unit_no, ubyte kind ) const
 	{
 		if( !_eves ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 		for( const(EVERECORD)* p = _start; p; p = p.next ){ if( p.unit_no == unit_no && p.kind == kind ) count++; }
 		return count;
 	}
 
-	int32_t  get_Count( int32_t clock1, int32_t clock2, uint8_t unit_no ) const
+	int  get_Count( int clock1, int clock2, ubyte unit_no ) const
 	{
 		if( !_eves ) return 0;
 
@@ -270,7 +269,7 @@ public:
 			}
 		}
 
-		int32_t count = 0;
+		int count = 0;
 		for(           ; p; p = p.next )
 		{
 			if( p.clock != clock1 && p.clock >= clock2 ) break;
@@ -278,12 +277,12 @@ public:
 		}
 		return count;
 	}
-	int32_t get_Value( int32_t clock, uint8_t unit_no, uint8_t kind ) const
+	int get_Value( int clock, ubyte unit_no, ubyte kind ) const
 	{
 		if( !_eves ) return 0;
 
 		const(EVERECORD)* p;
-		int32_t val = _DefaultKindValue( kind );
+		int val = _DefaultKindValue( kind );
 
 		for( p = _start; p; p = p.next )
 		{
@@ -301,7 +300,7 @@ public:
 		return _start;
 	}
 
-	bool Record_Add_i( int32_t clock, uint8_t unit_no, uint8_t kind, int32_t value )
+	bool Record_Add_i( int clock, ubyte unit_no, ubyte kind, int value )
 	{
 		if( !_eves ) return false;
 
@@ -310,7 +309,7 @@ public:
 		EVERECORD* p_next = null;
 
 		// 空き検索
-		for( int32_t r = 0; r < _eve_allocated_num; r++ )
+		for( int r = 0; r < _eve_allocated_num; r++ )
 		{
 			if( _eves[ r ].kind == EVENTKIND_null ){ p_new = &_eves[ r ]; break; }
 		}
@@ -375,9 +374,9 @@ public:
 
 		return true;
 	}
-	bool Record_Add_f( int32_t clock, uint8_t unit_no, uint8_t kind, float value_f )
+	bool Record_Add_f( int clock, ubyte unit_no, ubyte kind, float value_f )
 	{
-		int32_t value = *( cast(int32_t*)(&value_f) );
+		int value = *( cast(int*)(&value_f) );
 		return Record_Add_i( clock, unit_no, kind, value );
 	}
 
@@ -393,7 +392,7 @@ public:
 	}
 
 
-	void Linear_Add_i(  int32_t clock, uint8_t unit_no, uint8_t kind, int32_t value )
+	void Linear_Add_i(  int clock, ubyte unit_no, ubyte kind, int value )
 	{
 		EVERECORD* p = &_eves[ _linear ];
 
@@ -405,9 +404,9 @@ public:
 		_linear++;
 	}
 
-	void Linear_Add_f( int32_t clock, uint8_t unit_no, uint8_t kind, float value_f )
+	void Linear_Add_f( int clock, ubyte unit_no, ubyte kind, float value_f )
 	{
-		int32_t value = *( cast(int32_t*)(&value_f) );
+		int value = *( cast(int*)(&value_f) );
 		Linear_Add_i( clock, unit_no, kind, value );
 	}
 
@@ -417,7 +416,7 @@ public:
 
 		if( b_connect )
 		{
-			for( int32_t r = 1; r < _eve_allocated_num; r++ )
+			for( int r = 1; r < _eve_allocated_num; r++ )
 			{
 				if( _eves[ r ].kind == EVENTKIND_null ) break;
 				_eves[ r     ].prev = &_eves[ r - 1 ];
@@ -426,16 +425,16 @@ public:
 		}
 	}
 
-	int32_t Record_Clock_Shift( int32_t clock, int32_t shift, uint8_t unit_no ) // can't be under 0.
+	int Record_Clock_Shift( int clock, int shift, ubyte unit_no ) // can't be under 0.
 	{
 		if( !_eves  ) return 0;
 		if( !_start ) return 0;
 		if( !shift  ) return 0;
 
-		int32_t          count = 0;
-		int32_t          c;
-		uint8_t           k;
-		int32_t          v;
+		int          count = 0;
+		int          c;
+		ubyte           k;
+		int          v;
 		EVERECORD*   p_next;
 		EVERECORD*   p_prev;
 		EVERECORD*   p = _start;
@@ -493,11 +492,11 @@ public:
 		}
 		return count;
 	}
-	int32_t Record_Value_Set( int32_t clock1, int32_t clock2, uint8_t unit_no, uint8_t kind, int32_t value )
+	int Record_Value_Set( int clock1, int clock2, ubyte unit_no, ubyte kind, int value )
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		for( EVERECORD* p = _start; p; p = p.next )
 		{
@@ -510,13 +509,13 @@ public:
 
 		return count;
 	}
-	int32_t Record_Value_Change( int32_t clock1, int32_t clock2, uint8_t unit_no, uint8_t kind, int32_t value )
+	int Record_Value_Change( int clock1, int clock2, ubyte unit_no, ubyte kind, int value )
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
-		int32_t max, min;
+		int max, min;
 
 		switch( kind )
 		{
@@ -546,11 +545,11 @@ public:
 
 		return count;
 	}
-	int32_t Record_Value_Omit( uint8_t kind, int32_t value )
+	int Record_Value_Omit( ubyte kind, int value )
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		for( EVERECORD* p = _start; p; p = p.next )
 		{
@@ -562,11 +561,11 @@ public:
 		}
 		return count;
 	}
-	int32_t Record_Value_Replace( uint8_t kind, int32_t old_value, int32_t new_value )
+	int Record_Value_Replace( ubyte kind, int old_value, int new_value )
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		if( old_value == new_value ) return 0;
 		if( old_value <  new_value )
@@ -595,11 +594,11 @@ public:
 		return count;
 	}
 
-	int32_t Record_Delete( int32_t clock1, int32_t clock2, uint8_t unit_no, uint8_t kind )
+	int Record_Delete( int clock1, int clock2, ubyte unit_no, ubyte kind )
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		for( EVERECORD* p = _start; p; p = p.next )
 		{
@@ -623,11 +622,11 @@ public:
 		return count;
 	}
 
-	int32_t Record_Delete( int32_t clock1, int32_t clock2, uint8_t unit_no )
+	int Record_Delete( int clock1, int clock2, ubyte unit_no )
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		for( EVERECORD* p = _start; p; p = p.next )
 		{
@@ -647,11 +646,11 @@ public:
 
 		return count;
 	}
-	int32_t Record_UnitNo_Miss( uint8_t unit_no ) // delete event has the unit-no
+	int Record_UnitNo_Miss( ubyte unit_no ) // delete event has the unit-no
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		for( EVERECORD* p = _start; p; p = p.next )
 		{
@@ -660,19 +659,19 @@ public:
 		}
 		return count;
 	}
-	int32_t Record_UnitNo_Set( uint8_t unit_no ) // set the unit-no
+	int Record_UnitNo_Set( ubyte unit_no ) // set the unit-no
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 		for( EVERECORD* p = _start; p; p = p.next ){ p.unit_no = unit_no; count++; }
 		return count;
 	}
-	int32_t Record_UnitNo_Replace( uint8_t old_u, uint8_t new_u ) // exchange unit
+	int Record_UnitNo_Replace( ubyte old_u, ubyte new_u ) // exchange unit
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		if( old_u == new_u ) return 0;
 		if( old_u <  new_u )
@@ -695,11 +694,11 @@ public:
 		return count;
 	}
 
-	int32_t  BeatClockOperation( int32_t rate )
+	int  BeatClockOperation( int rate )
 	{
 		if( !_eves  ) return 0;
 
-		int32_t count = 0;
+		int count = 0;
 
 		for( EVERECORD* p = _start; p; p = p.next )
 		{
@@ -716,13 +715,13 @@ public:
 	// ------------
 
 
-	bool io_Write( pxtnDescriptor *p_doc, int32_t rough ) const
+	bool io_Write( pxtnDescriptor *p_doc, int rough ) const
 	{
-		int32_t eve_num        = get_Count();
-		int32_t ralatived_size = 0;
-		int32_t absolute       = 0;
-		int32_t clock;
-		int32_t value;
+		int eve_num        = get_Count();
+		int ralatived_size = 0;
+		int absolute       = 0;
+		int clock;
+		int value;
 
 		for( const(EVERECORD)* p = get_Records(); p; p = p.next )
 		{
@@ -736,9 +735,9 @@ public:
 			absolute = p.clock;
 		}
 
-		int32_t size = int32_t.sizeof + ralatived_size;
-		if( !p_doc.w_asfile( &size   , int32_t.sizeof, 1 ) ) return false;
-		if( !p_doc.w_asfile( &eve_num, int32_t.sizeof, 1 ) ) return false;
+		size_t size = int.sizeof + ralatived_size;
+		if( !p_doc.w_asfile( &size   , int.sizeof, 1 ) ) return false;
+		if( !p_doc.w_asfile( &eve_num, int.sizeof, 1 ) ) return false;
 
 		absolute = 0;
 
@@ -750,8 +749,8 @@ public:
 			else                                 value = p.value        ;
 
 			if( !p_doc.v_w_asfile( clock / rough, null )    ) return false;
-			if( !p_doc.w_asfile( &p.unit_no, uint8_t.sizeof, 1 ) ) return false;
-			if( !p_doc.w_asfile( &p.kind   , uint8_t.sizeof, 1 ) ) return false;
+			if( !p_doc.w_asfile( &p.unit_no, ubyte.sizeof, 1 ) ) return false;
+			if( !p_doc.w_asfile( &p.kind   , ubyte.sizeof, 1 ) ) return false;
 			if( !p_doc.v_w_asfile( value        , null )    ) return false;
 
 			absolute = p.clock;
@@ -762,19 +761,19 @@ public:
 
 	pxtnERR io_Read( pxtnDescriptor *p_doc )
 	{
-		int32_t size     = 0;
-		int32_t eve_num  = 0;
+		int size     = 0;
+		int eve_num  = 0;
 
 		if( !p_doc.r( &size   , 4, 1 ) ) return pxtnERR.pxtnERR_desc_r;
 		if( !p_doc.r( &eve_num, 4, 1 ) ) return pxtnERR.pxtnERR_desc_r;
 
 		int clock    = 0;
 		int absolute = 0;
-		uint8_t unit_no  = 0;
-		uint8_t kind     = 0;
+		ubyte unit_no  = 0;
+		ubyte kind     = 0;
 		int value    = 0;
 
-		for( int32_t e = 0; e < eve_num; e++ )
+		for( int e = 0; e < eve_num; e++ )
 		{
 			if( !p_doc.v_r( &clock         ) ) return pxtnERR.pxtnERR_desc_r;
 			if( !p_doc.r  ( &unit_no, 1, 1 ) ) return pxtnERR.pxtnERR_desc_r;
@@ -788,21 +787,21 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	int32_t io_Read_EventNum( pxtnDescriptor *p_doc ) const
+	int io_Read_EventNum( pxtnDescriptor *p_doc ) const
 	{
-		int32_t size    = 0;
-		int32_t eve_num = 0;
+		int size    = 0;
+		int eve_num = 0;
 
 		if( !p_doc.r( &size   , 4, 1 ) ) return 0;
 		if( !p_doc.r( &eve_num, 4, 1 ) ) return 0;
 
 		int count   = 0;
 		int clock   = 0;
-		uint8_t unit_no = 0;
-		uint8_t kind    = 0;
+		ubyte unit_no = 0;
+		ubyte kind    = 0;
 		int value   = 0;
 
-		for( int32_t e = 0; e < eve_num; e++ )
+		for( int e = 0; e < eve_num; e++ )
 		{
 			if( !p_doc.v_r( &clock         ) ) return 0;
 			if( !p_doc.r  ( &unit_no, 1, 1 ) ) return 0;
@@ -828,7 +827,7 @@ public:
 	{
 		_p_x4x_rec = null;
 	}
-	void x4x_Read_Add( int32_t clock, uint8_t unit_no, uint8_t kind, int32_t value )
+	void x4x_Read_Add( int clock, ubyte unit_no, ubyte kind, int value )
 	{
 		EVERECORD* p_new  = null;
 		EVERECORD* p_prev = null;
@@ -892,13 +891,13 @@ public:
 		if( bCheckRRR && evnt.rrr            ) return pxtnERR.pxtnERR_fmt_unknown;
 
 		absolute = 0;
-		for( e = 0; e < cast(int32_t)evnt.event_num; e++ )
+		for( e = 0; e < cast(int)evnt.event_num; e++ )
 		{
 			if( !p_doc.v_r( &clock ) ) break;
 			if( !p_doc.v_r( &value ) ) break;
 			absolute += clock;
 			clock     = absolute;
-			x4x_Read_Add( clock, cast(uint8_t)evnt.unit_index, cast(uint8_t)evnt.event_kind, value );
+			x4x_Read_Add( clock, cast(ubyte)evnt.unit_index, cast(ubyte)evnt.event_kind, value );
 			if( bTailAbsolute && Evelist_Kind_IsTail( evnt.event_kind ) ) absolute += value;
 		}
 		if( e != evnt.event_num ) return pxtnERR.pxtnERR_desc_broken;
@@ -907,7 +906,7 @@ public:
 
 		return pxtnERR.pxtnOK;
 	}
-	pxtnERR io_Read_x4x_EventNum( pxtnDescriptor *p_doc, int32_t* p_num ) const
+	pxtnERR io_Read_x4x_EventNum( pxtnDescriptor *p_doc, int* p_num ) const
 	{
 		if( !p_doc || !p_num ) return pxtnERR.pxtnERR_param;
 
@@ -922,7 +921,7 @@ public:
 		// support only 2
 		if( evnt.data_num != 2 ) return pxtnERR.pxtnERR_fmt_unknown;
 
-		for( e = 0; e < cast(int32_t)evnt.event_num; e++ )
+		for( e = 0; e < cast(int)evnt.event_num; e++ )
 		{
 			if( !p_doc.v_r( &work ) ) break;
 			if( !p_doc.v_r( &work ) ) break;
@@ -935,4 +934,4 @@ public:
 	}
 };
 
-bool Evelist_Kind_IsTail( int32_t kind );
+bool Evelist_Kind_IsTail( int kind );

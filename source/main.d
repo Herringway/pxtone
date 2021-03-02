@@ -32,7 +32,7 @@ static bool _load_ptcop( pxtnService* pxtn, const TCHAR* path_src, pxtnERR* p_px
 	pxtnDescriptor* desc = allocate!pxtnDescriptor();
 	pxtnERR        pxtn_err  = pxtnERR.pxtnERR_VOID;
 	FILE*          fp        = null;
-	int32_t        event_num =    0;
+	int        event_num =    0;
 
 	fp = _wfopen( path_src, "rb"w.ptr );
 	if( !( fp ) ) goto term;
@@ -79,7 +79,7 @@ bool initAudio(SDL_AudioCallback fun, ubyte channels, uint sampleRate, void* use
 }
 
 // Shift-JIS to UNICODE.
-static bool _sjis_to_wide( const char*    p_src, wchar** pp_dst, int32_t* p_dst_num  )
+static bool _sjis_to_wide( const char*    p_src, wchar** pp_dst, int* p_dst_num  )
 {
 	bool     b_ret     = false;
 	wchar* p_wide    = null ;
@@ -137,7 +137,7 @@ int main(string[] args)
 
 	// PREPARATION PLAYING MUSIC.
 	{
-		int32_t smp_total = pxtn.moo_get_total_sample();
+		int smp_total = pxtn.moo_get_total_sample();
 
 		pxtnVOMITPREPARATION prep = {0};
 		prep.flags          |= pxtnVOMITPREPFLAG_loop;
@@ -155,7 +155,7 @@ int main(string[] args)
 		TCHAR[ 250 ]         text = 0;
 		TCHAR*        name_t      = null ;
 		const(TCHAR)*  p_name      = null ;
-		int32_t       buf_size    =   0  ;
+		int       buf_size    =   0  ;
 
 		if( _sjis_to_wide( pxtn.text.get_name_buf( &buf_size ), &name_t, null ) )
 		{

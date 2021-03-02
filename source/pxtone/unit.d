@@ -9,15 +9,14 @@ import pxtone.evelist;
 import pxtone.max;
 import pxtone.woice;
 
-import core.stdc.stdint;
 import core.stdc.string;
 
 // v1x (20byte) =================
 struct _x1x_UNIT
 {
 	char[ pxtnMAX_TUNEUNITNAME ]     name;
-	uint16_t type ;
-	uint16_t group;
+	ushort type ;
+	ushort group;
 }
 
 ///////////////////
@@ -26,8 +25,8 @@ struct _x1x_UNIT
 
 struct _x3x_UNIT
 {
-	uint16_t type ;
-	uint16_t group;
+	ushort type ;
+	ushort group;
 }
 
 struct pxtnUnit
@@ -36,20 +35,20 @@ private:
 	bool     _bOperated = true;
 	bool     _bPlayed = true;
 	char[  pxtnMAX_TUNEUNITNAME + 1 ]     _name_buf = "no name";
-	int32_t  _name_size = "no name".length;
+	int  _name_size = "no name".length;
 
 	//	TUNEUNITTONESTRUCT
-	int32_t  _key_now;
-	int32_t  _key_start;
-	int32_t  _key_margin;
-	int32_t  _portament_sample_pos;
-	int32_t  _portament_sample_num;
-	int32_t[ pxtnMAX_CHANNEL ]  _pan_vols;
-	int32_t[ pxtnMAX_CHANNEL ]  _pan_times;
-	int32_t[ pxtnBUFSIZE_TIMEPAN ][ pxtnMAX_CHANNEL ]  _pan_time_bufs;
-	int32_t  _v_VOLUME  ;
-	int32_t  _v_VELOCITY;
-	int32_t  _v_GROUPNO ;
+	int  _key_now;
+	int  _key_start;
+	int  _key_margin;
+	int  _portament_sample_pos;
+	int  _portament_sample_num;
+	int[ pxtnMAX_CHANNEL ]  _pan_vols;
+	int[ pxtnMAX_CHANNEL ]  _pan_times;
+	int[ pxtnBUFSIZE_TIMEPAN ][ pxtnMAX_CHANNEL ]  _pan_time_bufs;
+	int  _v_VOLUME  ;
+	int  _v_VELOCITY;
+	int  _v_GROUPNO ;
 	float    _v_TUNING  ;
 
 	const(pxtnWoice) *_p_woice;
@@ -67,7 +66,7 @@ public :
 		_portament_sample_num =                     0;
 		_portament_sample_pos =                     0;
 
-		for( int32_t i = 0; i < pxtnMAX_CHANNEL; i++ )
+		for( int i = 0; i < pxtnMAX_CHANNEL; i++ )
 		{
 			_pan_vols [ i ] = 64;
 			_pan_times[ i ] =  0;
@@ -76,10 +75,10 @@ public :
 
 	void Tone_Clear()
 	{
-		for( int32_t i = 0; i < pxtnMAX_CHANNEL; i++ ) memset( _pan_time_bufs[ i ].ptr, 0, int.sizeof * pxtnBUFSIZE_TIMEPAN );
+		for( int i = 0; i < pxtnMAX_CHANNEL; i++ ) memset( _pan_time_bufs[ i ].ptr, 0, int.sizeof * pxtnBUFSIZE_TIMEPAN );
 	}
 
-	void Tone_Reset_and_2prm( int32_t voice_idx, int32_t env_rls_clock, float offset_freq )
+	void Tone_Reset_and_2prm( int voice_idx, int env_rls_clock, float offset_freq )
 	{
 		pxtnVOICETONE* p_tone = &_vts[ voice_idx ];
 		p_tone.life_count    = 0;
@@ -93,7 +92,7 @@ public :
 	{
 		if( !_p_woice ) return;
 
-		for( int32_t v = 0; v < _p_woice.get_voice_num(); v++ )
+		for( int v = 0; v < _p_woice.get_voice_num(); v++ )
 		{
 			const pxtnVOICEINSTANCE *p_vi = _p_woice.get_instance( v );
 			pxtnVOICETONE           *p_vt = &_vts                 [ v ];
@@ -126,15 +125,15 @@ public :
 
 	void Tone_ZeroLives()
 	{
-		for( int32_t i = 0; i < pxtnMAX_CHANNEL; i++ ) _vts[ i ].life_count = 0;
+		for( int i = 0; i < pxtnMAX_CHANNEL; i++ ) _vts[ i ].life_count = 0;
 	}
-	void Tone_Key( int32_t  key )
+	void Tone_Key( int  key )
 	{
 		_key_start            = _key_now;
 		_key_margin           = key - _key_start;
 		_portament_sample_pos = 0;
 	}
-	void Tone_Pan_Volume( int32_t ch, int32_t  pan )
+	void Tone_Pan_Volume( int ch, int  pan )
 	{
 		_pan_vols[ 0 ] = 64;
 		_pan_vols[ 1 ] = 64;
@@ -145,7 +144,7 @@ public :
 		}
 	}
 
-	void Tone_Pan_Time( int32_t ch, int32_t  pan, int32_t sps )
+	void Tone_Pan_Time( int ch, int  pan, int sps )
 	{
 		_pan_times[ 0 ] = 0;
 		_pan_times[ 1 ] = 0;
@@ -165,37 +164,37 @@ public :
 		}
 	}
 
-	void Tone_Velocity ( int32_t val ){ _v_VELOCITY           = val; }
-	void Tone_Volume   ( int32_t val ){ _v_VOLUME             = val; }
-	void Tone_Portament( int32_t val ){ _portament_sample_num = val; }
-	void Tone_GroupNo  ( int32_t val ){ _v_GROUPNO            = val; }
+	void Tone_Velocity ( int val ){ _v_VELOCITY           = val; }
+	void Tone_Volume   ( int val ){ _v_VOLUME             = val; }
+	void Tone_Portament( int val ){ _portament_sample_num = val; }
+	void Tone_GroupNo  ( int val ){ _v_GROUPNO            = val; }
 	void Tone_Tuning   ( float   val ){ _v_TUNING             = val; }
 
 
-	void Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_pan_index, int32_t  smooth_smp )
+	void Tone_Sample( bool b_mute_by_unit, int ch_num, int  time_pan_index, int  smooth_smp )
 	{
 		if( !_p_woice ) return;
 
 		if( b_mute_by_unit && !_bPlayed )
 		{
-			for( int32_t ch = 0; ch < ch_num; ch++ ) _pan_time_bufs[ ch ][ time_pan_index ] = 0;
+			for( int ch = 0; ch < ch_num; ch++ ) _pan_time_bufs[ ch ][ time_pan_index ] = 0;
 			return;
 		}
 
-		for( int32_t  ch = 0; ch < pxtnMAX_CHANNEL; ch++ )
+		for( int  ch = 0; ch < pxtnMAX_CHANNEL; ch++ )
 		{
-			int32_t  time_pan_buf = 0;
+			int  time_pan_buf = 0;
 
-			for( int32_t v = 0; v < _p_woice.get_voice_num(); v++ )
+			for( int v = 0; v < _p_woice.get_voice_num(); v++ )
 			{
 				pxtnVOICETONE*           p_vt = &_vts                 [ v ];
 				const pxtnVOICEINSTANCE* p_vi = _p_woice.get_instance( v );
 
-				int32_t  work = 0;
+				int  work = 0;
 
 				if( p_vt.life_count > 0 )
 				{
-					int32_t pos = cast(int32_t)p_vt.smp_pos * 4 + ch * 2;
+					int pos = cast(int)p_vt.smp_pos * 4 + ch * 2;
 					work += *( cast(short*)&p_vi.p_smp_w[ pos ] );
 
 					if( ch_num == 1 )
@@ -221,9 +220,9 @@ public :
 			_pan_time_bufs[ ch ][ time_pan_index ] = time_pan_buf;
 		}
 	}
-	void Tone_Supple( int32_t  *group_smps, int32_t ch, int32_t  time_pan_index ) const
+	void Tone_Supple( int  *group_smps, int ch, int  time_pan_index ) const
 	{
-		int32_t  idx = ( time_pan_index - _pan_times[ ch ] ) & ( pxtnBUFSIZE_TIMEPAN - 1 );
+		int  idx = ( time_pan_index - _pan_times[ ch ] ) & ( pxtnBUFSIZE_TIMEPAN - 1 );
 		group_smps[ _v_GROUPNO ] += _pan_time_bufs[ ch ][ idx ];
 	}
 
@@ -235,7 +234,7 @@ public :
 			if( _portament_sample_pos < _portament_sample_num )
 			{
 				_portament_sample_pos++;
-				_key_now = cast(int32_t)( _key_start + cast(double)_key_margin * _portament_sample_pos / _portament_sample_num );
+				_key_now = cast(int)( _key_start + cast(double)_key_margin * _portament_sample_pos / _portament_sample_num );
 			}
 			else
 			{
@@ -254,7 +253,7 @@ public :
 	{
 		if( !_p_woice ) return;
 
-		for( int32_t v = 0; v < _p_woice.get_voice_num(); v++ )
+		for( int v = 0; v < _p_woice.get_voice_num(); v++ )
 		{
 			const pxtnVOICEINSTANCE* p_vi = _p_woice.get_instance( v );
 			pxtnVOICETONE*           p_vt = &_vts                 [ v ];
@@ -301,7 +300,7 @@ public :
 	const(pxtnWoice) *get_woice() const{ return _p_woice; }
 
 
-	bool set_name_buf( const(char) *name, int32_t buf_size )
+	bool set_name_buf( const(char) *name, int buf_size )
 	{
 		if( !name || buf_size < 0 || buf_size > pxtnMAX_TUNEUNITNAME ) return false;
 		memset( _name_buf.ptr, 0, _name_buf.sizeof );
@@ -310,7 +309,7 @@ public :
 		return true;
 	}
 
-	const(char)* get_name_buf( int32_t* p_buf_size ) const return
+	const(char)* get_name_buf( int* p_buf_size ) const return
 	{
 		if( p_buf_size ) *p_buf_size = _name_size;
 		return _name_buf.ptr;
@@ -318,7 +317,7 @@ public :
 
 	bool is_name_buf () const{ if( _name_size > 0 ) return true; return false; }
 
-	pxtnVOICETONE *get_tone( int32_t voice_idx ) return
+	pxtnVOICETONE *get_tone( int voice_idx ) return
 	{
 		return &_vts[ voice_idx ];
 	}
@@ -335,10 +334,10 @@ public :
 	bool get_operated() const{ return _bOperated; }
 	bool get_played  () const{ return _bPlayed  ; }
 
-	pxtnERR Read_v3x( pxtnDescriptor *p_doc, int32_t *p_group )
+	pxtnERR Read_v3x( pxtnDescriptor *p_doc, int *p_group )
 	{
 		_x3x_UNIT unit = {0};
-		int32_t   size =  0 ;
+		int   size =  0 ;
 
 		if( !p_doc.r( &size, 4,                   1 ) ) return pxtnERR.pxtnERR_desc_r;
 		if( !p_doc.r( &unit,  _x3x_UNIT.sizeof, 1 ) ) return pxtnERR.pxtnERR_desc_r;
@@ -349,10 +348,10 @@ public :
 
 		return pxtnERR.pxtnOK;
 	}
-	bool Read_v1x( pxtnDescriptor *p_doc, int32_t *p_group )
+	bool Read_v1x( pxtnDescriptor *p_doc, int *p_group )
 	{
 		_x1x_UNIT unit;
-		int32_t   size;
+		int   size;
 
 		if( !p_doc.r( &size, 4,                   1 ) ) return false;
 		if( !p_doc.r( &unit,  _x1x_UNIT.sizeof, 1 ) ) return false;

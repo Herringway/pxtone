@@ -10,16 +10,13 @@ import pxtone.pulse.oscillator;
 import pxtone.pulse.pcm;
 import pxtone.pulse.noise;
 
-import core.stdc.stdint;
-
-
 enum _BASIC_SPS = 44100.0;
 enum _BASIC_FREQUENCY = 100.0; // 100 Hz
 enum _SAMPLING_TOP = 32767; //  16 bit max
 enum _KEY_TOP = 0x3200; //  40 key
 
 enum _smp_num_rand = 44100;
-enum _smp_num = cast(int32_t)( _BASIC_SPS / _BASIC_FREQUENCY );
+enum _smp_num = cast(int)( _BASIC_SPS / _BASIC_FREQUENCY );
 
 
 enum _RANDOMTYPE
@@ -37,15 +34,15 @@ struct _OSCILLATOR
 	const(short)* p_smp     ;
 	bool         bReverse  ;
 	_RANDOMTYPE  ran_type  ;
-	int32_t      rdm_start ;
-	int32_t      rdm_margin;
-	int32_t      rdm_index ;
+	int      rdm_start ;
+	int      rdm_margin;
+	int      rdm_index ;
 }
 
 
 struct _POINT
 {
-	int32_t    smp;
+	int    smp;
 	double mag;
 }
 
@@ -54,11 +51,11 @@ struct _UNIT
 {
 	bool        bEnable;
 	double[ 2 ]      pan;
-	int32_t     enve_index;
+	int     enve_index;
 	double      enve_mag_start;
 	double      enve_mag_margin;
-	int32_t     enve_count;
-	int32_t     enve_num;
+	int     enve_count;
+	int     enve_num;
 	_POINT*     enves;
 
 	_OSCILLATOR main;
@@ -67,7 +64,7 @@ struct _UNIT
 }
 
 
-void _set_ocsillator( _OSCILLATOR *p_to, pxNOISEDESIGN_OSCILLATOR *p_from, int32_t sps, const(short) *p_tbl, const(short) *p_tbl_rand )
+void _set_ocsillator( _OSCILLATOR *p_to, pxNOISEDESIGN_OSCILLATOR *p_from, int sps, const(short) *p_tbl, const(short) *p_tbl_rand )
 {
 	const(short)*p;
 
@@ -89,7 +86,7 @@ void _set_ocsillator( _OSCILLATOR *p_to, pxNOISEDESIGN_OSCILLATOR *p_from, int32
 	p_to.bReverse   = p_from.b_rev;
 
 	p_to.rdm_start  = 0;
-	p_to.rdm_index  = cast(int32_t)( cast(double)(_smp_num_rand) * ( p_from.offset / 100 ) );
+	p_to.rdm_index  = cast(int)( cast(double)(_smp_num_rand) * ( p_from.offset / 100 ) );
 	p = p_tbl_rand;
 	p_to.rdm_margin = p[ p_to.rdm_index ];
 
@@ -120,7 +117,7 @@ struct pxtnPulse_NoiseBuilder
 private:
 	bool    _b_init;
 	short*[ pxWAVETYPE.pxWAVETYPE_num ]  _p_tables;
-	int32_t[2] _rand_buf;
+	int[2] _rand_buf;
 
 	void  _random_reset()
 	{
@@ -130,7 +127,7 @@ private:
 
 	short _random_get()
 	{
-		int32_t  w1, w2;
+		int  w1, w2;
 		char *p1;
 		char *p2;
 
@@ -152,18 +149,18 @@ public :
 	{
 		_b_init = false;
 		SAFE_DELETE(_freq);
-		for( int32_t i = 0; i < pxWAVETYPE.pxWAVETYPE_num; i++ ) pxtnMem_free( cast(void **)&_p_tables[ i ] );
+		for( int i = 0; i < pxWAVETYPE.pxWAVETYPE_num; i++ ) pxtnMem_free( cast(void **)&_p_tables[ i ] );
 	}
 
 
 	// prepare tables. (110Hz)
 	bool Init()
 	{
-		int32_t    s;
+		int    s;
 		short  *p;
 		double work;
 
-		int32_t    a;
+		int    a;
 		short  v;
 
 		pxtnPulse_Oscillator osci;
@@ -319,20 +316,20 @@ public :
 		return _b_init;
 	}
 
-	pxtnPulse_PCM *BuildNoise( pxtnPulse_Noise *p_noise, int32_t ch, int32_t sps, int32_t bps ) const
+	pxtnPulse_PCM *BuildNoise( pxtnPulse_Noise *p_noise, int ch, int sps, int bps ) const
 	{
 		if( !_b_init ) return null;
 
 		bool           b_ret    = false;
-		int32_t        offset   =     0;
+		int        offset   =     0;
 		double         work     =     0;
 		double         vol      =     0;
 		double         fre      =     0;
 		double         store    =     0;
-		int32_t        byte4    =     0;
-		int32_t        unit_num =     0;
-		uint8_t*       p        = null ;
-		int32_t        smp_num  =     0;
+		int        byte4    =     0;
+		int        unit_num =     0;
+		ubyte*       p        = null ;
+		int        smp_num  =     0;
 
 		_UNIT*         units    = null ;
 		pxtnPulse_PCM* p_pcm    = null ;
@@ -343,7 +340,7 @@ public :
 
 		if( !pxtnMem_zero_alloc( cast(void**)&units, _UNIT.sizeof * unit_num ) ) goto End;
 
-		for( int32_t u = 0; u < unit_num; u++ )
+		for( int u = 0; u < unit_num; u++ )
 		{
 			_UNIT *pU = &units[ u ];
 
@@ -370,7 +367,7 @@ public :
 			if( !pxtnMem_zero_alloc( cast(void**)&pU.enves, _POINT.sizeof * pU.enve_num ) ) goto End;
 
 			// envelope
-			for( int32_t e = 0; e < p_du.enve_num; e++ )
+			for( int e = 0; e < p_du.enve_num; e++ )
 			{
 				pU.enves[ e ].smp =   sps * p_du.enves[ e ].x / 1000;
 				pU.enves[ e ].mag = cast(double)p_du.enves[ e ].y /  100;
@@ -392,18 +389,18 @@ public :
 			_set_ocsillator( &pU.volu, &p_du.volu, sps, _p_tables[ p_du.volu.type ], _p_tables[ pxWAVETYPE.pxWAVETYPE_Random ] );
 		}
 
-		smp_num = cast(int32_t)( cast(double)p_noise.get_smp_num_44k() / ( 44100.0 / sps ) );
+		smp_num = cast(int)( cast(double)p_noise.get_smp_num_44k() / ( 44100.0 / sps ) );
 
 		p_pcm = allocate!pxtnPulse_PCM();
 		if( p_pcm.Create( ch, sps, bps, smp_num ) != pxtnERR.pxtnOK ) goto End;
 		p = cast(ubyte*)p_pcm.get_p_buf_variable();
 
-		for( int32_t s = 0; s < smp_num; s++ )
+		for( int s = 0; s < smp_num; s++ )
 		{
-			for( int32_t c = 0; c < ch; c++ )
+			for( int c = 0; c < ch; c++ )
 			{
 				store = 0;
-				for( int32_t u = 0; u < unit_num; u++ )
+				for( int u = 0; u < unit_num; u++ )
 				{
 					_UNIT *pU = &units[ u ];
 
@@ -416,12 +413,12 @@ public :
 						switch( po.ran_type )
 						{
 						case _RANDOMTYPE._RANDOM_None:
-							offset =            cast(int32_t)po.offset    ;
+							offset =            cast(int)po.offset    ;
 							if( offset >= 0  ) work = po.p_smp[ offset ];
 							else               work = 0;
 							break;
 						case _RANDOMTYPE._RANDOM_Saw:
-							if( po.offset >= 0 ) work = po.rdm_start + po.rdm_margin * cast(int32_t)po.offset / _smp_num;
+							if( po.offset >= 0 ) work = po.rdm_start + po.rdm_margin * cast(int)po.offset / _smp_num;
 							else                  work = 0;
 							break;
 						case _RANDOMTYPE._RANDOM_Rect:
@@ -438,11 +435,11 @@ public :
 						switch( po.ran_type )
 						{
 						case _RANDOMTYPE._RANDOM_None:
-							offset = cast(int32_t   )po.offset;
+							offset = cast(int   )po.offset;
 							vol    = cast(double)po.p_smp[ offset ];
 							break;
 						case _RANDOMTYPE._RANDOM_Saw:
-							vol = po.rdm_start + po.rdm_margin * cast(int32_t)po.offset / _smp_num;
+							vol = po.rdm_start + po.rdm_margin * cast(int)po.offset / _smp_num;
 							break;
 						case _RANDOMTYPE._RANDOM_Rect:
 							vol = po.rdm_start;
@@ -464,7 +461,7 @@ public :
 					}
 				}
 
-				byte4 = cast(int32_t)store;
+				byte4 = cast(int)store;
 				if( byte4 >  _SAMPLING_TOP ) byte4 =  _SAMPLING_TOP;
 				if( byte4 < -_SAMPLING_TOP ) byte4 = -_SAMPLING_TOP;
 				if( bps ==  8 ){ *           p   = cast(ubyte)( ( byte4 >> 8 ) + 128 ); p += 1; } //  8bit
@@ -472,7 +469,7 @@ public :
 			}
 
 			// incriment
-			for( int32_t u = 0; u < unit_num; u++ )
+			for( int u = 0; u < unit_num; u++ )
 			{
 				_UNIT *pU = &units[ u ];
 
@@ -483,11 +480,11 @@ public :
 					switch( po.ran_type )
 					{
 					case _RANDOMTYPE._RANDOM_None:
-						offset = cast(int32_t)po.offset    ;
+						offset = cast(int)po.offset    ;
 						fre = _KEY_TOP * po.p_smp[ offset ] / _SAMPLING_TOP;
 						break;
 					case _RANDOMTYPE._RANDOM_Saw:
-						fre = po.rdm_start + po.rdm_margin * cast(int32_t) po.offset / _smp_num;
+						fre = po.rdm_start + po.rdm_margin * cast(int) po.offset / _smp_num;
 						break;
 					case _RANDOMTYPE._RANDOM_Rect:
 						fre = po.rdm_start;
@@ -498,7 +495,7 @@ public :
 					if( po.bReverse ) fre *= -1;
 					fre *= po.volume;
 
-					_incriment( &pU.main, pU.main.incriment * _freq.Get( cast(int32_t)fre ), _p_tables[ pxWAVETYPE.pxWAVETYPE_Random ] );
+					_incriment( &pU.main, pU.main.incriment * _freq.Get( cast(int)fre ), _p_tables[ pxWAVETYPE.pxWAVETYPE_Random ] );
 					_incriment( &pU.freq, pU.freq.incriment,                          _p_tables[ pxWAVETYPE.pxWAVETYPE_Random ] );
 					_incriment( &pU.volu, pU.volu.incriment,                          _p_tables[ pxWAVETYPE.pxWAVETYPE_Random ] );
 
