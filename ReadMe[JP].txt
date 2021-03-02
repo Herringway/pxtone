@@ -1,93 +1,93 @@
 /////////////////////////////////////////////////
 //                                             //
-// pxtone play sample (�o�[�W���� '17/01/01)   //
+// pxtone play sample (バージョン '17/01/01)   //
 //                                             //
 /////////////////////////////////////////////////
 
-������͉��H��
+＜これは何？＞
 
-    �s�X�g���R���[�W���i�s�X�R���j�ō�����ȃt�@�C����
-    Windows �ōĐ����邾���̃T���v���\�[�X�R�[�h�ł��B
+    ピストンコラージュ（ピスコラ）で作った曲ファイルを
+    Windows で再生するだけのサンプルソースコードです。
 
-��pxtone��
+＜pxtone＞
 
-    �s�X�R���ō쐬�����ȃf�[�^����"�g�`�f�[�^"����邱�Ƃ��ł���B
-    ����"�g�`�f�[�^"�� wav�t�@�C���Ƃ��ĕۑ�������A�����o�b�t�@�֏o�͂��ăQ�[���Ȃǂ�
-    BGM�ɂ�����ł��܂��B
+    ピスコラで作成した曲データから"波形データ"を作ることができる。
+    この"波形データ"を wavファイルとして保存したり、音声バッファへ出力してゲームなどの
+    BGMにしたりできます。
 
-    ptNoise �ō�鉹���t�@�C�����Q�[���̌��ʉ��Ƃ��ė��p���邱�Ƃ��ł��܂����A
-    ���̃T���v���ł͎g�p���Ă��܂���B
+    ptNoise で作る音声ファイルをゲームの効果音として利用することもできますが、
+    このサンプルでは使用していません。
 
-���\���m����
+＜予備知識＞
 
-    XAudio2   : Windows �ŉ������Đ�����̂Ɏg�p����API�B
-                XAudio2 �𗘗p����ɂ� DirectX SDK ���K�v�B
+    XAudio2   : Windows で音声を再生するのに使用するAPI。
+                XAudio2 を利用するには DirectX SDK が必要。
 
-    Ogg Vorbis: Xiph.org���J�������t���[�̉����t�@�C���t�H�[�}�b�g�B
-                �����t�@�C���� ogg �𗘗p���Ă���Ȃ��Đ�����ɂ͂��ꂪ�K�v�B
-                Xiph.org �œ���ł���B(ogg���g��Ȃ��ꍇ�͕s�v)
+    Ogg Vorbis: Xiph.orgが開発したフリーの音声ファイルフォーマット。
+                音声ファイルに ogg を利用している曲を再生するにはこれが必要。
+                Xiph.org で入手できる。(oggを使わない場合は不要)
 
-                Ogg Vorbis �𗘗p����ꍇ�� pxtn.h �ɂ��� "#define pxINCLUDE_OGGVORBIS 1" ��
-                �R�����g�A�E�g���O���Ă��������B
+                Ogg Vorbis を利用する場合は pxtn.h にある "#define pxINCLUDE_OGGVORBIS 1" の
+                コメントアウトを外してください。
 
-���s�X�R���̋Ȃ��Đ����闬�ꁄ
+＜ピスコラの曲を再生する流れ＞
 
-    ��� pxtnService�N���X �𗘗p���܂��B
+    主に pxtnServiceクラス を利用します。
 
-    �P�A������
-      ��
-    �Q�A�t�@�C���ǂݍ���
-      ��
-    �R�A�Đ�����
-      ��
-    �S�A�g�`�f�[�^�̐���
-      ��
-    �T�A�����o�b�t�@�֏o��
+    １、初期化
+      ↓
+    ２、ファイル読み込み
+      ↓
+    ３、再生準備
+      ↓
+    ４、波形データの生成
+      ↓
+    ５、音声バッファへ出力
 
-    BGM�Ƃ��čĐ�����ꍇ�́A��x�ɃT���v�����O����̂ł͂Ȃ�
-    �S�E�T���J��Ԃ��ď����������o�b�t�@�֏o�͂��܂��B
+    BGMとして再生する場合は、一度にサンプリングするのではなく
+    ４・５を繰り返して少しずつ音声バッファへ出力します。
 
-�����C�Z���X�I�Ȃ��Ɓ�
+＜ライセンス的なこと＞
 
-    �E�Đ��ɕK�v�� �\�[�X�R�[�h(pxtone�t�H���_��)�͖����Ŏg���܂��B���ς�OK�ł��B
-    �E���ɋ����Ƃ�K�v�͂���܂���B
-    �E���p�̖��L�ɂ��Ă͂��C�����܂��B
-    �E���p�������ŉ�����肪�������ꍇ�̐ӔC�͕������˂܂��B
+    ・再生に必要な ソースコード(pxtoneフォルダ内)は無償で使えます。改変もOKです。
+    ・特に許可をとる必要はありません。
+    ・利用の明記についてはお任せします。
+    ・利用が原因で何か問題があった場合の責任は負いかねます。
 
-��ogg/vorbis ����������_�E�����[�h���Ďg�����@��
+＜ogg/vorbis を公式からダウンロードして使う方法＞
 
-    http://www.vorbis.com/ �� FOR DEVELOPERS �� downloads ���
+    http://www.vorbis.com/ の FOR DEVELOPERS の downloads より
     libogg-???.zip
-    libvorbis-???.zip ���_�E�����[�h���ēW�J�B
+    libvorbis-???.zip をダウンロードして展開。
 
-    �����̃w�b�_���܂ރt�H���_���C���N���[�h�ɂ�ǉ��A
-    �ȉ��̃\�[�X�R�[�h���܂߂ăr���h���܂��B
-    �Elibogg\src\bitwise.c
-    �Elibogg\src\framing.c
-    �Elibvorbis\lib\analysis.c
-    �Elibvorbis\lib\bitrate.c
-    �Elibvorbis\lib\block.c
-    �Elibvorbis\lib\codebook.c
-    �Elibvorbis\lib\envelope.c
-    �Elibvorbis\lib\floor0.c
-    �Elibvorbis\lib\floor1.c
-    �Elibvorbis\lib\info.c
-    �Elibvorbis\lib\lookup.c
-    �Elibvorbis\lib\lpc.c
-    �Elibvorbis\lib\lsp.c
-    �Elibvorbis\lib\mapping0.c
-    �Elibvorbis\lib\mdct.c
-    �Elibvorbis\lib\psy.c
-    �Elibvorbis\lib\registry.c
-    �Elibvorbis\lib\res0.c
-    �Elibvorbis\lib\sharedbook.c
-    �Elibvorbis\lib\smallft.c
-    �Elibvorbis\lib\synthesis.c
-    �Elibvorbis\lib\vorbisenc.c
-    �Elibvorbis\lib\vorbisfile.c
-    �Elibvorbis\lib\window.c
-    
-    �ȉ��͏��O����B
-    �Elibvorbis\lib\barkmel.c
-    �Elibvorbis\lib\psytune.c
-    �Elibvorbis\lib\tone.c
+    それらのヘッダを含むフォルダをインクルードにを追加、
+    以下のソースコードを含めてビルドします。
+    ・libogg\src\bitwise.c
+    ・libogg\src\framing.c
+    ・libvorbis\lib\analysis.c
+    ・libvorbis\lib\bitrate.c
+    ・libvorbis\lib\block.c
+    ・libvorbis\lib\codebook.c
+    ・libvorbis\lib\envelope.c
+    ・libvorbis\lib\floor0.c
+    ・libvorbis\lib\floor1.c
+    ・libvorbis\lib\info.c
+    ・libvorbis\lib\lookup.c
+    ・libvorbis\lib\lpc.c
+    ・libvorbis\lib\lsp.c
+    ・libvorbis\lib\mapping0.c
+    ・libvorbis\lib\mdct.c
+    ・libvorbis\lib\psy.c
+    ・libvorbis\lib\registry.c
+    ・libvorbis\lib\res0.c
+    ・libvorbis\lib\sharedbook.c
+    ・libvorbis\lib\smallft.c
+    ・libvorbis\lib\synthesis.c
+    ・libvorbis\lib\vorbisenc.c
+    ・libvorbis\lib\vorbisfile.c
+    ・libvorbis\lib\window.c
+
+    以下は除外する。
+    ・libvorbis\lib\barkmel.c
+    ・libvorbis\lib\psytune.c
+    ・libvorbis\lib\tone.c
