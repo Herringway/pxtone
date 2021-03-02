@@ -33,6 +33,8 @@ enum PTV_DATAFLAG_WAVE = 0x00000001;
 enum PTV_DATAFLAG_ENVELOPE = 0x00000002;
 enum PTV_DATAFLAG_UNCOVERED = 0xfffffffc;
 
+__gshared const(char) *_code = "PTVOICE-";
+
 enum pxtnWOICETYPE
 {
 	pxtnWOICE_None = 0,
