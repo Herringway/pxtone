@@ -544,7 +544,7 @@ public :
 			if( !p_doc.v_w_asfile( p_vc.basic_key  , &total ) ) goto End;
 			if( !p_doc.v_w_asfile( p_vc.volume     , &total ) ) goto End;
 			if( !p_doc.v_w_asfile( p_vc.pan        , &total ) ) goto End;
-			memcpy( &work, &p_vc.tuning, 4.sizeof );
+			memcpy( &work, &p_vc.tuning, 4 );
 			if( !p_doc.v_w_asfile( work             , &total ) ) goto End;
 			if( !p_doc.v_w_asfile( p_vc.voice_flags, &total ) ) goto End;
 			if( !p_doc.v_w_asfile( p_vc.data_flags , &total ) ) goto End;
