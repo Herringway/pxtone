@@ -10,7 +10,7 @@
 		{
 			"name": "win32",
 			"targetType": "executable",
-			"libs": ["comdlg32", "comctl32", "shlwapi", "vcruntime", "user32", "ole32", "xaudio2"],
+			"libs": ["comdlg32", "comctl32", "shlwapi", "user32", "ole32", "xaudio2"],
 			"versions": ["win32"]
 		}
 	]
