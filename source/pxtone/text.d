@@ -68,10 +68,9 @@ public :
 		_comment_size = buf_size;
 		return true;
 	}
-	const(char)* get_comment_buf( int* p_buf_size ) const
+	const(char)[] get_comment_buf() const
 	{
-		if( p_buf_size ) *p_buf_size = _comment_size;
-		return _p_comment_buf;
+		return _p_comment_buf[0 .. _comment_size];
 	}
 	bool is_comment_buf() const{ if( _comment_size > 0 ) return true; return false; }
 
@@ -87,10 +86,9 @@ public :
 		_name_size = buf_size;
 		return true;
 	}
-	const(char)* get_name_buf( int* p_buf_size ) const
+	const(char)[] get_name_buf() const
 	{
-		if( p_buf_size ) *p_buf_size = _name_size;
-		return _p_name_buf;
+		return _p_name_buf[0 .. _name_size];
 	}
 	bool is_name_buf   () const{ if( _name_size    > 0 ) return true; return false; }
 
