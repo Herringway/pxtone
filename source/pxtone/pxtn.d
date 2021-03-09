@@ -15,11 +15,11 @@ struct pxtnPOINT
     int y;
 }
 
-void* allocate(size_t size) { return malloc(size); }
+void* allocate(size_t size) nothrow { return malloc(size); }
 T* allocate(T)() {
 	import std.conv : emplace;
 	auto result = cast(T*)malloc(T.sizeof);
 	emplace(result);
 	return result;
 }
-void SAFE_DELETE(void* p) { if( p ){ free( p ); p = null; } }
+void SAFE_DELETE(void* p) nothrow { if( p ){ free( p ); p = null; } }

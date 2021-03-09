@@ -104,9 +104,7 @@ term:
 
 extern(C) void _sampling_func( void *user, ubyte *buf, int bufSize) nothrow {
 	pxtnService* pxtn = cast(pxtnService*)user;
-	try {
-		pxtn.Moo( buf[0 .. bufSize] );
-	} catch (Exception) {}
+	pxtn.Moo( buf[0 .. bufSize] );
 }
 
 int main(string[] args)

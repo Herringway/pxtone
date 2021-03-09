@@ -41,7 +41,7 @@ private:
 
 public:
 
-	bool set_file_r  ( FILE *fd )
+	bool set_file_r  ( FILE *fd ) nothrow
 	{
 		if( !fd ) return false;
 
@@ -62,7 +62,7 @@ public:
 		_cur    =    0;
 		return true;
 	}
-	bool set_file_w  ( FILE *fd )
+	bool set_file_w  ( FILE *fd ) nothrow
 	{
 		if( !fd ) return false;
 
@@ -73,7 +73,7 @@ public:
 		_cur    =    0 ;
 		return true;
 	}
-	bool set_memory_r( void *p_mem, int size )
+	bool set_memory_r( void *p_mem, int size ) nothrow
 	{
 		if( !p_mem || size < 1 ) return false;
 		_p_desc = p_mem;
@@ -83,7 +83,7 @@ public:
 		_cur    =     0;
 		return true;
 	}
-	bool seek( pxtnSEEK mode, int val )
+	bool seek( pxtnSEEK mode, int val ) nothrow
 	{
 		if( _b_file )
 		{
@@ -115,7 +115,7 @@ public:
 		return true;
 	}
 
-	bool w_asfile( const(void) *p, int size, int num )
+	bool w_asfile( const(void) *p, int size, int num ) nothrow
 	{
 		bool b_ret = false;
 
@@ -129,7 +129,7 @@ public:
 		return b_ret;
 	}
 
-	bool r(       void *p, int size, int num )
+	bool r(       void *p, int size, int num ) nothrow
 	{
 		if( !_p_desc ) return false;
 		if( !_b_read ) return false;
@@ -156,7 +156,7 @@ public:
 	}
 
 	// ..uint
-	int  v_w_asfile( int val, int *p_add )
+	int  v_w_asfile( int val, int *p_add ) nothrow
 	{
 		if( !_p_desc ) return 0;
 		if( !_b_file ) return 0;
@@ -225,7 +225,7 @@ public:
 		//return false;
 	}
 	// 可変長読み込み（int  までを保証）
-	bool v_r  ( int *p  )
+	bool v_r  ( int *p  ) nothrow
 	{
 		if( !_p_desc ) return false;
 		if( !_b_read ) return false;
@@ -276,10 +276,10 @@ public:
 		return true;
 	}
 
-	int get_size_bytes() const { return _size; }
+	int get_size_bytes() const nothrow { return _size; }
 };
 
-int  pxtnDescriptor_v_chk( int val )
+int  pxtnDescriptor_v_chk( int val ) nothrow
 {
 	uint  us;
 

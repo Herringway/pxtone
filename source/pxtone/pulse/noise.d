@@ -64,7 +64,7 @@ enum NOISEDESIGNLIMIT_OSC_FREQUENCY = 44100.0f;
 enum NOISEDESIGNLIMIT_OSC_VOLUME = 200.0f;
 enum NOISEDESIGNLIMIT_OSC_OFFSET = 100.0f;
 
-static void _FixUnit( pxNOISEDESIGN_OSCILLATOR *p_osc )
+static void _FixUnit( pxNOISEDESIGN_OSCILLATOR *p_osc ) nothrow
 {
 	if( p_osc.type   >= pxWAVETYPE.pxWAVETYPE_num                 ) p_osc.type   = pxWAVETYPE.pxWAVETYPE_None;
 	if( p_osc.freq   >  NOISEDESIGNLIMIT_OSC_FREQUENCY ) p_osc.freq   = NOISEDESIGNLIMIT_OSC_FREQUENCY;
@@ -95,7 +95,7 @@ __gshared const(char)*_code = "PTNOISE-";
 //                    _ver =  20051028 ; -v.0.9.2.3
 __gshared const uint _ver =  20120418 ; // 16 wave types.
 
-static bool _WriteOscillator( const(pxNOISEDESIGN_OSCILLATOR) *p_osc, pxtnDescriptor *p_doc, int *p_add )
+static bool _WriteOscillator( const(pxNOISEDESIGN_OSCILLATOR) *p_osc, pxtnDescriptor *p_doc, int *p_add ) nothrow
 {
 	int work;
 	work = cast(int) p_osc.type        ; if( !p_doc.v_w_asfile( work, p_add ) ) return false;
@@ -106,7 +106,7 @@ static bool _WriteOscillator( const(pxNOISEDESIGN_OSCILLATOR) *p_osc, pxtnDescri
 	return true;
 }
 
-static pxtnERR _ReadOscillator( pxNOISEDESIGN_OSCILLATOR *p_osc, pxtnDescriptor *p_doc )
+static pxtnERR _ReadOscillator( pxNOISEDESIGN_OSCILLATOR *p_osc, pxtnDescriptor *p_doc ) nothrow
 {
 	int work;
 	if( !p_doc.v_r( &work )          ) return pxtnERR.pxtnERR_desc_r     ; p_osc.type     = cast(pxWAVETYPE)work;
@@ -119,7 +119,7 @@ static pxtnERR _ReadOscillator( pxNOISEDESIGN_OSCILLATOR *p_osc, pxtnDescriptor 
 	return pxtnERR.pxtnOK;
 }
 
-static uint _MakeFlags( const(pxNOISEDESIGN_UNIT) *pU )
+static uint _MakeFlags( const(pxNOISEDESIGN_UNIT) *pU ) nothrow
 {
 	uint flags = 0;
 	flags |= NOISEEDITFLAG_ENVELOPE;
@@ -134,7 +134,7 @@ static uint _MakeFlags( const(pxNOISEDESIGN_UNIT) *pU )
 
 
 
-int _CompareOsci( const(pxNOISEDESIGN_OSCILLATOR) *p_osc1, const(pxNOISEDESIGN_OSCILLATOR) *p_osc2 )
+int _CompareOsci( const(pxNOISEDESIGN_OSCILLATOR) *p_osc1, const(pxNOISEDESIGN_OSCILLATOR) *p_osc2 ) nothrow
 {
 	if( p_osc1.type   != p_osc2.type   ) return 1;
 	if( p_osc1.freq   != p_osc2.freq   ) return 1;
@@ -153,12 +153,12 @@ private:
 	pxNOISEDESIGN_UNIT* _units      ;
 
 public:
-	~this()
+	~this() nothrow
 	{
 		Release();
 	}
 
-	bool write( pxtnDescriptor *p_doc, int *p_add ) const
+	bool write( pxtnDescriptor *p_doc, int *p_add ) const nothrow
 	{
 		bool  b_ret = false;
 		int   u, e, seek, num_seek, flags;
@@ -222,7 +222,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR read( pxtnDescriptor *p_doc )
+	pxtnERR read( pxtnDescriptor *p_doc ) nothrow
 	{
 		pxtnERR  res       = pxtnERR.pxtnERR_VOID;
 		uint flags     =            0;
@@ -287,7 +287,7 @@ public:
 		return res;
 	}
 
-	void Release()
+	void Release() nothrow
 	{
 		if( _units )
 		{
@@ -299,7 +299,7 @@ public:
 			_unit_num = 0;
 		}
 	}
-	bool Allocate( int unit_num, int envelope_num )
+	bool Allocate( int unit_num, int envelope_num ) nothrow
 	{
 		bool b_ret = false;
 
@@ -321,7 +321,7 @@ public:
 
 		return b_ret;
 	}
-	bool Copy( pxtnPulse_Noise *p_dst ) const
+	bool Copy( pxtnPulse_Noise *p_dst ) const nothrow
 	{
 		if( !p_dst ) return false;
 
@@ -354,7 +354,7 @@ public:
 
 		return b_ret;
 	}
-	int Compare     ( const(pxtnPulse_Noise) *p_src ) const
+	int Compare     ( const(pxtnPulse_Noise) *p_src ) const nothrow
 	{
 		if( !p_src ) return -1;
 
@@ -379,7 +379,7 @@ public:
 		return 0;
 	}
 
-	void Fix()
+	void Fix() nothrow
 	{
 		pxNOISEDESIGN_UNIT *p_unit;
 		int i, e;
@@ -406,26 +406,26 @@ public:
 			}
 		}
 	}
-	void set_smp_num_44k( int num )
+	void set_smp_num_44k( int num ) nothrow
 	{
 		_smp_num_44k = num;
 	}
 
-	int get_unit_num() const
+	int get_unit_num() const nothrow
 	{
 		return _unit_num;
 	}
 
-	int get_smp_num_44k() const
+	int get_smp_num_44k() const nothrow
 	{
 		return _smp_num_44k;
 	}
 
-	float get_sec() const
+	float get_sec() const nothrow
 	{
 		return cast(float)_smp_num_44k / 44100;
 	}
-	pxNOISEDESIGN_UNIT *get_unit( int u )
+	pxNOISEDESIGN_UNIT *get_unit( int u ) nothrow
 	{
 		if( !_units || u < 0 || u >= _unit_num ) return null;
 		return &_units[ u ];

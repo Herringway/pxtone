@@ -14,7 +14,7 @@ private:
 	int   _sample_num = 0;
 
 public:
-	void ReadyGetSample( pxtnPOINT *p_point, int point_num, int volume, int sample_num, int point_reso )
+	void ReadyGetSample( pxtnPOINT *p_point, int point_num, int volume, int sample_num, int point_reso ) nothrow
 	{
 		_volume      = volume;
 		_p_point     = p_point;
@@ -23,7 +23,7 @@ public:
 		_point_reso  = point_reso;
 	}
 
-	double GetOneSample_Overtone( int index )
+	double GetOneSample_Overtone( int index ) nothrow
 	{
 		int    o;
 		double work_double;
@@ -41,7 +41,7 @@ public:
 		return work_double;
 	}
 
-	double GetOneSample_Coodinate( int index )
+	double GetOneSample_Coodinate( int index ) nothrow
 	{
 		int  i;
 		int  c;

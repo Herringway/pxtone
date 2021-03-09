@@ -188,7 +188,7 @@ struct pxtnVOMITPREPARATION
 }
 
 
-alias pxtnSampledCallback = bool function( void* user, const(pxtnService)* pxtn );
+alias pxtnSampledCallback = bool function( void* user, const(pxtnService)* pxtn ) nothrow;
 
 struct pxtnService
 {
@@ -845,7 +845,7 @@ private:
 
 		return b_ret;
 	}
-	bool _moo_release()
+	bool _moo_release() nothrow
 	{
 		if( !_moo_b_init ) return false;
 		_moo_b_init = false;
@@ -859,7 +859,7 @@ private:
 	// Units   ////////////////////////////////////
 	////////////////////////////////////////////////
 
-	bool _moo_ResetVoiceOn( pxtnUnit *p_u, int  w ) const
+	bool _moo_ResetVoiceOn( pxtnUnit *p_u, int  w ) const nothrow
 	{
 		if( !_moo_b_init ) return false;
 
@@ -891,7 +891,7 @@ private:
 	}
 
 
-	bool _moo_InitUnitTone()
+	bool _moo_InitUnitTone() nothrow
 	{
 		if( !_moo_b_init ) return false;
 		for( int u = 0; u < _unit_num; u++ )
@@ -904,7 +904,7 @@ private:
 	}
 
 
-	bool _moo_PXTONE_SAMPLE( void *p_data )
+	bool _moo_PXTONE_SAMPLE( void *p_data ) nothrow
 	{
 		if( !_moo_b_init ) return false;
 
@@ -1421,16 +1421,16 @@ public :
 	// Woice..
 	// ---------------------------
 
-	int  Woice_Num() const{ return _b_init ? _woice_num : 0; }
-	int  Woice_Max() const{ return _b_init ? _woice_max : 0; }
+	int  Woice_Num() const nothrow { return _b_init ? _woice_num : 0; }
+	int  Woice_Max() const nothrow { return _b_init ? _woice_max : 0; }
 
-	const(pxtnWoice) *Woice_Get( int idx ) const
+	const(pxtnWoice) *Woice_Get( int idx ) const nothrow
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _woice_num ) return null;
 		return _woices[ idx ];
 	}
-	pxtnWoice* Woice_Get_variable( int idx )
+	pxtnWoice* Woice_Get_variable( int idx ) nothrow
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _woice_num ) return null;
@@ -1498,13 +1498,13 @@ public :
 	int  Unit_Num() const{ return _b_init ? _unit_num : 0; }
 	int  Unit_Max() const{ return _b_init ? _unit_max : 0; }
 
-	const(pxtnUnit) *Unit_Get( int idx ) const
+	const(pxtnUnit) *Unit_Get( int idx ) const nothrow
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _unit_num ) return null;
 		return _units[ idx ];
 	}
-	pxtnUnit       *Unit_Get_variable( int idx )
+	pxtnUnit       *Unit_Get_variable( int idx ) nothrow
 	{
 		if( !_b_init ) return null;
 		if( idx < 0 || idx >= _unit_num ) return null;
@@ -1765,7 +1765,7 @@ public :
 	//
 	////////////////////
 
-	bool Moo( void* p_buf, int  size )
+	bool Moo( ubyte[] p_buf ) nothrow
 	{
 		if( !_moo_b_init       ) return false;
 		if( !_moo_b_valid_data ) return false;
@@ -1775,22 +1775,22 @@ public :
 
 		int  smp_w = 0;
 
-		if( size % _dst_byte_per_smp ) return false;
+		if( p_buf.length % _dst_byte_per_smp ) return false;
 
-		int  smp_num = size / _dst_byte_per_smp;
+		int  smp_num = cast(int)(p_buf.length / _dst_byte_per_smp);
 
 		{
-			short  *p16 = cast(short*)p_buf;
+			short[]  p16 = cast(short[])p_buf;
 			short[ 2 ]  sample;
 
 			for( smp_w = 0; smp_w < smp_num; smp_w++ )
 			{
 				if( !_moo_PXTONE_SAMPLE( sample.ptr ) ){ _moo_b_end_vomit = true; break; }
-				for( int ch = 0; ch < _dst_ch_num; ch++, p16++ ) *p16 = sample[ ch ];
+				for( int ch = 0; ch < _dst_ch_num; ch++, p16 = p16[1 .. $] ) p16[0] = sample[ ch ];
 			}
 			for( ;          smp_w < smp_num; smp_w++ )
 			{
-				for( int ch = 0; ch < _dst_ch_num; ch++, p16++ ) *p16 = 0;
+				for( int ch = 0; ch < _dst_ch_num; ch++, p16 = p16[1 .. $] ) p16[0] = 0;
 			}
 		}
 

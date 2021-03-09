@@ -123,7 +123,7 @@ struct pxtnVOICETONE
 
 
 
-static void _Voice_Release( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi )
+private void _Voice_Release( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi ) nothrow
 {
 	if( p_vc )
 	{
@@ -144,7 +144,7 @@ version(pxINCLUDE_OGGVORBIS) {
 }
 
 
-void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int  ch, int  sps, int  bps )
+void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int  ch, int  sps, int  bps ) nothrow
 {
 	double  work, osc;
 	int long_;
@@ -286,35 +286,35 @@ private:
 
 public :
 
-	~this()
+	~this() nothrow
 	{
 		Voice_Release();
 	}
 
-	int       get_voice_num    () const{ return _voice_num    ; }
-	float         get_x3x_tuning   () const{ return _x3x_tuning   ; }
-	int       get_x3x_basic_key() const{ return _x3x_basic_key; }
-	pxtnWOICETYPE get_type         () const{ return _type         ; }
+	int       get_voice_num    () const nothrow { return _voice_num    ; }
+	float         get_x3x_tuning   () const nothrow { return _x3x_tuning   ; }
+	int       get_x3x_basic_key() const nothrow { return _x3x_basic_key; }
+	pxtnWOICETYPE get_type         () const nothrow { return _type         ; }
 
-	const(pxtnVOICEUNIT)*get_voice( int idx ) const
+	const(pxtnVOICEUNIT)*get_voice( int idx ) const nothrow
 	{
 		if( idx < 0 || idx >= _voice_num ) return null;
 		return &_voices[ idx ];
 	}
-	pxtnVOICEUNIT *get_voice_variable( int idx )
+	pxtnVOICEUNIT *get_voice_variable( int idx ) nothrow
 	{
 		if( idx < 0 || idx >= _voice_num ) return null;
 		return &_voices[ idx ];
 	}
 
 
-	const(pxtnVOICEINSTANCE) *get_instance( int idx ) const
+	const(pxtnVOICEINSTANCE) *get_instance( int idx ) const nothrow
 	{
 		if( idx < 0 || idx >= _voice_num ) return null;
 		return &_voinsts[ idx ];
 	}
 
-	bool set_name_buf( const(char) *name, int buf_size )
+	bool set_name_buf( const(char) *name, int buf_size ) nothrow
 	{
 		if( !name || buf_size < 0 || buf_size > pxtnMAX_TUNEWOICENAME ) return false;
 		memset( _name_buf.ptr, 0, _name_buf.sizeof );
@@ -323,20 +323,20 @@ public :
 		return true;
 	}
 
-	const(char)* get_name_buf( int* p_buf_size ) const return
+	const(char)* get_name_buf( int* p_buf_size ) const return nothrow
 	{
 		if( p_buf_size ) *p_buf_size = _name_size;
 		return _name_buf.ptr;
 	}
 
-	bool is_name_buf () const
+	bool is_name_buf () const nothrow
 	{
 		if( _name_size > 0 ) return true;
 		return false;
 	}
 
 
-	bool Voice_Allocate( int voice_num )
+	bool Voice_Allocate( int voice_num ) nothrow
 	{
 		bool b_ret = false;
 
@@ -371,7 +371,7 @@ public :
 		return b_ret;
 	}
 
-	void Voice_Release ()
+	void Voice_Release () nothrow
 	{
 		for( int v = 0; v < _voice_num; v++ ) _Voice_Release( &_voices[ v ], &_voinsts[ v ] );
 		pxtnMem_free( cast(void**)&_voices  );
@@ -379,7 +379,7 @@ public :
 		_voice_num = 0;
 	}
 
-	bool Copy( pxtnWoice *p_dst ) const
+	bool Copy( pxtnWoice *p_dst ) const nothrow
 	{
 		bool           b_ret = false;
 		int        v, num;
@@ -438,7 +438,7 @@ public :
 		return b_ret;
 	}
 
-	void Slim()
+	void Slim() nothrow
 	{
 		for( int i = _voice_num - 1; i >= 0; i-- )
 		{
@@ -458,7 +458,7 @@ public :
 		}
 	}
 
-	pxtnERR read( pxtnDescriptor* desc, pxtnWOICETYPE type )
+	pxtnERR read( pxtnDescriptor* desc, pxtnWOICETYPE type ) nothrow
 	{
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
@@ -515,7 +515,7 @@ public :
 
 		return res;
 	}
-	bool PTV_Write( pxtnDescriptor *p_doc, int *p_total ) const
+	bool PTV_Write( pxtnDescriptor *p_doc, int *p_total ) const nothrow
 	{
 		bool           b_ret = false;
 		const(pxtnVOICEUNIT)* p_vc  = null ;
@@ -564,7 +564,7 @@ public :
 
 		return b_ret;
 	}
-	pxtnERR PTV_Read( pxtnDescriptor *p_doc )
+	pxtnERR PTV_Read( pxtnDescriptor *p_doc ) nothrow
 	{
 		pxtnERR        res       = pxtnERR.pxtnERR_VOID;
 		pxtnVOICEUNIT* p_vc      = null ;
@@ -616,7 +616,7 @@ public :
 		return res;
 	}
 
-	bool io_matePCM_w( pxtnDescriptor *p_doc ) const
+	bool io_matePCM_w( pxtnDescriptor *p_doc ) const nothrow
 	{
 		const pxtnPulse_PCM* p_pcm =  _voices[ 0 ].p_pcm;
 		const(pxtnVOICEUNIT)*       p_vc  = &_voices[ 0 ];
@@ -641,7 +641,7 @@ public :
 		return true;
 	}
 
-	pxtnERR io_matePCM_r( pxtnDescriptor *p_doc )
+	pxtnERR io_matePCM_r( pxtnDescriptor *p_doc ) nothrow
 	{
 		pxtnERR             res  = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PCM pcm  = {0};
@@ -677,7 +677,7 @@ public :
 		return res;
 	}
 
-	bool io_matePTN_w( pxtnDescriptor *p_doc ) const
+	bool io_matePTN_w( pxtnDescriptor *p_doc ) const nothrow
 	{
 		_MATERIALSTRUCT_PTN ptn ;
 		const(pxtnVOICEUNIT)*      p_vc;
@@ -706,7 +706,7 @@ public :
 	}
 
 
-	pxtnERR io_matePTN_r( pxtnDescriptor *p_doc )
+	pxtnERR io_matePTN_r( pxtnDescriptor *p_doc ) nothrow
 	{
 		pxtnERR             res  = pxtnERR.pxtnERR_VOID; 
 		_MATERIALSTRUCT_PTN ptn  = {0};
@@ -739,7 +739,7 @@ public :
 		if( res != pxtnERR.pxtnOK ) Voice_Release();
 		return res;
 	}
-	bool io_matePTV_w( pxtnDescriptor *p_doc ) const
+	bool io_matePTV_w( pxtnDescriptor *p_doc ) const nothrow
 	{
 		_MATERIALSTRUCT_PTV ptv;
 		int head_size = _MATERIALSTRUCT_PTV.sizeof + int.sizeof;
@@ -767,7 +767,7 @@ public :
 		return true;
 	}
 
-	pxtnERR io_matePTV_r( pxtnDescriptor *p_doc )
+	pxtnERR io_matePTV_r( pxtnDescriptor *p_doc ) nothrow
 	{
 		pxtnERR             res  = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PTV ptv  = {0};
@@ -787,7 +787,7 @@ public :
 		return res;
 	}
 version(pxINCLUDE_OGGVORBIS) {
-	bool io_mateOGGV_w( pxtnDescriptor *p_doc ) const
+	bool io_mateOGGV_w( pxtnDescriptor *p_doc ) const nothrow
 	{
 		if( !_voices ) return false;
 
@@ -810,7 +810,7 @@ version(pxINCLUDE_OGGVORBIS) {
 		return true;
 	}
 
-	pxtnERR io_mateOGGV_r( pxtnDescriptor *p_doc )
+	pxtnERR io_mateOGGV_r( pxtnDescriptor *p_doc ) nothrow
 	{
 		pxtnERR              res  = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_OGGV mate = {0};
@@ -845,7 +845,7 @@ version(pxINCLUDE_OGGVORBIS) {
 	}
 }
 
-	pxtnERR Tone_Ready_sample( const pxtnPulse_NoiseBuilder* ptn_bldr )
+	pxtnERR Tone_Ready_sample( const pxtnPulse_NoiseBuilder* ptn_bldr ) nothrow
 	{
 		pxtnERR            res   = pxtnERR.pxtnERR_VOID;
 		pxtnVOICEINSTANCE* p_vi  = null ;
@@ -940,7 +940,7 @@ version(pxINCLUDE_OGGVORBIS) {
 		return res;
 	}
 
-	pxtnERR Tone_Ready_envelope( int sps )
+	pxtnERR Tone_Ready_envelope( int sps ) nothrow
 	{
 		pxtnERR    res     = pxtnERR.pxtnERR_VOID;
 		int    e       =            0;
@@ -1024,7 +1024,7 @@ version(pxINCLUDE_OGGVORBIS) {
 
 		return res;
 	}
-	pxtnERR Tone_Ready( const pxtnPulse_NoiseBuilder* ptn_bldr, int sps )
+	pxtnERR Tone_Ready( const pxtnPulse_NoiseBuilder* ptn_bldr, int sps ) nothrow
 	{
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		res = Tone_Ready_sample  ( ptn_bldr ); if( res != pxtnERR.pxtnOK ) return res;

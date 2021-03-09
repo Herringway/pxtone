@@ -38,12 +38,12 @@ struct pxtnOverDrive {
 	void set_played( bool b ){ _b_played = b; }
 	bool switch_played(){ _b_played = _b_played ? false : true; return _b_played; }
 
-	void Tone_Ready()
+	void Tone_Ready() nothrow
 	{
 		_cut_16bit_top  = cast(int)( 32767 * ( 100 - _cut_f ) / 100 );
 	}
 
-	void Tone_Supple( int *group_smps ) const
+	void Tone_Supple( int *group_smps ) const nothrow
 	{
 		if( !_b_played ) return;
 		int work = group_smps[ _group ];
@@ -51,7 +51,7 @@ struct pxtnOverDrive {
 		else if( work < -_cut_16bit_top ) work =  -_cut_16bit_top;
 		group_smps[ _group ] = cast(int)( cast(float)work * _amp_f );
 	}
-	bool Write( pxtnDescriptor *p_doc ) const
+	bool Write( pxtnDescriptor *p_doc ) const nothrow
 	{
 		_OVERDRIVESTRUCT over;
 		int              size;

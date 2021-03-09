@@ -44,15 +44,15 @@ private:
 
 public :
 
-	~this()
+	~this() nothrow
 	{
 		Tone_Release();
 	}
 
-	DELAYUNIT get_unit ()const { return _unit ; }
-	int   get_group()const { return _group; }
-	float     get_rate ()const { return _rate ; }
-	float     get_freq ()const { return _freq ; }
+	DELAYUNIT get_unit () const nothrow { return _unit ; }
+	int   get_group() const nothrow { return _group; }
+	float     get_rate () const nothrow { return _rate ; }
+	float     get_freq () const nothrow { return _freq ; }
 
 	void      Set( DELAYUNIT unit, float freq, float rate, int group )
 	{
@@ -62,19 +62,19 @@ public :
 		_freq  = freq ;
 	}
 
-	bool get_played()const{ return _b_played; }
-	void set_played( bool b ){ _b_played = b; }
-	bool switch_played(){ _b_played = _b_played ? false : true; return _b_played; }
+	bool get_played() const nothrow{ return _b_played; }
+	void set_played( bool b ) nothrow { _b_played = b; }
+	bool switch_played() nothrow { _b_played = _b_played ? false : true; return _b_played; }
 
 
 
-	void Tone_Release()
+	void Tone_Release() nothrow
 	{
 		for( int i = 0; i < pxtnMAX_CHANNEL; i ++ ) pxtnMem_free( cast(void**)&_bufs[ i ] );
 		_smp_num = 0;
 	}
 
-	pxtnERR Tone_Ready( int beat_num, float beat_tempo, int sps )
+	pxtnERR Tone_Ready( int beat_num, float beat_tempo, int sps ) nothrow
 	{
 		Tone_Release();
 
@@ -107,7 +107,7 @@ public :
 		return res;
 	}
 
-	void Tone_Supple( int ch, int *group_smps )
+	void Tone_Supple( int ch, int *group_smps ) nothrow
 	{
 		if( !_smp_num ) return;
 		int a = _bufs[ ch ][ _offset ] * _rate_s32/ 100;
@@ -115,13 +115,13 @@ public :
 		_bufs[ ch ][ _offset ] =  group_smps[ _group ];
 	}
 
-	void Tone_Increment()
+	void Tone_Increment() nothrow
 	{
 		if( !_smp_num ) return;
 		if( ++_offset >= _smp_num ) _offset = 0;
 	}
 
-	void  Tone_Clear()
+	void  Tone_Clear() nothrow
 	{
 		if( !_smp_num ) return;
 		int def = 0; // ..
@@ -131,7 +131,7 @@ public :
 
 
 
-	bool Write( pxtnDescriptor *p_doc ) const
+	bool Write( pxtnDescriptor *p_doc ) const nothrow
 	{
 		_DELAYSTRUCT    dela;
 		int            size;
@@ -150,7 +150,7 @@ public :
 		return true;
 	}
 
-	pxtnERR Read( pxtnDescriptor *p_doc )
+	pxtnERR Read( pxtnDescriptor *p_doc ) nothrow
 	{
 		_DELAYSTRUCT dela = {0};
 		int      size =  0 ;

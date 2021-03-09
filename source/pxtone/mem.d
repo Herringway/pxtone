@@ -3,7 +3,7 @@
 import core.stdc.stdlib;
 import core.stdc.string;
 
-bool pxtnMem_zero_alloc( void** pp, size_t byte_size )
+bool pxtnMem_zero_alloc( void** pp, size_t byte_size ) nothrow
 {
 	*pp = malloc( byte_size );
 	if( !( *pp  ) ) return false;
@@ -11,14 +11,14 @@ bool pxtnMem_zero_alloc( void** pp, size_t byte_size )
 	return true;
 }
 
-bool pxtnMem_free( void** pp )
+bool pxtnMem_free( void** pp ) nothrow
 {
 	if( !pp || !*pp ) return false;
 	free( *pp ); *pp = null;
 	return true;
 }
 
-bool pxtnMem_zero( void*  p , size_t byte_size )
+bool pxtnMem_zero( void*  p , size_t byte_size ) nothrow
 {
 	(cast(ubyte*)p)[0 .. byte_size] = 0;
 	return true;

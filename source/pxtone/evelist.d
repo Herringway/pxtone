@@ -12,7 +12,7 @@ import core.stdc.string;
 // global
 ///////////////////////
 
-bool Evelist_Kind_IsTail( int kind )
+bool Evelist_Kind_IsTail( int kind ) nothrow
 {
 	if( kind == EVENTKIND_ON || kind == EVENTKIND_PORTAMENT ) return true;
 	return false;
@@ -68,7 +68,7 @@ struct EVERECORD
 	EVERECORD* next    ;
 }
 
-static int _DefaultKindValue( ubyte kind )
+static int _DefaultKindValue( ubyte kind ) nothrow
 {
 	switch( kind )
 	{
@@ -96,7 +96,7 @@ static int _DefaultKindValue( ubyte kind )
 	}
 	return 0;
 }
-static int _ComparePriority( ubyte kind1, ubyte kind2 )
+static int _ComparePriority( ubyte kind1, ubyte kind2 ) nothrow
 {
 	static const int[ EVENTKIND_NUM ] priority_table =
 	[
@@ -145,7 +145,7 @@ private:
 
 	EVERECORD* _p_x4x_rec;
 
-	void _rec_set( EVERECORD* p_rec, EVERECORD* prev, EVERECORD* next, int clock, ubyte unit_no, ubyte kind, int value )
+	void _rec_set( EVERECORD* p_rec, EVERECORD* prev, EVERECORD* next, int clock, ubyte unit_no, ubyte kind, int value ) nothrow
 	{
 		if( prev ) prev.next = p_rec;
 		else       _start     = p_rec;
@@ -158,7 +158,7 @@ private:
 		p_rec.unit_no = unit_no;
 		p_rec.value   = value  ;
 	}
-	void _rec_cut( EVERECORD* p_rec )
+	void _rec_cut( EVERECORD* p_rec ) nothrow
 	{
 		if( p_rec.prev ) p_rec.prev.next = p_rec.next;
 		else              _start            = p_rec.next;
@@ -168,26 +168,26 @@ private:
 
 public:
 
-	void Release()
+	void Release() nothrow
 	{
 		if( _eves ) free( _eves );
 		_eves              = null;
 		_start             = null;
 		_eve_allocated_num =    0;
 	}
-	void Clear()
+	void Clear() nothrow
 	{
 		if( _eves ) memset( _eves, 0, EVERECORD.sizeof * _eve_allocated_num );
 		_start   = null;
 	}
 
-	~this()
+	~this() nothrow
 	{
 		Release();
 	}
 
 
-	bool Allocate( int max_event_num )
+	bool Allocate( int max_event_num ) nothrow
 	{
 		Release();
 		_eves = cast(EVERECORD*)malloc( EVERECORD.sizeof * max_event_num );
@@ -197,13 +197,13 @@ public:
 		return true;
 	}
 
-	int  get_Num_Max() const
+	int  get_Num_Max() const nothrow
 	{
 		if( !_eves ) return 0;
 		return _eve_allocated_num;
 	}
 
-	int  get_Max_Clock() const
+	int  get_Max_Clock() const nothrow
 	{
 		int max_clock = 0;
 		int clock;
@@ -219,7 +219,7 @@ public:
 
 	}
 
-	int  get_Count() const
+	int  get_Count() const nothrow
 	{
 		if( !_eves || !_start ) return 0;
 
@@ -228,7 +228,7 @@ public:
 		return count;
 	}
 
-	int  get_Count( ubyte kind, int value ) const
+	int  get_Count( ubyte kind, int value ) const nothrow
 	{
 		if( !_eves ) return 0;
 
@@ -237,7 +237,7 @@ public:
 		return count;
 	}
 
-	int  get_Count( ubyte unit_no ) const
+	int  get_Count( ubyte unit_no ) const nothrow
 	{
 		if( !_eves ) return 0;
 
@@ -246,7 +246,7 @@ public:
 		return count;
 	}
 
-	int  get_Count( ubyte unit_no, ubyte kind ) const
+	int  get_Count( ubyte unit_no, ubyte kind ) const nothrow
 	{
 		if( !_eves ) return 0;
 
@@ -255,7 +255,7 @@ public:
 		return count;
 	}
 
-	int  get_Count( int clock1, int clock2, ubyte unit_no ) const
+	int  get_Count( int clock1, int clock2, ubyte unit_no ) const nothrow
 	{
 		if( !_eves ) return 0;
 
@@ -277,7 +277,7 @@ public:
 		}
 		return count;
 	}
-	int get_Value( int clock, ubyte unit_no, ubyte kind ) const
+	int get_Value( int clock, ubyte unit_no, ubyte kind ) const nothrow
 	{
 		if( !_eves ) return 0;
 
@@ -294,13 +294,13 @@ public:
 	}
 
 
-	const(EVERECORD)* get_Records() const
+	const(EVERECORD)* get_Records() const nothrow
 	{
 		if( !_eves ) return null;
 		return _start;
 	}
 
-	bool Record_Add_i( int clock, ubyte unit_no, ubyte kind, int value )
+	bool Record_Add_i( int clock, ubyte unit_no, ubyte kind, int value ) nothrow
 	{
 		if( !_eves ) return false;
 
@@ -374,7 +374,7 @@ public:
 
 		return true;
 	}
-	bool Record_Add_f( int clock, ubyte unit_no, ubyte kind, float value_f )
+	bool Record_Add_f( int clock, ubyte unit_no, ubyte kind, float value_f ) nothrow
 	{
 		int value = *( cast(int*)(&value_f) );
 		return Record_Add_i( clock, unit_no, kind, value );
@@ -384,7 +384,7 @@ public:
 	// linear
 	/////////////////////
 
-	bool Linear_Start()
+	bool Linear_Start() nothrow
 	{
 		if( !_eves ) return false;
 		Clear(); _linear = 0;
@@ -392,7 +392,7 @@ public:
 	}
 
 
-	void Linear_Add_i(  int clock, ubyte unit_no, ubyte kind, int value )
+	void Linear_Add_i(  int clock, ubyte unit_no, ubyte kind, int value ) nothrow
 	{
 		EVERECORD* p = &_eves[ _linear ];
 
@@ -404,13 +404,13 @@ public:
 		_linear++;
 	}
 
-	void Linear_Add_f( int clock, ubyte unit_no, ubyte kind, float value_f )
+	void Linear_Add_f( int clock, ubyte unit_no, ubyte kind, float value_f ) nothrow
 	{
 		int value = *( cast(int*)(&value_f) );
 		Linear_Add_i( clock, unit_no, kind, value );
 	}
 
-	void Linear_End( bool b_connect )
+	void Linear_End( bool b_connect ) nothrow
 	{
 		if( _eves[ 0 ].kind != EVENTKIND_null ) _start = &_eves[ 0 ];
 
@@ -425,7 +425,7 @@ public:
 		}
 	}
 
-	int Record_Clock_Shift( int clock, int shift, ubyte unit_no ) // can't be under 0.
+	int Record_Clock_Shift( int clock, int shift, ubyte unit_no ) nothrow // can't be under 0.
 	{
 		if( !_eves  ) return 0;
 		if( !_start ) return 0;
@@ -492,7 +492,7 @@ public:
 		}
 		return count;
 	}
-	int Record_Value_Set( int clock1, int clock2, ubyte unit_no, ubyte kind, int value )
+	int Record_Value_Set( int clock1, int clock2, ubyte unit_no, ubyte kind, int value ) nothrow
 	{
 		if( !_eves  ) return 0;
 
@@ -509,7 +509,7 @@ public:
 
 		return count;
 	}
-	int Record_Value_Change( int clock1, int clock2, ubyte unit_no, ubyte kind, int value )
+	int Record_Value_Change( int clock1, int clock2, ubyte unit_no, ubyte kind, int value ) nothrow
 	{
 		if( !_eves  ) return 0;
 
@@ -545,7 +545,7 @@ public:
 
 		return count;
 	}
-	int Record_Value_Omit( ubyte kind, int value )
+	int Record_Value_Omit( ubyte kind, int value ) nothrow
 	{
 		if( !_eves  ) return 0;
 
@@ -561,7 +561,7 @@ public:
 		}
 		return count;
 	}
-	int Record_Value_Replace( ubyte kind, int old_value, int new_value )
+	int Record_Value_Replace( ubyte kind, int old_value, int new_value ) nothrow
 	{
 		if( !_eves  ) return 0;
 
@@ -594,7 +594,7 @@ public:
 		return count;
 	}
 
-	int Record_Delete( int clock1, int clock2, ubyte unit_no, ubyte kind )
+	int Record_Delete( int clock1, int clock2, ubyte unit_no, ubyte kind ) nothrow
 	{
 		if( !_eves  ) return 0;
 
@@ -622,7 +622,7 @@ public:
 		return count;
 	}
 
-	int Record_Delete( int clock1, int clock2, ubyte unit_no )
+	int Record_Delete( int clock1, int clock2, ubyte unit_no ) nothrow
 	{
 		if( !_eves  ) return 0;
 
@@ -646,7 +646,7 @@ public:
 
 		return count;
 	}
-	int Record_UnitNo_Miss( ubyte unit_no ) // delete event has the unit-no
+	int Record_UnitNo_Miss( ubyte unit_no ) nothrow // delete event has the unit-no
 	{
 		if( !_eves  ) return 0;
 
@@ -659,7 +659,7 @@ public:
 		}
 		return count;
 	}
-	int Record_UnitNo_Set( ubyte unit_no ) // set the unit-no
+	int Record_UnitNo_Set( ubyte unit_no ) nothrow // set the unit-no
 	{
 		if( !_eves  ) return 0;
 
@@ -667,7 +667,7 @@ public:
 		for( EVERECORD* p = _start; p; p = p.next ){ p.unit_no = unit_no; count++; }
 		return count;
 	}
-	int Record_UnitNo_Replace( ubyte old_u, ubyte new_u ) // exchange unit
+	int Record_UnitNo_Replace( ubyte old_u, ubyte new_u ) nothrow // exchange unit
 	{
 		if( !_eves  ) return 0;
 
@@ -694,7 +694,7 @@ public:
 		return count;
 	}
 
-	int  BeatClockOperation( int rate )
+	int  BeatClockOperation( int rate ) nothrow
 	{
 		if( !_eves  ) return 0;
 
@@ -715,7 +715,7 @@ public:
 	// ------------
 
 
-	bool io_Write( pxtnDescriptor *p_doc, int rough ) const
+	bool io_Write( pxtnDescriptor *p_doc, int rough ) const nothrow
 	{
 		int eve_num        = get_Count();
 		int ralatived_size = 0;
@@ -759,7 +759,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_Read( pxtnDescriptor *p_doc )
+	pxtnERR io_Read( pxtnDescriptor *p_doc ) nothrow
 	{
 		int size     = 0;
 		int eve_num  = 0;
@@ -787,7 +787,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	int io_Read_EventNum( pxtnDescriptor *p_doc ) const
+	int io_Read_EventNum( pxtnDescriptor *p_doc ) const nothrow
 	{
 		int size    = 0;
 		int eve_num = 0;
@@ -814,7 +814,7 @@ public:
 		return eve_num;
 	}
 
-	bool x4x_Read_Start()
+	bool x4x_Read_Start() nothrow
 	{
 		if( !_eves ) return false;
 		Clear();
@@ -823,11 +823,11 @@ public:
 		return true;
 	}
 
-	void x4x_Read_NewKind()
+	void x4x_Read_NewKind() nothrow
 	{
 		_p_x4x_rec = null;
 	}
-	void x4x_Read_Add( int clock, ubyte unit_no, ubyte kind, int value )
+	void x4x_Read_Add( int clock, ubyte unit_no, ubyte kind, int value ) nothrow
 	{
 		EVERECORD* p_new  = null;
 		EVERECORD* p_prev = null;
@@ -874,7 +874,7 @@ public:
 	}
 
 	// write event.
-	pxtnERR io_Unit_Read_x4x_EVENT( pxtnDescriptor *p_doc, bool bTailAbsolute, bool bCheckRRR )
+	pxtnERR io_Unit_Read_x4x_EVENT( pxtnDescriptor *p_doc, bool bTailAbsolute, bool bCheckRRR ) nothrow
 	{
 		_x4x_EVENTSTRUCT evnt     ={0};
 		int          clock    = 0;
@@ -906,7 +906,7 @@ public:
 
 		return pxtnERR.pxtnOK;
 	}
-	pxtnERR io_Read_x4x_EventNum( pxtnDescriptor *p_doc, int* p_num ) const
+	pxtnERR io_Read_x4x_EventNum( pxtnDescriptor *p_doc, int* p_num ) const nothrow
 	{
 		if( !p_doc || !p_num ) return pxtnERR.pxtnERR_param;
 

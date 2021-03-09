@@ -11,7 +11,7 @@ import pxtone.woice;
 
 __gshared int _version  =  20060111; // support no-envelope
 
-bool _Write_Wave( pxtnDescriptor *p_doc, const(pxtnVOICEUNIT) *p_vc, int *p_total )
+bool _Write_Wave( pxtnDescriptor *p_doc, const(pxtnVOICEUNIT) *p_vc, int *p_total ) nothrow
 {
 	bool    b_ret = false;
 	int num, i, size;
@@ -71,7 +71,7 @@ End:
 	return b_ret;
 }
 
-bool _Write_Envelope( pxtnDescriptor *p_doc, const(pxtnVOICEUNIT) *p_vc, int *p_total )
+bool _Write_Envelope( pxtnDescriptor *p_doc, const(pxtnVOICEUNIT) *p_vc, int *p_total ) nothrow
 {
 	bool b_ret = false;
 	int num, i;
@@ -97,7 +97,7 @@ End:
 
 
 
-pxtnERR _Read_Wave( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc )
+pxtnERR _Read_Wave( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc ) nothrow
 {
 	int i, num;
 	byte  sc;
@@ -153,7 +153,7 @@ pxtnERR _Read_Wave( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc )
 	return pxtnERR.pxtnOK;
 }
 
-pxtnERR _Read_Envelope( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc )
+pxtnERR _Read_Envelope( pxtnDescriptor *p_doc, pxtnVOICEUNIT *p_vc ) nothrow
 {
 	pxtnERR res = pxtnERR.pxtnOK;
 	int  num, i;
