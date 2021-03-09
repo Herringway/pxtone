@@ -6,6 +6,10 @@ import pxtone;
 import core.stdc.stdlib;
 import core.stdc.string;
 
+import std.file;
+import std.format;
+import std.path;
+
 static const TCHAR* _app_name = "pxtone-play-sample"w.ptr;
 
 extern(C) FILE* _wfopen(const(wchar_t)*, const(wchar_t)*);
@@ -15,24 +19,20 @@ extern(C) int swprintf_s(wchar_t*,size_t,const(wchar_t) *,...);
 alias _stprintf_s = swprintf_s;
 
 enum _CHANNEL_NUM = 2;
-enum _SAMPLE_PER_SECOND = 96000;
+enum _SAMPLE_PER_SECOND = 48000;
 enum _BUFFER_PER_SEC = (0.3f);
 
 import std.experimental.logger;
 import std.string;
 import bindbc.sdl : SDL_AudioCallback, SDL_AudioDeviceID;
 
-static bool _load_ptcop( pxtnService* pxtn, const TCHAR* path_src, pxtnERR* p_pxtn_err )
+static bool _load_ptcop( pxtnService* pxtn, void[] data, pxtnERR* p_pxtn_err )
 {
 	bool           b_ret     = false;
 	pxtnDescriptor* desc = allocate!pxtnDescriptor();
 	pxtnERR        pxtn_err  = pxtnERR.pxtnERR_VOID;
-	FILE*          fp        = null;
-	int        event_num =    0;
 
-	fp = _wfopen( path_src, "rb"w.ptr );
-	if( !( fp ) ) goto term;
-	if( !desc.set_file_r( fp ) ) goto term;
+	if( !desc.set_memory_r( data.ptr, cast(int)data.length ) ) goto term;
 
 	pxtn_err = pxtn.read       ( desc ); if( pxtn_err != pxtnERR.pxtnOK ) goto term;
 	pxtn_err = pxtn.tones_ready(       ); if( pxtn_err != pxtnERR.pxtnOK ) goto term;
@@ -40,7 +40,6 @@ static bool _load_ptcop( pxtnService* pxtn, const TCHAR* path_src, pxtnERR* p_px
 	b_ret = true;
 term:
 
-	if( fp     ) fclose( fp );
 	if( !b_ret ) pxtn.evels.Release();
 
 	if( p_pxtn_err ) *p_pxtn_err = pxtn_err;
@@ -106,7 +105,7 @@ term:
 extern(C) void _sampling_func( void *user, ubyte *buf, int bufSize) nothrow {
 	pxtnService* pxtn = cast(pxtnService*)user;
 	try {
-		pxtn.Moo( buf, bufSize );
+		pxtn.Moo( buf[0 .. bufSize] );
 	} catch (Exception) {}
 }
 
@@ -121,7 +120,8 @@ int main(string[] args)
 	pxtnERR        pxtn_err = pxtnERR.pxtnERR_VOID;
 
 	import std.utf : toUTF16z;
-	auto filePath = args[1].toUTF16z;
+	auto filePath = args[1];
+	auto file = read(args[1]);
 
 	// INIT PXTONE.
 	pxtn = allocate!pxtnService();
@@ -129,13 +129,13 @@ int main(string[] args)
 	if( !pxtn.set_destination_quality( _CHANNEL_NUM, _SAMPLE_PER_SECOND ) ) goto term;
 
 	// LOAD MUSIC FILE.
-	if( !_load_ptcop( pxtn, filePath, &pxtn_err ) ) goto term;
+	if( !_load_ptcop( pxtn, file, &pxtn_err ) ) goto term;
 
 	// PREPARATION PLAYING MUSIC.
 	{
-		int smp_total = pxtn.moo_get_total_sample();
+		//int smp_total = pxtn.moo_get_total_sample();
 
-		pxtnVOMITPREPARATION prep = {0};
+		pxtnVOMITPREPARATION prep;
 		prep.flags          |= pxtnVOMITPREPFLAG_loop;
 		prep.start_pos_float =     0;
 		prep.master_volume   = 0.80f;
@@ -148,25 +148,16 @@ int main(string[] args)
 	tracef("SDL audio init success");
 
 	{
-		TCHAR[ 250 ]         text = 0;
-		TCHAR*        name_t      = null ;
-		const(TCHAR)*  p_name      = null ;
-		int       buf_size    =   0  ;
+		char[250] text = 0;
 
-		if( _sjis_to_wide( pxtn.text.get_name_buf( &buf_size ), &name_t, null ) )
-		{
-			p_name = name_t;
-		}
-		else
-		{
-			p_name = "none"w.ptr;
-		}
+		auto name = pxtn.text.get_name_buf();
+		auto comment = pxtn.text.get_comment_buf();
 
-		_stprintf_s( text.ptr, 250, "file: %s\r\nname: %s"w.ptr, PathFindFileName( filePath ), p_name );
+		auto str = sformat(text, "file: %s\nname: %s\ncomment: %s", filePath.baseName, name, comment);
 
-		if( name_t ) free( name_t );
+		//if( name_t ) free( name_t );
 		import std.stdio : readln, writeln;
-		writeln(text);
+		writeln(str);
 		writeln("Press enter to exit");
 		readln();
 	}

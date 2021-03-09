@@ -1,0 +1,10 @@
+{
+	"description": "pxtone player",
+	"license": "proprietary",
+	"name": "player",
+	"targetType": "executable",
+	"dependencies": {
+		"pxtone": "*",
+		"bindbc-sdl": "~>0.19.2"
+	}
+}
