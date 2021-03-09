@@ -29,7 +29,7 @@ struct pxtnPulse_Frequency {
 	 		add = 1;
 			for( j = 0; j < i; j++ ) add = add * 0.1;
 
-			// check 0 .. 9 
+			// check 0 .. 9
 			for( j = 0; j < 10; j++ )
 			{
 				work = parameter + add * j;

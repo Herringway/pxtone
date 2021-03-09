@@ -933,5 +933,3 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 };
-
-bool Evelist_Kind_IsTail( int kind );

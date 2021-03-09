@@ -708,7 +708,7 @@ public :
 
 	pxtnERR io_matePTN_r( pxtnDescriptor *p_doc ) nothrow
 	{
-		pxtnERR             res  = pxtnERR.pxtnERR_VOID; 
+		pxtnERR             res  = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PTN ptn  = {0};
 		int             size =  0 ;
 
