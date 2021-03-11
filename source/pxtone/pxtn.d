@@ -7,8 +7,6 @@ import core.stdc.stdlib;
 
 enum pxtn_H;
 
-//#define pxINCLUDE_OGGVORBIS 1
-
 struct pxtnPOINT
 {
     int x;

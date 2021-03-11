@@ -287,7 +287,7 @@ private:
 			case _enum_Tag._TAG_mateOGGV:
 
 	version(pxINCLUDE_OGGVORBIS) {
-				res = _io_Read_Woice( p_doc, pxtnWOICE_OGGV );
+				res = _io_Read_Woice( p_doc, pxtnWOICETYPE.pxtnWOICE_OGGV );
 				if( res != pxtnERR.pxtnOK ) goto term;
 				break;
 	} else {
@@ -666,6 +666,17 @@ private:
 
 		pxtnERR res       = pxtnERR.pxtnERR_VOID;
 		int byte_size =            0;
+		
+		version(pxINCLUDE_OGGVORBIS) {
+			import derelict.vorbis;
+			try {
+				DerelictVorbis.load();
+				DerelictVorbisFile.load();
+			} catch(Exception e) {
+				res = pxtnERR.pxtnERR_ogg;
+				goto End;
+			}
+		}
 
 		text      = allocate!pxtnText();
 		if( !( text ) ){ res = pxtnERR.pxtnERR_INIT    ; goto End; }

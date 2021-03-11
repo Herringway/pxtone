@@ -792,7 +792,7 @@ version(pxINCLUDE_OGGVORBIS) {
 		if( !_voices ) return false;
 
 		_MATERIALSTRUCT_OGGV mate = {0};
-		pxtnVOICEUNIT*       p_vc = &_voices[ 0 ];
+		const(pxtnVOICEUNIT)*       p_vc = &_voices[ 0 ];
 
 		if( !p_vc.p_oggv ) return false;
 
@@ -802,7 +802,7 @@ version(pxINCLUDE_OGGVORBIS) {
 		mate.voice_flags =           p_vc.voice_flags;
 		mate.basic_key   = cast(ushort)p_vc.basic_key  ;
 
-		uint size =  _MATERIALSTRUCT_OGGV.sizeof + oggv_size;
+		uint size =  cast(uint)(_MATERIALSTRUCT_OGGV.sizeof + oggv_size);
 		if( !p_doc.w_asfile( &size, uint.sizeof            , 1 ) ) return false;
 		if( !p_doc.w_asfile( &mate, _MATERIALSTRUCT_OGGV.sizeof, 1 ) ) return false;
 		if( !p_vc.p_oggv.pxtn_write( p_doc ) ) return false;

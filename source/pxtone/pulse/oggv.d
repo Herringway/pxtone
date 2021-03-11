@@ -2,9 +2,18 @@
 
 version(pxINCLUDE_OGGVORBIS):
 
+import derelict.vorbis.codec;
+import derelict.vorbis.file;
+
+import core.stdc.string;
+import core.stdc.stdint;
+import core.stdc.stdlib;
+import core.stdc.stdio;
+
 import pxtone.pxtn;
 
 import pxtone.descriptor;
+import pxtone.error;
 import pxtone.pulse.pcm;
 
 struct OVMEM
@@ -16,7 +25,7 @@ struct OVMEM
 
 // 4 callbacks below:
 
-size_t _mread( void *p, size_t size, size_t nmemb, void* p_void )
+extern(C) size_t _mread( void *p, size_t size, size_t nmemb, void* p_void ) nothrow
 {
 	OVMEM *pom = cast(OVMEM*)p_void;
 
@@ -39,7 +48,7 @@ size_t _mread( void *p, size_t size, size_t nmemb, void* p_void )
 	return nmemb;
 }
 
-int _mseek( void* p_void, ogg_int64_t offset, int mode )
+extern(C) int _mseek( void* p_void, long offset, int mode ) nothrow
 {
 	int newpos;
 	OVMEM *pom = cast(OVMEM*)p_void;
@@ -61,14 +70,14 @@ int _mseek( void* p_void, ogg_int64_t offset, int mode )
 	return 0;
 }
 
-long _mtell( void* p_void )
+extern(C) int _mtell( void* p_void ) nothrow
 {
 	OVMEM* pom = cast(OVMEM*)p_void;
 	if( !pom ) return -1;
 	return pom.pos;
 }
 
-int _mclose_dummy( void* p_void )
+extern(C) int _mclose_dummy( void* p_void ) nothrow
 {
 	OVMEM* pom = cast(OVMEM*)p_void;
 	if( !pom ) return -1;
@@ -88,7 +97,7 @@ private:
 	int _size   ;
 	char*   _p_data ;
 
-	bool _SetInformation()
+	bool _SetInformation() nothrow
 	{
 		bool b_ret = false;
 
@@ -99,10 +108,10 @@ private:
 
 		// set callback func.
 		ov_callbacks   oc;
-	    oc.read_func  = _mread       ;
-	    oc.seek_func  = _mseek       ;
-	    oc.close_func = _mclose_dummy;
-	    oc.tell_func  = _mtell       ;
+	    oc.read_func  = &_mread       ;
+	    oc.seek_func  = &_mseek       ;
+	    oc.close_func = &_mclose_dummy;
+	    oc.tell_func  = &_mtell       ;
 
 		OggVorbis_File vf;
 
@@ -136,45 +145,45 @@ private:
 	}
 
 public :
-	~this()
+	~this() nothrow
 	{
 		Release();
 	}
 
-	pxtnERR Decode( pxtnPulse_PCM * p_pcm ) const
+	pxtnERR Decode( pxtnPulse_PCM * p_pcm ) const nothrow
 	{
-		pxtnERR res = pxtnERR_VOID;
+		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		OggVorbis_File vf;
 		vorbis_info*   vi;
 		ov_callbacks   oc;
 
 		OVMEM ovmem;
+		int current_section;
+		char[ 4096 ]    pcmout = 0; //take 4k out of the data segment, not the stack
 
-		ovmem.p_buf = _p_data;
+		ovmem.p_buf = cast(char*)_p_data;
 		ovmem.pos   =       0;
 		ovmem.size  = _size  ;
 
 	    // set callback func.
-	    oc.read_func  = _mread       ;
-	    oc.seek_func  = _mseek       ;
-	    oc.close_func = _mclose_dummy;
-	    oc.tell_func  = _mtell       ;
+	    oc.read_func  = &_mread       ;
+	    oc.seek_func  = &_mseek       ;
+	    oc.close_func = &_mclose_dummy;
+	    oc.tell_func  = &_mtell       ;
 
 	    switch( ov_open_callbacks( &ovmem, &vf, null, 0, oc ) )
 		{
-		case OV_EREAD     : res = pxtnERR_ogg; goto term; //{printf("A read from media returned an error.\n");exit(1);}
-		case OV_ENOTVORBIS: res = pxtnERR_ogg; goto term; //{printf("Bitstream is not Vorbis data. \n");exit(1);}
-		case OV_EVERSION  : res = pxtnERR_ogg; goto term; //{printf("Vorbis version mismatch. \n");exit(1);}
-		case OV_EBADHEADER: res = pxtnERR_ogg; goto term; //{printf("Invalid Vorbis bitstream header. \n");exit(1);}
-		case OV_EFAULT    : res = pxtnERR_ogg; goto term; //{printf("Internal logic fault; indicates a bug or heap/stack corruption. \n");exit(1);}
+		case OV_EREAD     : res = pxtnERR.pxtnERR_ogg; goto term; //{printf("A read from media returned an error.\n");exit(1);}
+		case OV_ENOTVORBIS: res = pxtnERR.pxtnERR_ogg; goto term; //{printf("Bitstream is not Vorbis data. \n");exit(1);}
+		case OV_EVERSION  : res = pxtnERR.pxtnERR_ogg; goto term; //{printf("Vorbis version mismatch. \n");exit(1);}
+		case OV_EBADHEADER: res = pxtnERR.pxtnERR_ogg; goto term; //{printf("Invalid Vorbis bitstream header. \n");exit(1);}
+		case OV_EFAULT    : res = pxtnERR.pxtnERR_ogg; goto term; //{printf("Internal logic fault; indicates a bug or heap/stack corruption. \n");exit(1);}
 		default: break;
 	    }
 
 	    vi    = ov_info( &vf,-1 );
 
-		int current_section;
-		char[ 4096 ]    pcmout = 0; //take 4k out of the data segment, not the stack
 		{
 			int smp_num = cast(int)ov_pcm_total( &vf, -1 );
 			uint bytes;
@@ -182,7 +191,7 @@ public :
 			bytes = vi.channels * 2 * smp_num;
 
 			res = p_pcm.Create( vi.channels, vi.rate, 16, smp_num );
-			if( res != pxtnOK ) goto term;
+			if( res != pxtnERR.pxtnOK ) goto term;
 		}
 	    // decode..
 		{
@@ -190,8 +199,8 @@ public :
 			uint8_t  *p  = cast(uint8_t*)p_pcm.get_p_buf_variable();
 			do
 			{
-				ret = ov_read( &vf, pcmout, 4096, 0, 2, 1, &current_section );
-				if( ret > 0 ) memcpy( p, pcmout, ret ); //fwrite( pcmout, 1, ret, of );
+				ret = ov_read( &vf, cast(byte*)pcmout.ptr, 4096, 0, 2, 1, &current_section );
+				if( ret > 0 ) memcpy( p, pcmout.ptr, ret ); //fwrite( pcmout, 1, ret, of );
 				p += ret;
 			}
 			while( ret );
@@ -200,12 +209,12 @@ public :
 	    // end.
 	    ov_clear( &vf );
 
-		res = pxtnOK;
+		res = pxtnERR.pxtnOK;
 
 	term:
 	    return res;
 	}
-	void Release()
+	void Release() nothrow
 	{
 		if( _p_data ) free( _p_data ); _p_data = null;
 		_ch      = 0;
@@ -213,7 +222,7 @@ public :
 		_smp_num = 0;
 		_size    = 0;
 	}
-	bool GetInfo( int* p_ch, int* p_sps, int* p_smp_num )
+	bool GetInfo( int* p_ch, int* p_sps, int* p_smp_num ) nothrow
 	{
 		if( !_p_data ) return false;
 
@@ -223,14 +232,13 @@ public :
 
 		return true;
 	}
-	int  GetSize() const
+	int  GetSize() const nothrow
 	{
 		if( !_p_data ) return 0;
-		return int.sizeof*4 + _size;
+		return cast(int)(int.sizeof*4 + _size);
 	}
 
-	bool    ogg_write ( pxtnDescriptor *p_doc ) const;
-	bool ogg_write( pxtnDescriptor* desc ) const
+	bool ogg_write( pxtnDescriptor* desc ) const nothrow
 	{
 		bool    b_ret  = false;
 
@@ -240,25 +248,27 @@ public :
 	End:
 		return b_ret;
 	}
-	pxtnERR ogg_read( pxtnDescriptor* desc )
+	pxtnERR ogg_read( pxtnDescriptor* desc ) nothrow
 	{
-		pxtnERR res = pxtnERR_VOID;
+		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
-		if( !( _size = desc.get_size_bytes() )   ){ res = pxtnERR_desc_r; goto End; }
-		if( !( _p_data = cast(char*)malloc( _size ) ) ){ res = pxtnERR_memory; goto End; }
-		if( !desc.r( _p_data, 1,       _size )   ){ res = pxtnERR_desc_r; goto End; }
+		_size = desc.get_size_bytes();
+		if( !(  _size )   ){ res = pxtnERR.pxtnERR_desc_r; goto End; }
+		_p_data = cast(char*)malloc( _size );
+		if( !( _p_data ) ){ res = pxtnERR.pxtnERR_memory; goto End; }
+		if( !desc.r( _p_data, 1,       _size )   ){ res = pxtnERR.pxtnERR_desc_r; goto End; }
 		if( !_SetInformation()                    ) goto End;
 
-		res = pxtnOK;
+		res = pxtnERR.pxtnOK;
 	End:
 
-		if( res != pxtnOK )
+		if( res != pxtnERR.pxtnOK )
 		{
 			if( _p_data ) free( _p_data ); _p_data = null; _size = 0;
 		}
 		return res;
 	}
-	bool pxtn_write( pxtnDescriptor *p_doc ) const
+	bool pxtn_write( pxtnDescriptor *p_doc ) const nothrow
 	{
 		if( !_p_data ) return false;
 
@@ -270,7 +280,7 @@ public :
 
 		return true;
 	}
-	bool pxtn_read( pxtnDescriptor *p_doc )
+	bool pxtn_read( pxtnDescriptor *p_doc ) nothrow
 	{
 		bool  b_ret  = false;
 
@@ -281,7 +291,8 @@ public :
 
 		if( !_size ) goto End;
 
-		if( !( _p_data = cast(char*)malloc( _size ) ) ) goto End;
+		_p_data = cast(char*)malloc( _size );
+		if( !( _p_data ) ) goto End;
 		if( !p_doc.r( _p_data, 1,      _size )   ) goto End;
 
 		b_ret = true;
@@ -295,12 +306,13 @@ public :
 		return b_ret;
 	}
 
-	bool Copy( pxtnPulse_Oggv *p_dst ) const
+	bool Copy( pxtnPulse_Oggv *p_dst ) const nothrow
 	{
 		p_dst.Release();
 		if( !_p_data ) return true;
 
-		if( !( p_dst._p_data = cast(char*)malloc( _size ) ) ) return false;
+		p_dst._p_data = cast(char*)malloc( _size );
+		if( !( p_dst._p_data ) ) return false;
 		memcpy( p_dst._p_data, _p_data, _size );
 
 		p_dst._ch      = _ch     ;
