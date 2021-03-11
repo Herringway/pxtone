@@ -23,20 +23,20 @@ struct pxtnOverDrive {
 
 	int   _cut_16bit_top;
 
-	float   get_cut  ()const{ return _cut_f; }
-	float   get_amp  ()const{ return _amp_f; }
-	int get_group()const{ return _group; }
+	float   get_cut  ()const nothrow{ return _cut_f; }
+	float   get_amp  ()const nothrow{ return _amp_f; }
+	int get_group()const nothrow{ return _group; }
 
-	void  Set( float cut, float amp, int group )
+	void  Set( float cut, float amp, int group )nothrow
 	{
 		_cut_f = cut  ;
 		_amp_f = amp  ;
 		_group = group;
 	}
 
-	bool get_played()const{ return _b_played; }
-	void set_played( bool b ){ _b_played = b; }
-	bool switch_played(){ _b_played = _b_played ? false : true; return _b_played; }
+	bool get_played()const nothrow { return _b_played; }
+	void set_played( bool b ) nothrow { _b_played = b; }
+	bool switch_played() nothrow { _b_played = _b_played ? false : true; return _b_played; }
 
 	void Tone_Ready() nothrow
 	{
@@ -69,7 +69,7 @@ struct pxtnOverDrive {
 		return true;
 	}
 
-	pxtnERR Read( pxtnDescriptor *p_doc )
+	pxtnERR Read( pxtnDescriptor *p_doc ) nothrow
 	{
 		_OVERDRIVESTRUCT over = {0};
 		int          size =  0 ;
