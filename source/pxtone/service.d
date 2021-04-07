@@ -98,7 +98,7 @@ enum _enum_Tag {
 
 };
 
-private _enum_Tag _CheckTagCode(const char* p_code) nothrow {
+private _enum_Tag _CheckTagCode(const char* p_code) nothrow @system {
 	if (!memcmp(p_code, _code_antiOPER, _CODESIZE)) {
 		return _enum_Tag._TAG_antiOPER;
 	} else if (!memcmp(p_code, _code_x1x_PROJ, _CODESIZE)) {
@@ -235,7 +235,7 @@ private:
 
 	int _group_num;
 
-	pxtnERR _ReadVersion(pxtnDescriptor* p_doc, _enum_FMTVER* p_fmt_ver, ushort* p_exe_ver) nothrow {
+	pxtnERR _ReadVersion(pxtnDescriptor* p_doc, _enum_FMTVER* p_fmt_ver, ushort* p_exe_ver) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -290,7 +290,7 @@ private:
 	// Read Project //////////////
 	////////////////////////////////////////
 
-	pxtnERR _ReadTuneItems(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR _ReadTuneItems(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -470,7 +470,7 @@ private:
 
 	}
 
-	bool _x1x_Project_Read(pxtnDescriptor* p_doc) nothrow {
+	bool _x1x_Project_Read(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -504,7 +504,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_Read_Delay(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR _io_Read_Delay(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -533,7 +533,7 @@ private:
 		return res;
 	}
 
-	pxtnERR _io_Read_OverDrive(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR _io_Read_OverDrive(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -562,7 +562,7 @@ private:
 		return res;
 	}
 
-	pxtnERR _io_Read_Woice(pxtnDescriptor* p_doc, pxtnWOICETYPE type) nothrow {
+	pxtnERR _io_Read_Woice(pxtnDescriptor* p_doc, pxtnWOICETYPE type) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		if (!_b_init) {
@@ -622,7 +622,7 @@ private:
 		return res;
 	}
 
-	pxtnERR _io_Read_OldUnit(pxtnDescriptor* p_doc, int ver) nothrow {
+	pxtnERR _io_Read_OldUnit(pxtnDescriptor* p_doc, int ver) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -679,7 +679,7 @@ private:
 	// assi woice
 	/////////////
 
-	bool _io_assiWOIC_w(pxtnDescriptor* p_doc, int idx) const nothrow {
+	bool _io_assiWOIC_w(pxtnDescriptor* p_doc, int idx) const nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -707,7 +707,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_assiWOIC_r(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR _io_assiWOIC_r(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -741,7 +741,7 @@ private:
 	// assi unit.
 	// -----
 
-	bool _io_assiUNIT_w(pxtnDescriptor* p_doc, int idx) const nothrow {
+	bool _io_assiUNIT_w(pxtnDescriptor* p_doc, int idx) const nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -765,7 +765,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_assiUNIT_r(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR _io_assiUNIT_r(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -799,7 +799,7 @@ private:
 	// unit num
 	// -----
 
-	bool _io_UNIT_num_w(pxtnDescriptor* p_doc) const nothrow {
+	bool _io_UNIT_num_w(pxtnDescriptor* p_doc) const nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -822,7 +822,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_UNIT_num_r(pxtnDescriptor* p_doc, int* p_num) nothrow {
+	pxtnERR _io_UNIT_num_r(pxtnDescriptor* p_doc, int* p_num) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -854,7 +854,7 @@ private:
 	}
 
 	// fix old key event
-	bool _x3x_TuningKeyEvent() nothrow {
+	bool _x3x_TuningKeyEvent() nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -879,7 +879,7 @@ private:
 	}
 
 	// fix old tuning (1.0)
-	bool _x3x_AddTuningEvent() nothrow {
+	bool _x3x_AddTuningEvent() nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -898,7 +898,7 @@ private:
 		return true;
 	}
 
-	bool _x3x_SetVoiceNames() nothrow {
+	bool _x3x_SetVoiceNames() nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -949,7 +949,7 @@ private:
 
 	pxtnPulse_Frequency* _moo_freq;
 
-	pxtnERR _init(int fix_evels_num, bool b_edit) nothrow {
+	pxtnERR _init(int fix_evels_num, bool b_edit) nothrow @system {
 		if (_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1065,7 +1065,7 @@ private:
 		return res;
 	}
 
-	bool _release() nothrow {
+	bool _release() nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -1108,7 +1108,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _pre_count_event(pxtnDescriptor* p_doc, int* p_count) nothrow {
+	pxtnERR _pre_count_event(pxtnDescriptor* p_doc, int* p_count) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1220,12 +1220,12 @@ private:
 		return res;
 	}
 
-	void _moo_destructer() nothrow {
+	void _moo_destructer() nothrow @system {
 
 		_moo_release();
 	}
 
-	bool _moo_init() nothrow {
+	bool _moo_init() nothrow @system {
 		bool b_ret = false;
 
 		_moo_freq = allocate!pxtnPulse_Frequency();
@@ -1246,7 +1246,7 @@ private:
 		return b_ret;
 	}
 
-	bool _moo_release() nothrow {
+	bool _moo_release() nothrow @system {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -1263,7 +1263,7 @@ private:
 	// Units   ////////////////////////////////////
 	////////////////////////////////////////////////
 
-	bool _moo_ResetVoiceOn(pxtnUnit* p_u, int w) const nothrow {
+	bool _moo_ResetVoiceOn(pxtnUnit* p_u, int w) const nothrow @system {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -1293,7 +1293,7 @@ private:
 		return true;
 	}
 
-	bool _moo_InitUnitTone() nothrow {
+	bool _moo_InitUnitTone() nothrow @system {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -1305,7 +1305,7 @@ private:
 		return true;
 	}
 
-	bool _moo_PXTONE_SAMPLE(void* p_data) nothrow {
+	bool _moo_PXTONE_SAMPLE(void* p_data) nothrow @system {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -1520,7 +1520,7 @@ private:
 
 public:
 
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		_release();
 	}
 
@@ -1528,15 +1528,15 @@ public:
 	pxtnMaster* master;
 	pxtnEvelist* evels;
 
-	pxtnERR init_() nothrow {
+	pxtnERR init_() nothrow @system {
 		return _init(0, false);
 	}
 
-	pxtnERR init_collage(int fix_evels_num) nothrow {
+	pxtnERR init_collage(int fix_evels_num) nothrow @system {
 		return _init(fix_evels_num, true);
 	}
 
-	bool clear() nothrow {
+	bool clear() nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -1585,7 +1585,7 @@ public:
 	// save               //////////////////
 	////////////////////////////////////////
 
-	pxtnERR write(pxtnDescriptor* p_doc, bool b_tune, ushort exe_ver) nothrow {
+	pxtnERR write(pxtnDescriptor* p_doc, bool b_tune, ushort exe_ver) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1795,7 +1795,7 @@ public:
 		return res;
 	}
 
-	pxtnERR read(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR read(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1884,7 +1884,7 @@ public:
 		return res;
 	}
 
-	bool AdjustMeasNum() nothrow {
+	bool AdjustMeasNum() nothrow @safe {
 		if (!_b_init) {
 			return false;
 		}
@@ -1892,7 +1892,7 @@ public:
 		return true;
 	}
 
-	pxtnERR tones_ready() nothrow {
+	pxtnERR tones_ready() nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1919,7 +1919,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	bool tones_clear() nothrow {
+	bool tones_clear() nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -1932,7 +1932,7 @@ public:
 		return true;
 	}
 
-	int Group_Num() const {
+	int Group_Num() const nothrow @safe {
 		return _b_init ? _group_num : 0;
 	}
 
@@ -1940,15 +1940,15 @@ public:
 	// Delay..
 	// ---------------------------
 
-	int Delay_Num() const {
+	int Delay_Num() const nothrow @safe {
 		return _b_init ? _delay_num : 0;
 	}
 
-	int Delay_Max() const {
+	int Delay_Max() const nothrow @safe {
 		return _b_init ? _delay_max : 0;
 	}
 
-	bool Delay_Set(int idx, DELAYUNIT unit, float freq, float rate, int group) {
+	bool Delay_Set(int idx, DELAYUNIT unit, float freq, float rate, int group) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -1959,7 +1959,7 @@ public:
 		return true;
 	}
 
-	bool Delay_Add(DELAYUNIT unit, float freq, float rate, int group) {
+	bool Delay_Add(DELAYUNIT unit, float freq, float rate, int group) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -1972,7 +1972,7 @@ public:
 		return true;
 	}
 
-	bool Delay_Remove(int idx) {
+	bool Delay_Remove(int idx) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -1989,7 +1989,7 @@ public:
 		return true;
 	}
 
-	pxtnERR Delay_ReadyTone(int idx) {
+	pxtnERR Delay_ReadyTone(int idx) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1999,7 +1999,7 @@ public:
 		return _delays[idx].Tone_Ready(master.get_beat_num(), master.get_beat_tempo(), _dst_sps);
 	}
 
-	pxtnDelay* Delay_Get(int idx) {
+	pxtnDelay* Delay_Get(int idx) nothrow @system {
 		if (!_b_init) {
 			return null;
 		}
@@ -2013,15 +2013,15 @@ public:
 	// Over Drive..
 	// ---------------------------
 
-	int OverDrive_Num() const {
+	int OverDrive_Num() const nothrow @safe {
 		return _b_init ? _ovdrv_num : 0;
 	}
 
-	int OverDrive_Max() const {
+	int OverDrive_Max() const nothrow @safe {
 		return _b_init ? _ovdrv_max : 0;
 	}
 
-	bool OverDrive_Set(int idx, float cut, float amp, int group) {
+	bool OverDrive_Set(int idx, float cut, float amp, int group) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2032,7 +2032,7 @@ public:
 		return true;
 	}
 
-	bool OverDrive_Add(float cut, float amp, int group) {
+	bool OverDrive_Add(float cut, float amp, int group) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2045,7 +2045,7 @@ public:
 		return true;
 	}
 
-	bool OverDrive_Remove(int idx) {
+	bool OverDrive_Remove(int idx) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2062,7 +2062,7 @@ public:
 		return true;
 	}
 
-	bool OverDrive_ReadyTone(int idx) {
+	bool OverDrive_ReadyTone(int idx) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2073,7 +2073,7 @@ public:
 		return true;
 	}
 
-	pxtnOverDrive* OverDrive_Get(int idx) {
+	pxtnOverDrive* OverDrive_Get(int idx) nothrow @system {
 		if (!_b_init) {
 			return null;
 		}
@@ -2087,15 +2087,15 @@ public:
 	// Woice..
 	// ---------------------------
 
-	int Woice_Num() const nothrow {
+	int Woice_Num() const nothrow @safe {
 		return _b_init ? _woice_num : 0;
 	}
 
-	int Woice_Max() const nothrow {
+	int Woice_Max() const nothrow @safe {
 		return _b_init ? _woice_max : 0;
 	}
 
-	const(pxtnWoice)* Woice_Get(int idx) const nothrow {
+	const(pxtnWoice)* Woice_Get(int idx) const nothrow @system {
 		if (!_b_init) {
 			return null;
 		}
@@ -2105,7 +2105,7 @@ public:
 		return _woices[idx];
 	}
 
-	pxtnWoice* Woice_Get_variable(int idx) nothrow {
+	pxtnWoice* Woice_Get_variable(int idx) nothrow @system {
 		if (!_b_init) {
 			return null;
 		}
@@ -2115,7 +2115,7 @@ public:
 		return _woices[idx];
 	}
 
-	pxtnERR Woice_read(int idx, pxtnDescriptor* desc, pxtnWOICETYPE type) {
+	pxtnERR Woice_read(int idx, pxtnDescriptor* desc, pxtnWOICETYPE type) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -2139,7 +2139,7 @@ public:
 		return res;
 	}
 
-	pxtnERR Woice_ReadyTone(int idx) {
+	pxtnERR Woice_ReadyTone(int idx) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -2149,7 +2149,7 @@ public:
 		return _woices[idx].Tone_Ready(_ptn_bldr, _dst_sps);
 	}
 
-	bool Woice_Remove(int idx) {
+	bool Woice_Remove(int idx) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2165,7 +2165,7 @@ public:
 		return true;
 	}
 
-	bool Woice_Replace(int old_place, int new_place) {
+	bool Woice_Replace(int old_place, int new_place) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2202,15 +2202,15 @@ public:
 	// Unit..
 	// ---------------------------
 
-	int Unit_Num() const {
+	int Unit_Num() const nothrow @safe {
 		return _b_init ? _unit_num : 0;
 	}
 
-	int Unit_Max() const {
+	int Unit_Max() const nothrow @safe {
 		return _b_init ? _unit_max : 0;
 	}
 
-	const(pxtnUnit)* Unit_Get(int idx) const nothrow {
+	const(pxtnUnit)* Unit_Get(int idx) const nothrow @system {
 		if (!_b_init) {
 			return null;
 		}
@@ -2220,7 +2220,7 @@ public:
 		return _units[idx];
 	}
 
-	pxtnUnit* Unit_Get_variable(int idx) nothrow {
+	pxtnUnit* Unit_Get_variable(int idx) nothrow @system {
 		if (!_b_init) {
 			return null;
 		}
@@ -2230,7 +2230,7 @@ public:
 		return _units[idx];
 	}
 
-	bool Unit_Remove(int idx) {
+	bool Unit_Remove(int idx) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2246,7 +2246,7 @@ public:
 		return true;
 	}
 
-	bool Unit_Replace(int old_place, int new_place) {
+	bool Unit_Replace(int old_place, int new_place) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2278,7 +2278,7 @@ public:
 		return true;
 	}
 
-	bool Unit_AddNew() {
+	bool Unit_AddNew() nothrow @system {
 		if (_unit_num >= _unit_max) {
 			return false;
 		}
@@ -2287,7 +2287,7 @@ public:
 		return true;
 	}
 
-	bool Unit_SetOpratedAll(bool b) {
+	bool Unit_SetOpratedAll(bool b) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2300,7 +2300,7 @@ public:
 		return true;
 	}
 
-	bool Unit_Solo(int idx) {
+	bool Unit_Solo(int idx) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -2318,7 +2318,7 @@ public:
 	// Quality..
 	// ---------------------------
 
-	bool set_destination_quality(int ch_num, int sps) nothrow {
+	bool set_destination_quality(int ch_num, int sps) nothrow @safe {
 		if (!_b_init) {
 			return false;
 		}
@@ -2337,7 +2337,7 @@ public:
 		return true;
 	}
 
-	bool get_destination_quality(int* p_ch_num, int* p_sps) const nothrow {
+	bool get_destination_quality(int* p_ch_num, int* p_sps) const nothrow @safe {
 		if (!_b_init) {
 			return false;
 		}
@@ -2350,7 +2350,7 @@ public:
 		return true;
 	}
 
-	bool set_sampled_callback(pxtnSampledCallback proc, void* user) nothrow {
+	bool set_sampled_callback(pxtnSampledCallback proc, void* user) nothrow @safe {
 		if (!_b_init) {
 			return false;
 		}
@@ -2367,21 +2367,21 @@ public:
 	// get / set
 	///////////////////////
 
-	bool moo_is_valid_data() const nothrow {
+	bool moo_is_valid_data() const nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
 		return _moo_b_valid_data;
 	}
 
-	bool moo_is_end_vomit() const nothrow {
+	bool moo_is_end_vomit() const nothrow @safe {
 		if (!_moo_b_init) {
 			return true;
 		}
 		return _moo_b_end_vomit;
 	}
 
-	bool moo_set_mute_by_unit(bool b) nothrow {
+	bool moo_set_mute_by_unit(bool b) nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -2389,7 +2389,7 @@ public:
 		return true;
 	}
 
-	bool moo_set_loop(bool b) nothrow {
+	bool moo_set_loop(bool b) nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -2397,7 +2397,7 @@ public:
 		return true;
 	}
 
-	bool moo_set_fade(int fade, float sec) nothrow {
+	bool moo_set_fade(int fade, float sec) nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -2417,7 +2417,7 @@ public:
 		return true;
 	}
 
-	bool moo_set_master_volume(float v) nothrow {
+	bool moo_set_master_volume(float v) nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -2431,7 +2431,7 @@ public:
 		return true;
 	}
 
-	int moo_get_total_sample() const nothrow {
+	int moo_get_total_sample() const nothrow @system {
 		if (!_b_init) {
 			return 0;
 		}
@@ -2446,7 +2446,7 @@ public:
 		return pxtnService_moo_CalcSampleNum(meas_num, beat_num, _dst_sps, master.get_beat_tempo());
 	}
 
-	int moo_get_now_clock() const nothrow {
+	int moo_get_now_clock() const nothrow @safe {
 		if (!_moo_b_init) {
 			return 0;
 		}
@@ -2456,7 +2456,7 @@ public:
 		return 0;
 	}
 
-	int moo_get_end_clock() const nothrow {
+	int moo_get_end_clock() const nothrow @safe {
 		if (!_moo_b_init) {
 			return 0;
 		}
@@ -2466,7 +2466,7 @@ public:
 		return 0;
 	}
 
-	int moo_get_sampling_offset() const nothrow {
+	int moo_get_sampling_offset() const nothrow @safe {
 		if (!_moo_b_init) {
 			return 0;
 		}
@@ -2476,7 +2476,7 @@ public:
 		return _moo_smp_count;
 	}
 
-	int moo_get_sampling_end() const nothrow {
+	int moo_get_sampling_end() const nothrow @safe {
 		if (!_moo_b_init) {
 			return 0;
 		}
@@ -2487,7 +2487,7 @@ public:
 	}
 
 	// preparation
-	bool moo_preparation(const(pxtnVOMITPREPARATION)* p_prep) nothrow {
+	bool moo_preparation(const(pxtnVOMITPREPARATION)* p_prep) nothrow @system {
 		if (!_moo_b_init || !_moo_b_valid_data || !_dst_ch_num || !_dst_sps || !_dst_byte_per_smp) {
 			_moo_b_end_vomit = true;
 			return false;
@@ -2580,7 +2580,7 @@ public:
 	//
 	////////////////////
 
-	bool Moo(ubyte[] p_buf) nothrow {
+	bool Moo(ubyte[] p_buf) nothrow @system {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -2635,7 +2635,7 @@ public:
 	}
 };
 
-int pxtnService_moo_CalcSampleNum(int meas_num, int beat_num, int sps, float beat_tempo) nothrow {
+int pxtnService_moo_CalcSampleNum(int meas_num, int beat_num, int sps, float beat_tempo) nothrow @safe {
 	uint total_beat_num;
 	uint sample_num;
 	if (!beat_tempo) {

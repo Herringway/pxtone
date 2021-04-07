@@ -8,7 +8,7 @@ import pxtone.descriptor;
 import core.stdc.stdlib;
 import core.stdc.string;
 
-bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow {
+bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @system {
 	if (!pp) {
 		return false;
 	}
@@ -44,7 +44,7 @@ term:
 	return b_ret;
 }
 
-static bool _write4(const char* p, int buf_size, pxtnDescriptor* p_doc) nothrow {
+static bool _write4(const char* p, int buf_size, pxtnDescriptor* p_doc) nothrow @system {
 	if (!p_doc.w_asfile(&buf_size, 4, 1)) {
 		return false;
 	}
@@ -63,14 +63,14 @@ private:
 	int _name_size;
 
 public:
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		SAFE_DELETE(_p_comment_buf);
 		_comment_size = 0;
 		SAFE_DELETE(_p_name_buf);
 		_name_size = 0;
 	}
 
-	bool set_comment_buf(const(char)* comment, int buf_size) nothrow {
+	bool set_comment_buf(const(char)* comment, int buf_size) nothrow @system {
 		if (!comment) {
 			return false;
 		}
@@ -92,18 +92,18 @@ public:
 		return true;
 	}
 
-	const(char)[] get_comment_buf() const nothrow {
+	const(char)[] get_comment_buf() const nothrow @system {
 		return _p_comment_buf[0 .. _comment_size];
 	}
 
-	bool is_comment_buf() const nothrow {
+	bool is_comment_buf() const nothrow @safe {
 		if (_comment_size > 0) {
 			return true;
 		}
 		return false;
 	}
 
-	bool set_name_buf(const(char)* name, int buf_size) nothrow {
+	bool set_name_buf(const(char)* name, int buf_size) nothrow @system {
 		if (!name) {
 			return false;
 		}
@@ -125,33 +125,33 @@ public:
 		return true;
 	}
 
-	const(char)[] get_name_buf() const nothrow {
+	const(char)[] get_name_buf() const nothrow @system {
 		return _p_name_buf[0 .. _name_size];
 	}
 
-	bool is_name_buf() const nothrow {
+	bool is_name_buf() const nothrow @safe {
 		if (_name_size > 0) {
 			return true;
 		}
 		return false;
 	}
 
-	bool Comment_r(pxtnDescriptor* p_doc) nothrow {
+	bool Comment_r(pxtnDescriptor* p_doc) nothrow @system {
 		return _read4_malloc(&_p_comment_buf, &_comment_size, p_doc);
 	}
 
-	bool Comment_w(pxtnDescriptor* p_doc) nothrow {
+	bool Comment_w(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_p_comment_buf) {
 			return false;
 		}
 		return _write4(_p_comment_buf, _comment_size, p_doc);
 	}
 
-	bool Name_r(pxtnDescriptor* p_doc) nothrow {
+	bool Name_r(pxtnDescriptor* p_doc) nothrow @system {
 		return _read4_malloc(&_p_name_buf, &_name_size, p_doc);
 	}
 
-	bool Name_w(pxtnDescriptor* p_doc) nothrow {
+	bool Name_w(pxtnDescriptor* p_doc) nothrow @system {
 		if (!_p_name_buf) {
 			return false;
 		}

@@ -110,7 +110,7 @@ struct pxtnVOICETONE {
 	int smooth_volume;
 }
 
-private void _Voice_Release(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi) nothrow {
+private void _Voice_Release(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi) nothrow @system {
 	if (p_vc) {
 		SAFE_DELETE(p_vc.p_pcm);
 		SAFE_DELETE(p_vc.p_ptn);
@@ -129,7 +129,7 @@ private void _Voice_Release(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi) nothro
 	}
 }
 
-void _UpdateWavePTV(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int ch, int sps, int bps) nothrow {
+void _UpdateWavePTV(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int ch, int sps, int bps) nothrow @system {
 	double work, osc;
 	int long_;
 	int[2] pan_volume = [64, 64];
@@ -270,48 +270,48 @@ private:
 
 public:
 
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		Voice_Release();
 	}
 
-	int get_voice_num() const nothrow {
+	int get_voice_num() const nothrow @safe {
 		return _voice_num;
 	}
 
-	float get_x3x_tuning() const nothrow {
+	float get_x3x_tuning() const nothrow @safe {
 		return _x3x_tuning;
 	}
 
-	int get_x3x_basic_key() const nothrow {
+	int get_x3x_basic_key() const nothrow @safe {
 		return _x3x_basic_key;
 	}
 
-	pxtnWOICETYPE get_type() const nothrow {
+	pxtnWOICETYPE get_type() const nothrow @safe {
 		return _type;
 	}
 
-	const(pxtnVOICEUNIT)* get_voice(int idx) const nothrow {
+	const(pxtnVOICEUNIT)* get_voice(int idx) const nothrow @system {
 		if (idx < 0 || idx >= _voice_num) {
 			return null;
 		}
 		return &_voices[idx];
 	}
 
-	pxtnVOICEUNIT* get_voice_variable(int idx) nothrow {
+	pxtnVOICEUNIT* get_voice_variable(int idx) nothrow @system {
 		if (idx < 0 || idx >= _voice_num) {
 			return null;
 		}
 		return &_voices[idx];
 	}
 
-	const(pxtnVOICEINSTANCE)* get_instance(int idx) const nothrow {
+	const(pxtnVOICEINSTANCE)* get_instance(int idx) const nothrow @system {
 		if (idx < 0 || idx >= _voice_num) {
 			return null;
 		}
 		return &_voinsts[idx];
 	}
 
-	bool set_name_buf(const(char)* name, int buf_size) nothrow {
+	bool set_name_buf(const(char)* name, int buf_size) nothrow @system {
 		if (!name || buf_size < 0 || buf_size > pxtnMAX_TUNEWOICENAME) {
 			return false;
 		}
@@ -323,21 +323,21 @@ public:
 		return true;
 	}
 
-	const(char)* get_name_buf(int* p_buf_size) const return nothrow {
+	const(char)* get_name_buf(int* p_buf_size) const return nothrow @system {
 		if (p_buf_size) {
 			*p_buf_size = _name_size;
 		}
 		return _name_buf.ptr;
 	}
 
-	bool is_name_buf() const nothrow {
+	bool is_name_buf() const nothrow @safe {
 		if (_name_size > 0) {
 			return true;
 		}
 		return false;
 	}
 
-	bool Voice_Allocate(int voice_num) nothrow {
+	bool Voice_Allocate(int voice_num) nothrow @system {
 		bool b_ret = false;
 
 		Voice_Release();
@@ -376,7 +376,7 @@ public:
 		return b_ret;
 	}
 
-	void Voice_Release() nothrow {
+	void Voice_Release() nothrow @system {
 		for (int v = 0; v < _voice_num; v++) {
 			_Voice_Release(&_voices[v], &_voinsts[v]);
 		}
@@ -385,7 +385,7 @@ public:
 		_voice_num = 0;
 	}
 
-	bool Copy(pxtnWoice* p_dst) const nothrow {
+	bool Copy(pxtnWoice* p_dst) const nothrow @system {
 		bool b_ret = false;
 		int v, num;
 		size_t size;
@@ -456,7 +456,7 @@ public:
 		return b_ret;
 	}
 
-	void Slim() nothrow {
+	void Slim() nothrow @system {
 		for (int i = _voice_num - 1; i >= 0; i--) {
 			bool b_remove = false;
 
@@ -479,7 +479,7 @@ public:
 		}
 	}
 
-	pxtnERR read(pxtnDescriptor* desc, pxtnWOICETYPE type) nothrow {
+	pxtnERR read(pxtnDescriptor* desc, pxtnWOICETYPE type) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		switch (type) {
@@ -564,7 +564,7 @@ public:
 		return res;
 	}
 
-	bool PTV_Write(pxtnDescriptor* p_doc, int* p_total) const nothrow {
+	bool PTV_Write(pxtnDescriptor* p_doc, int* p_total) const nothrow @system {
 		bool b_ret = false;
 		const(pxtnVOICEUNIT)* p_vc = null;
 		uint work = 0;
@@ -652,7 +652,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR PTV_Read(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR PTV_Read(pxtnDescriptor* p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		pxtnVOICEUNIT* p_vc = null;
 		ubyte[8] code = 0;
@@ -772,7 +772,7 @@ public:
 		return res;
 	}
 
-	bool io_matePCM_w(pxtnDescriptor* p_doc) const nothrow {
+	bool io_matePCM_w(pxtnDescriptor* p_doc) const nothrow @system {
 		const pxtnPulse_PCM* p_pcm = _voices[0].p_pcm;
 		const(pxtnVOICEUNIT)* p_vc = &_voices[0];
 		_MATERIALSTRUCT_PCM pcm;
@@ -802,7 +802,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_matePCM_r(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR io_matePCM_r(pxtnDescriptor* p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PCM pcm = {0};
 		int size = 0;
@@ -853,7 +853,7 @@ public:
 		return res;
 	}
 
-	bool io_matePTN_w(pxtnDescriptor* p_doc) const nothrow {
+	bool io_matePTN_w(pxtnDescriptor* p_doc) const nothrow @system {
 		_MATERIALSTRUCT_PTN ptn;
 		const(pxtnVOICEUNIT)* p_vc;
 		int size = 0;
@@ -892,7 +892,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_matePTN_r(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR io_matePTN_r(pxtnDescriptor* p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PTN ptn = {0};
 		int size = 0;
@@ -939,7 +939,7 @@ public:
 		return res;
 	}
 
-	bool io_matePTV_w(pxtnDescriptor* p_doc) const nothrow {
+	bool io_matePTV_w(pxtnDescriptor* p_doc) const nothrow @system {
 		_MATERIALSTRUCT_PTV ptv;
 		int head_size = _MATERIALSTRUCT_PTV.sizeof + int.sizeof;
 		int size = 0;
@@ -980,7 +980,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_matePTV_r(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR io_matePTV_r(pxtnDescriptor* p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PTV ptv = {0};
 		int size = 0;
@@ -1012,7 +1012,7 @@ public:
 	}
 
 	version (pxINCLUDE_OGGVORBIS) {
-		bool io_mateOGGV_w(pxtnDescriptor* p_doc) const nothrow {
+		bool io_mateOGGV_w(pxtnDescriptor* p_doc) const nothrow @system {
 			if (!_voices) {
 				return false;
 			}
@@ -1044,7 +1044,7 @@ public:
 			return true;
 		}
 
-		pxtnERR io_mateOGGV_r(pxtnDescriptor* p_doc) nothrow {
+		pxtnERR io_mateOGGV_r(pxtnDescriptor* p_doc) nothrow @system {
 			pxtnERR res = pxtnERR.pxtnERR_VOID;
 			_MATERIALSTRUCT_OGGV mate = {0};
 			int size = 0;
@@ -1090,7 +1090,7 @@ public:
 		}
 	}
 
-	pxtnERR Tone_Ready_sample(const pxtnPulse_NoiseBuilder* ptn_bldr) nothrow {
+	pxtnERR Tone_Ready_sample(const pxtnPulse_NoiseBuilder* ptn_bldr) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		pxtnVOICEINSTANCE* p_vi = null;
 		pxtnVOICEUNIT* p_vc = null;
@@ -1198,7 +1198,7 @@ public:
 		return res;
 	}
 
-	pxtnERR Tone_Ready_envelope(int sps) nothrow {
+	pxtnERR Tone_Ready_envelope(int sps) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		int e = 0;
 		pxtnPOINT* p_point = null;
@@ -1281,7 +1281,7 @@ public:
 		return res;
 	}
 
-	pxtnERR Tone_Ready(const pxtnPulse_NoiseBuilder* ptn_bldr, int sps) nothrow {
+	pxtnERR Tone_Ready(const pxtnPulse_NoiseBuilder* ptn_bldr, int sps) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		res = Tone_Ready_sample(ptn_bldr);
 		if (res != pxtnERR.pxtnOK) {

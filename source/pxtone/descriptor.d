@@ -38,7 +38,7 @@ private:
 
 public:
 
-	bool set_file_r(FILE* fd) nothrow {
+	bool set_file_r(FILE* fd) nothrow @system {
 		if (!fd) {
 			return false;
 		}
@@ -67,7 +67,7 @@ public:
 		return true;
 	}
 
-	bool set_file_w(FILE* fd) nothrow {
+	bool set_file_w(FILE* fd) nothrow @safe {
 		if (!fd) {
 			return false;
 		}
@@ -80,7 +80,7 @@ public:
 		return true;
 	}
 
-	bool set_memory_r(void* p_mem, int size) nothrow {
+	bool set_memory_r(void* p_mem, int size) nothrow @safe {
 		if (!p_mem || size < 1) {
 			return false;
 		}
@@ -92,7 +92,7 @@ public:
 		return true;
 	}
 
-	bool seek(pxtnSEEK mode, int val) nothrow {
+	bool seek(pxtnSEEK mode, int val) nothrow @system {
 		if (_b_file) {
 			int[pxtnSEEK.pxtnSEEK_num] seek_tbl = [SEEK_SET, SEEK_CUR, SEEK_END];
 			if (fseek(cast(REALFILE*) _p_desc, val, seek_tbl[mode])) {
@@ -134,7 +134,7 @@ public:
 		return true;
 	}
 
-	bool w_asfile(const(void)* p, int size, int num) nothrow {
+	bool w_asfile(const(void)* p, int size, int num) nothrow @system {
 		bool b_ret = false;
 
 		if (!_p_desc || !_b_file || _b_read) {
@@ -151,7 +151,7 @@ public:
 		return b_ret;
 	}
 
-	bool r(void* p, int size, int num) nothrow {
+	bool r(void* p, int size, int num) nothrow @system {
 		if (!_p_desc) {
 			return false;
 		}
@@ -181,7 +181,7 @@ public:
 	}
 
 	// ..uint
-	int v_w_asfile(int val, int* p_add) nothrow {
+	int v_w_asfile(int val, int* p_add) nothrow @system {
 		if (!_p_desc) {
 			return 0;
 		}
@@ -246,7 +246,7 @@ public:
 		//return false;
 	}
 	// 可変長読み込み（int  までを保証）
-	bool v_r(int* p) nothrow {
+	bool v_r(int* p) nothrow @system {
 		if (!_p_desc) {
 			return false;
 		}
@@ -303,12 +303,12 @@ public:
 		return true;
 	}
 
-	int get_size_bytes() const nothrow {
+	int get_size_bytes() const nothrow @safe {
 		return _size;
 	}
 };
 
-int pxtnDescriptor_v_chk(int val) nothrow {
+int pxtnDescriptor_v_chk(int val) nothrow @safe {
 	uint us;
 
 	us = cast(uint) val;

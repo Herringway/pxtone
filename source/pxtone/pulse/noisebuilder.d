@@ -55,7 +55,7 @@ struct _UNIT {
 	_OSCILLATOR volu;
 }
 
-void _set_ocsillator(_OSCILLATOR* p_to, pxNOISEDESIGN_OSCILLATOR* p_from, int sps, const(short)* p_tbl, const(short)* p_tbl_rand) nothrow {
+void _set_ocsillator(_OSCILLATOR* p_to, pxNOISEDESIGN_OSCILLATOR* p_from, int sps, const(short)* p_tbl, const(short)* p_tbl_rand) nothrow @system {
 	const(short)* p;
 
 	switch (p_from.type) {
@@ -90,7 +90,7 @@ void _set_ocsillator(_OSCILLATOR* p_to, pxNOISEDESIGN_OSCILLATOR* p_from, int sp
 
 }
 
-void _incriment(_OSCILLATOR* p_osc, double incriment, const(short)* p_tbl_rand) nothrow {
+void _incriment(_OSCILLATOR* p_osc, double incriment, const(short)* p_tbl_rand) nothrow @system {
 	p_osc.offset += incriment;
 	if (p_osc.offset > _smp_num) {
 		p_osc.offset -= _smp_num;
@@ -116,12 +116,12 @@ private:
 	short*[pxWAVETYPE.pxWAVETYPE_num] _p_tables;
 	int[2] _rand_buf;
 
-	void _random_reset() nothrow {
+	void _random_reset() nothrow @safe {
 		_rand_buf[0] = 0x4444;
 		_rand_buf[1] = 0x8888;
 	}
 
-	short _random_get() nothrow {
+	short _random_get() nothrow @system {
 		int w1, w2;
 		char* p1;
 		char* p2;
@@ -140,7 +140,7 @@ private:
 	pxtnPulse_Frequency* _freq;
 
 public:
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		_b_init = false;
 		SAFE_DELETE(_freq);
 		for (int i = 0; i < pxWAVETYPE.pxWAVETYPE_num; i++) {
@@ -149,7 +149,7 @@ public:
 	}
 
 	// prepare tables. (110Hz)
-	bool Init() nothrow {
+	bool Init() nothrow @system {
 		int s;
 		short* p;
 		double work;
@@ -493,7 +493,7 @@ public:
 		return _b_init;
 	}
 
-	pxtnPulse_PCM* BuildNoise(pxtnPulse_Noise* p_noise, int ch, int sps, int bps) const nothrow {
+	pxtnPulse_PCM* BuildNoise(pxtnPulse_Noise* p_noise, int ch, int sps, int bps) const nothrow @system {
 		if (!_b_init) {
 			return null;
 		}

@@ -81,7 +81,7 @@ __gshared const(char)*[pxtnERR.pxtnERR_num + 1] _err_msg_tbl = [
 	"?"
 ];
 
-const(char)* pxtnError_get_string(pxtnERR err_code) {
+const(char)* pxtnError_get_string(pxtnERR err_code) @system {
 	if (err_code < 0 || err_code >= pxtnERR.pxtnERR_num) {
 		return _err_msg_tbl[pxtnERR.pxtnERR_num];
 	}

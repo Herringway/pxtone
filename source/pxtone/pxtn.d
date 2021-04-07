@@ -13,7 +13,7 @@ struct pxtnPOINT {
 	int y;
 }
 
-void* allocate(size_t size) nothrow {
+void* allocate(size_t size) nothrow @system {
 	return malloc(size);
 }
 
@@ -25,7 +25,7 @@ T* allocate(T)() {
 	return result;
 }
 
-void SAFE_DELETE(void* p) nothrow {
+void SAFE_DELETE(void* p) nothrow @system {
 	if (p) {
 		free(p);
 		p = null;

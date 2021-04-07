@@ -13,7 +13,7 @@ enum _TABLE_SIZE = (_OCTAVE_NUM * _KEY_PER_OCTAVE * _FREQUENCY_PER_KEY);
 
 struct pxtnPulse_Frequency {
 	float* _freq_table;
-	double _GetDivideOctaveRate(int divi) nothrow {
+	double _GetDivideOctaveRate(int divi) nothrow @safe {
 		double parameter = 1.0;
 		double work;
 		double result;
@@ -53,14 +53,14 @@ struct pxtnPulse_Frequency {
 		return parameter;
 	}
 
-	~this() nothrow {
+	~this() nothrow @system {
 		if (_freq_table) {
 			free(_freq_table);
 		}
 		_freq_table = null;
 	}
 
-	bool Init() nothrow {
+	bool Init() nothrow @system {
 		bool b_ret = false;
 		double[_OCTAVE_NUM] oct_table = [0.00390625, //0  -8
 			0.0078125, //1  -7
@@ -104,7 +104,7 @@ struct pxtnPulse_Frequency {
 		return b_ret;
 	}
 
-	float Get(int key) const nothrow {
+	float Get(int key) const nothrow @system {
 		int i;
 
 		i = (key + 0x6000) * _FREQUENCY_PER_KEY / 0x100;
@@ -116,7 +116,7 @@ struct pxtnPulse_Frequency {
 		return _freq_table[i];
 	}
 
-	float Get2(int key) nothrow {
+	float Get2(int key) nothrow @system {
 		int i = key >> 4;
 		if (i < 0) {
 			i = 0;
@@ -126,7 +126,7 @@ struct pxtnPulse_Frequency {
 		return _freq_table[i];
 	}
 
-	const(float)* GetDirect(int* p_size) nothrow {
+	const(float)* GetDirect(int* p_size) nothrow @safe {
 		*p_size = _TABLE_SIZE;
 		return _freq_table;
 	}

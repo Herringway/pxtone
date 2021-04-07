@@ -30,7 +30,7 @@ private:
 	ubyte* _p_smp;
 
 	// stereo / mono
-	bool _Convert_ChannelNum(int new_ch) nothrow {
+	bool _Convert_ChannelNum(int new_ch) nothrow @system {
 		ubyte* p_work = null;
 		int sample_size;
 		int work_size;
@@ -128,7 +128,7 @@ private:
 	}
 
 	// change bps
-	bool _Convert_BitPerSample(int new_bps) nothrow {
+	bool _Convert_BitPerSample(int new_bps) nothrow @system {
 		ubyte* p_work;
 		int sample_size;
 		int work_size;
@@ -198,7 +198,7 @@ private:
 		return true;
 	}
 	// sps
-	bool _Convert_SamplePerSecond(int new_sps) nothrow {
+	bool _Convert_SamplePerSecond(int new_sps) nothrow @system {
 		bool b_ret = false;
 		int sample_num;
 		int work_size;
@@ -316,11 +316,11 @@ private:
 	}
 
 public:
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		Release();
 	}
 
-	pxtnERR Create(int ch, int sps, int bps, int sample_num) nothrow {
+	pxtnERR Create(int ch, int sps, int bps, int sample_num) nothrow @system {
 		Release();
 
 		if (bps != 8 && bps != 16) {
@@ -354,7 +354,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	void Release() nothrow {
+	void Release() nothrow @system {
 		if (_p_smp) {
 			free(_p_smp);
 		}
@@ -367,7 +367,7 @@ public:
 		_smp_tail = 0;
 	}
 
-	pxtnERR read(pxtnDescriptor* doc) nothrow {
+	pxtnERR read(pxtnDescriptor* doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		char[16] buf = 0;
 		uint size = 0;
@@ -453,7 +453,7 @@ public:
 		return res;
 	}
 
-	bool write(pxtnDescriptor* doc, const char* pstrLIST) const nothrow {
+	bool write(pxtnDescriptor* doc, const char* pstrLIST) const nothrow @system {
 		if (!_p_smp) {
 			return false;
 		}
@@ -568,7 +568,7 @@ public:
 	}
 
 	// convert..
-	bool Convert(int new_ch, int new_sps, int new_bps) nothrow {
+	bool Convert(int new_ch, int new_sps, int new_bps) nothrow @system {
 		if (!_Convert_ChannelNum(new_ch)) {
 			return false;
 		}
@@ -649,49 +649,49 @@ public:
 		return true;
 	}
 
-	void* Devolve_SamplingBuffer() nothrow {
+	void* Devolve_SamplingBuffer() nothrow @safe {
 		void* p = _p_smp;
 		_p_smp = null;
 		return p;
 	}
 
-	float get_sec() const nothrow {
+	float get_sec() const nothrow @safe {
 		return cast(float)(_smp_body + _smp_head + _smp_tail) / cast(float) _sps;
 	}
 
-	int get_ch() const nothrow {
+	int get_ch() const nothrow @safe {
 		return _ch;
 	}
 
-	int get_bps() const nothrow {
+	int get_bps() const nothrow @safe {
 		return _bps;
 	}
 
-	int get_sps() const nothrow {
+	int get_sps() const nothrow @safe {
 		return _sps;
 	}
 
-	int get_smp_body() const nothrow {
+	int get_smp_body() const nothrow @safe {
 		return _smp_body;
 	}
 
-	int get_smp_head() const nothrow {
+	int get_smp_head() const nothrow @safe {
 		return _smp_head;
 	}
 
-	int get_smp_tail() const nothrow {
+	int get_smp_tail() const nothrow @safe {
 		return _smp_tail;
 	}
 
-	int get_buf_size() const nothrow {
+	int get_buf_size() const nothrow @safe {
 		return (_smp_head + _smp_body + _smp_tail) * _ch * _bps / 8;
 	}
 
-	const(void)* get_p_buf() const nothrow {
+	const(void)* get_p_buf() const nothrow @safe {
 		return _p_smp;
 	}
 
-	void* get_p_buf_variable() const nothrow {
+	void* get_p_buf_variable() const nothrow @system {
 		return cast(void*) _p_smp;
 	}
 

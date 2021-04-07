@@ -31,7 +31,7 @@ private:
 	int _volume_;
 
 public:
-	void Reset() nothrow {
+	void Reset() nothrow @safe {
 		_beat_num = EVENTDEFAULT_BEATNUM;
 		_beat_tempo = EVENTDEFAULT_BEATTEMPO;
 		_beat_clock = EVENTDEFAULT_BEATCLOCK;
@@ -40,13 +40,13 @@ public:
 		_last_meas = 0;
 	}
 
-	void Set(int beat_num, float beat_tempo, int beat_clock) nothrow {
+	void Set(int beat_num, float beat_tempo, int beat_clock) nothrow @safe {
 		_beat_num = beat_num;
 		_beat_tempo = beat_tempo;
 		_beat_clock = beat_clock;
 	}
 
-	void Get(int* p_beat_num, float* p_beat_tempo, int* p_beat_clock, int* p_meas_num) const nothrow {
+	void Get(int* p_beat_num, float* p_beat_tempo, int* p_beat_clock, int* p_meas_num) const nothrow @safe {
 		if (p_beat_num) {
 			*p_beat_num = _beat_num;
 		}
@@ -61,42 +61,42 @@ public:
 		}
 	}
 
-	int get_beat_num() const nothrow {
+	int get_beat_num() const nothrow @safe {
 		return _beat_num;
 	}
 
-	float get_beat_tempo() const nothrow {
+	float get_beat_tempo() const nothrow @safe {
 		return _beat_tempo;
 	}
 
-	int get_beat_clock() const nothrow {
+	int get_beat_clock() const nothrow @safe {
 		return _beat_clock;
 	}
 
-	int get_meas_num() const nothrow {
+	int get_meas_num() const nothrow @safe {
 		return _meas_num;
 	}
 
-	int get_repeat_meas() const nothrow {
+	int get_repeat_meas() const nothrow @safe {
 		return _repeat_meas;
 	}
 
-	int get_last_meas() const nothrow {
+	int get_last_meas() const nothrow @safe {
 		return _last_meas;
 	}
 
-	int get_last_clock() const nothrow {
+	int get_last_clock() const nothrow @safe {
 		return _last_meas * _beat_clock * _beat_num;
 	}
 
-	int get_play_meas() const nothrow {
+	int get_play_meas() const nothrow @safe {
 		if (_last_meas) {
 			return _last_meas;
 		}
 		return _meas_num;
 	}
 
-	void set_meas_num(int meas_num) nothrow {
+	void set_meas_num(int meas_num) nothrow @safe {
 		if (meas_num < 1) {
 			meas_num = 1;
 		}
@@ -109,28 +109,28 @@ public:
 		_meas_num = meas_num;
 	}
 
-	void set_repeat_meas(int meas) nothrow {
+	void set_repeat_meas(int meas) nothrow @safe {
 		if (meas < 0) {
 			meas = 0;
 		}
 		_repeat_meas = meas;
 	}
 
-	void set_last_meas(int meas) nothrow {
+	void set_last_meas(int meas) nothrow @safe {
 		if (meas < 0) {
 			meas = 0;
 		}
 		_last_meas = meas;
 	}
 
-	void set_beat_clock(int beat_clock) nothrow {
+	void set_beat_clock(int beat_clock) nothrow @safe {
 		if (beat_clock < 0) {
 			beat_clock = 0;
 		}
 		_beat_clock = beat_clock;
 	}
 
-	void AdjustMeasNum(int clock) nothrow {
+	void AdjustMeasNum(int clock) nothrow @safe {
 		int m_num;
 		int b_num;
 
@@ -147,11 +147,11 @@ public:
 		}
 	}
 
-	int get_this_clock(int meas, int beat, int clock) const nothrow {
+	int get_this_clock(int meas, int beat, int clock) const nothrow @safe {
 		return _beat_num * _beat_clock * meas + _beat_clock * beat + clock;
 	}
 
-	bool io_w_v5(pxtnDescriptor* p_doc, int rough) const nothrow {
+	bool io_w_v5(pxtnDescriptor* p_doc, int rough) const nothrow @system {
 
 		uint size = 15;
 		short bclock = cast(short)(_beat_clock / rough);
@@ -181,7 +181,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_r_v5(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR io_r_v5(pxtnDescriptor* p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		short beat_clock = 0;
 		byte beat_num = 0;
@@ -224,7 +224,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	int io_r_v5_EventNum(pxtnDescriptor* p_doc) nothrow {
+	int io_r_v5_EventNum(pxtnDescriptor* p_doc) nothrow @system {
 		uint size;
 		if (!p_doc.r(&size, uint.sizeof, 1)) {
 			return 0;
@@ -239,7 +239,7 @@ public:
 		return 5;
 	}
 
-	pxtnERR io_r_x4x(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR io_r_x4x(pxtnDescriptor* p_doc) nothrow @system {
 		_x4x_MASTER mast = {0};
 		int size = 0;
 		int e = 0;
@@ -337,7 +337,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	int io_r_x4x_EventNum(pxtnDescriptor* p_doc) nothrow {
+	int io_r_x4x_EventNum(pxtnDescriptor* p_doc) nothrow @system {
 		_x4x_MASTER mast;
 		int size;
 		int work;

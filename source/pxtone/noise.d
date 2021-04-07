@@ -18,11 +18,11 @@ struct pxtoneNoise {
 	int _sps = 44100;
 	int _bps = 16;
 
-	~this() {
+	~this() nothrow @system {
 		SAFE_DELETE(_bldr);
 	}
 
-	bool init() {
+	bool init() nothrow @system {
 		pxtnPulse_NoiseBuilder* bldr = allocate!pxtnPulse_NoiseBuilder();
 		if (!bldr.Init()) {
 			free(cast(void*) bldr);
@@ -32,7 +32,7 @@ struct pxtoneNoise {
 		return true;
 	}
 
-	bool quality_set(int ch_num, int sps, int bps) {
+	bool quality_set(int ch_num, int sps, int bps) nothrow @safe {
 		switch (ch_num) {
 		case 1:
 		case 2:
@@ -66,7 +66,7 @@ struct pxtoneNoise {
 		return false;
 	}
 
-	void quality_get(int* p_ch_num, int* p_sps, int* p_bps) const {
+	void quality_get(int* p_ch_num, int* p_sps, int* p_bps) const nothrow @safe {
 		if (p_ch_num) {
 			*p_ch_num = _ch_num;
 		}
@@ -78,7 +78,7 @@ struct pxtoneNoise {
 		}
 	}
 
-	bool generate(pxtnDescriptor* p_doc, void** pp_buf, int* p_size) const {
+	bool generate(pxtnDescriptor* p_doc, void** pp_buf, int* p_size) const nothrow @system {
 		bool b_ret = false;
 		pxtnPulse_NoiseBuilder* bldr = cast(pxtnPulse_NoiseBuilder*) _bldr;
 		pxtnPulse_Noise* noise = allocate!pxtnPulse_Noise();

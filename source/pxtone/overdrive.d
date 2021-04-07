@@ -23,42 +23,42 @@ struct pxtnOverDrive {
 
 	int _cut_16bit_top;
 
-	float get_cut() const nothrow {
+	float get_cut() const nothrow @safe {
 		return _cut_f;
 	}
 
-	float get_amp() const nothrow {
+	float get_amp() const nothrow @safe {
 		return _amp_f;
 	}
 
-	int get_group() const nothrow {
+	int get_group() const nothrow @safe {
 		return _group;
 	}
 
-	void Set(float cut, float amp, int group) nothrow {
+	void Set(float cut, float amp, int group) nothrow @safe {
 		_cut_f = cut;
 		_amp_f = amp;
 		_group = group;
 	}
 
-	bool get_played() const nothrow {
+	bool get_played() const nothrow @safe {
 		return _b_played;
 	}
 
-	void set_played(bool b) nothrow {
+	void set_played(bool b) nothrow @safe {
 		_b_played = b;
 	}
 
-	bool switch_played() nothrow {
+	bool switch_played() nothrow @safe {
 		_b_played = _b_played ? false : true;
 		return _b_played;
 	}
 
-	void Tone_Ready() nothrow {
+	void Tone_Ready() nothrow @safe {
 		_cut_16bit_top = cast(int)(32767 * (100 - _cut_f) / 100);
 	}
 
-	void Tone_Supple(int* group_smps) const nothrow {
+	void Tone_Supple(int* group_smps) const nothrow @system {
 		if (!_b_played) {
 			return;
 		}
@@ -71,7 +71,7 @@ struct pxtnOverDrive {
 		group_smps[_group] = cast(int)(cast(float) work * _amp_f);
 	}
 
-	bool Write(pxtnDescriptor* p_doc) const nothrow {
+	bool Write(pxtnDescriptor* p_doc) const nothrow @system {
 		_OVERDRIVESTRUCT over;
 		int size;
 
@@ -92,7 +92,7 @@ struct pxtnOverDrive {
 		return true;
 	}
 
-	pxtnERR Read(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR Read(pxtnDescriptor* p_doc) nothrow @system {
 		_OVERDRIVESTRUCT over = {0};
 		int size = 0;
 

@@ -40,54 +40,54 @@ private:
 
 public:
 
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		Tone_Release();
 	}
 
-	DELAYUNIT get_unit() const nothrow {
+	DELAYUNIT get_unit() const nothrow @safe {
 		return _unit;
 	}
 
-	int get_group() const nothrow {
+	int get_group() const nothrow @safe {
 		return _group;
 	}
 
-	float get_rate() const nothrow {
+	float get_rate() const nothrow @safe {
 		return _rate;
 	}
 
-	float get_freq() const nothrow {
+	float get_freq() const nothrow @safe {
 		return _freq;
 	}
 
-	void Set(DELAYUNIT unit, float freq, float rate, int group) {
+	void Set(DELAYUNIT unit, float freq, float rate, int group) nothrow @safe {
 		_unit = unit;
 		_group = group;
 		_rate = rate;
 		_freq = freq;
 	}
 
-	bool get_played() const nothrow {
+	bool get_played() const nothrow @safe {
 		return _b_played;
 	}
 
-	void set_played(bool b) nothrow {
+	void set_played(bool b) nothrow @safe {
 		_b_played = b;
 	}
 
-	bool switch_played() nothrow {
+	bool switch_played() nothrow @safe {
 		_b_played = _b_played ? false : true;
 		return _b_played;
 	}
 
-	void Tone_Release() nothrow {
+	void Tone_Release() nothrow @system {
 		for (int i = 0; i < pxtnMAX_CHANNEL; i++) {
 			pxtnMem_free(cast(void**)&_bufs[i]);
 		}
 		_smp_num = 0;
 	}
 
-	pxtnERR Tone_Ready(int beat_num, float beat_tempo, int sps) nothrow {
+	pxtnERR Tone_Ready(int beat_num, float beat_tempo, int sps) nothrow @system {
 		Tone_Release();
 
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
@@ -128,7 +128,7 @@ public:
 		return res;
 	}
 
-	void Tone_Supple(int ch, int* group_smps) nothrow {
+	void Tone_Supple(int ch, int* group_smps) nothrow @system {
 		if (!_smp_num) {
 			return;
 		}
@@ -139,7 +139,7 @@ public:
 		_bufs[ch][_offset] = group_smps[_group];
 	}
 
-	void Tone_Increment() nothrow {
+	void Tone_Increment() nothrow @safe {
 		if (!_smp_num) {
 			return;
 		}
@@ -148,7 +148,7 @@ public:
 		}
 	}
 
-	void Tone_Clear() nothrow {
+	void Tone_Clear() nothrow @system {
 		if (!_smp_num) {
 			return;
 		}
@@ -158,7 +158,7 @@ public:
 		}
 	}
 
-	bool Write(pxtnDescriptor* p_doc) const nothrow {
+	bool Write(pxtnDescriptor* p_doc) const nothrow @system {
 		_DELAYSTRUCT dela;
 		int size;
 
@@ -180,7 +180,7 @@ public:
 		return true;
 	}
 
-	pxtnERR Read(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR Read(pxtnDescriptor* p_doc) nothrow @system {
 		_DELAYSTRUCT dela = {0};
 		int size = 0;
 

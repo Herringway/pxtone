@@ -22,7 +22,7 @@ struct OVMEM {
 
 // 4 callbacks below:
 
-extern (C) size_t _mread(void* p, size_t size, size_t nmemb, void* p_void) nothrow {
+extern (C) size_t _mread(void* p, size_t size, size_t nmemb, void* p_void) nothrow @system {
 	OVMEM* pom = cast(OVMEM*) p_void;
 
 	if (!pom) {
@@ -49,7 +49,7 @@ extern (C) size_t _mread(void* p, size_t size, size_t nmemb, void* p_void) nothr
 	return nmemb;
 }
 
-extern (C) int _mseek(void* p_void, long offset, int mode) nothrow {
+extern (C) int _mseek(void* p_void, long offset, int mode) nothrow @system {
 	int newpos;
 	OVMEM* pom = cast(OVMEM*) p_void;
 
@@ -83,7 +83,7 @@ extern (C) int _mseek(void* p_void, long offset, int mode) nothrow {
 	return 0;
 }
 
-extern (C) int _mtell(void* p_void) nothrow {
+extern (C) int _mtell(void* p_void) nothrow @system {
 	OVMEM* pom = cast(OVMEM*) p_void;
 	if (!pom) {
 		return -1;
@@ -91,7 +91,7 @@ extern (C) int _mtell(void* p_void) nothrow {
 	return pom.pos;
 }
 
-extern (C) int _mclose_dummy(void* p_void) nothrow {
+extern (C) int _mclose_dummy(void* p_void) nothrow @system {
 	OVMEM* pom = cast(OVMEM*) p_void;
 	if (!pom) {
 		return -1;
@@ -111,7 +111,7 @@ private:
 	int _size;
 	char* _p_data;
 
-	bool _SetInformation() nothrow {
+	bool _SetInformation() nothrow @system {
 		bool b_ret = false;
 
 		OVMEM ovmem;
@@ -162,11 +162,11 @@ private:
 	}
 
 public:
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		Release();
 	}
 
-	pxtnERR Decode(pxtnPulse_PCM* p_pcm) const nothrow {
+	pxtnERR Decode(pxtnPulse_PCM* p_pcm) const nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		OggVorbis_File vf;
@@ -243,7 +243,7 @@ public:
 		return res;
 	}
 
-	void Release() nothrow {
+	void Release() nothrow @system {
 		if (_p_data) {
 			free(_p_data);
 		}
@@ -254,7 +254,7 @@ public:
 		_size = 0;
 	}
 
-	bool GetInfo(int* p_ch, int* p_sps, int* p_smp_num) nothrow {
+	bool GetInfo(int* p_ch, int* p_sps, int* p_smp_num) nothrow @safe {
 		if (!_p_data) {
 			return false;
 		}
@@ -272,14 +272,14 @@ public:
 		return true;
 	}
 
-	int GetSize() const nothrow {
+	int GetSize() const nothrow @safe {
 		if (!_p_data) {
 			return 0;
 		}
 		return cast(int)(int.sizeof * 4 + _size);
 	}
 
-	bool ogg_write(pxtnDescriptor* desc) const nothrow {
+	bool ogg_write(pxtnDescriptor* desc) const nothrow @system {
 		bool b_ret = false;
 
 		if (!desc.w_asfile(_p_data, 1, _size)) {
@@ -291,7 +291,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR ogg_read(pxtnDescriptor* desc) nothrow {
+	pxtnERR ogg_read(pxtnDescriptor* desc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		_size = desc.get_size_bytes();
@@ -325,7 +325,7 @@ public:
 		return res;
 	}
 
-	bool pxtn_write(pxtnDescriptor* p_doc) const nothrow {
+	bool pxtn_write(pxtnDescriptor* p_doc) const nothrow @system {
 		if (!_p_data) {
 			return false;
 		}
@@ -349,7 +349,7 @@ public:
 		return true;
 	}
 
-	bool pxtn_read(pxtnDescriptor* p_doc) nothrow {
+	bool pxtn_read(pxtnDescriptor* p_doc) nothrow @system {
 		bool b_ret = false;
 
 		if (!p_doc.r(&_ch, int.sizeof, 1)) {
@@ -391,7 +391,7 @@ public:
 		return b_ret;
 	}
 
-	bool Copy(pxtnPulse_Oggv* p_dst) const nothrow {
+	bool Copy(pxtnPulse_Oggv* p_dst) const nothrow @system {
 		p_dst.Release();
 		if (!_p_data) {
 			return true;

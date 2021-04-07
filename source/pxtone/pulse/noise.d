@@ -60,7 +60,7 @@ enum NOISEDESIGNLIMIT_OSC_FREQUENCY = 44100.0f;
 enum NOISEDESIGNLIMIT_OSC_VOLUME = 200.0f;
 enum NOISEDESIGNLIMIT_OSC_OFFSET = 100.0f;
 
-static void _FixUnit(pxNOISEDESIGN_OSCILLATOR* p_osc) nothrow {
+static void _FixUnit(pxNOISEDESIGN_OSCILLATOR* p_osc) nothrow @safe {
 	if (p_osc.type >= pxWAVETYPE.pxWAVETYPE_num) {
 		p_osc.type = pxWAVETYPE.pxWAVETYPE_None;
 	}
@@ -102,7 +102,7 @@ __gshared const(char)* _code = "PTNOISE-";
 //_ver =  20051028 ; -v.0.9.2.3
 __gshared const uint _ver = 20120418; // 16 wave types.
 
-static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, pxtnDescriptor* p_doc, int* p_add) nothrow {
+static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, pxtnDescriptor* p_doc, int* p_add) nothrow @system {
 	int work;
 	work = cast(int) p_osc.type;
 	if (!p_doc.v_w_asfile(work, p_add)) {
@@ -127,7 +127,7 @@ static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, pxtnDescrip
 	return true;
 }
 
-static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, pxtnDescriptor* p_doc) nothrow {
+static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, pxtnDescriptor* p_doc) nothrow @system {
 	int work;
 	if (!p_doc.v_r(&work)) {
 		return pxtnERR.pxtnERR_desc_r;
@@ -156,7 +156,7 @@ static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, pxtnDescriptor* 
 	return pxtnERR.pxtnOK;
 }
 
-static uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow {
+static uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow @safe {
 	uint flags = 0;
 	flags |= NOISEEDITFLAG_ENVELOPE;
 	if (pU.pan) {
@@ -174,7 +174,7 @@ static uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow {
 	return flags;
 }
 
-int _CompareOsci(const(pxNOISEDESIGN_OSCILLATOR)* p_osc1, const(pxNOISEDESIGN_OSCILLATOR)* p_osc2) nothrow {
+int _CompareOsci(const(pxNOISEDESIGN_OSCILLATOR)* p_osc1, const(pxNOISEDESIGN_OSCILLATOR)* p_osc2) nothrow @safe {
 	if (p_osc1.type != p_osc2.type) {
 		return 1;
 	}
@@ -200,11 +200,11 @@ private:
 	pxNOISEDESIGN_UNIT* _units;
 
 public:
-	 ~this() nothrow {
+	 ~this() nothrow @system {
 		Release();
 	}
 
-	bool write(pxtnDescriptor* p_doc, int* p_add) const nothrow {
+	bool write(pxtnDescriptor* p_doc, int* p_add) const nothrow @system {
 		bool b_ret = false;
 		int u, e, seek, num_seek, flags;
 		char _byte;
@@ -299,7 +299,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR read(pxtnDescriptor* p_doc) nothrow {
+	pxtnERR read(pxtnDescriptor* p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		uint flags = 0;
 		char unit_num = 0;
@@ -427,7 +427,7 @@ public:
 		return res;
 	}
 
-	void Release() nothrow {
+	void Release() nothrow @system {
 		if (_units) {
 			for (int u = 0; u < _unit_num; u++) {
 				if (_units[u].enves) {
@@ -439,7 +439,7 @@ public:
 		}
 	}
 
-	bool Allocate(int unit_num, int envelope_num) nothrow {
+	bool Allocate(int unit_num, int envelope_num) nothrow @system {
 		bool b_ret = false;
 
 		Release();
@@ -466,7 +466,7 @@ public:
 		return b_ret;
 	}
 
-	bool Copy(pxtnPulse_Noise* p_dst) const nothrow {
+	bool Copy(pxtnPulse_Noise* p_dst) const nothrow @system {
 		if (!p_dst) {
 			return false;
 		}
@@ -507,7 +507,7 @@ public:
 		return b_ret;
 	}
 
-	int Compare(const(pxtnPulse_Noise)* p_src) const nothrow {
+	int Compare(const(pxtnPulse_Noise)* p_src) const nothrow @system {
 		if (!p_src) {
 			return -1;
 		}
@@ -551,7 +551,7 @@ public:
 		return 0;
 	}
 
-	void Fix() nothrow {
+	void Fix() nothrow @system {
 		pxNOISEDESIGN_UNIT* p_unit;
 		int i, e;
 
@@ -589,23 +589,23 @@ public:
 		}
 	}
 
-	void set_smp_num_44k(int num) nothrow {
+	void set_smp_num_44k(int num) nothrow @safe {
 		_smp_num_44k = num;
 	}
 
-	int get_unit_num() const nothrow {
+	int get_unit_num() const nothrow @safe {
 		return _unit_num;
 	}
 
-	int get_smp_num_44k() const nothrow {
+	int get_smp_num_44k() const nothrow @safe {
 		return _smp_num_44k;
 	}
 
-	float get_sec() const nothrow {
+	float get_sec() const nothrow @safe {
 		return cast(float) _smp_num_44k / 44100;
 	}
 
-	pxNOISEDESIGN_UNIT* get_unit(int u) nothrow {
+	pxNOISEDESIGN_UNIT* get_unit(int u) nothrow @system {
 		if (!_units || u < 0 || u >= _unit_num) {
 			return null;
 		}
