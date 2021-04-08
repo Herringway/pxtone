@@ -350,9 +350,9 @@ public:
 		}
 
 		if (_bps == 8) {
-			memset(_p_smp, 128, size);
+			_p_smp[0 .. size] = 128;
 		} else {
-			memset(_p_smp, 0, size);
+			_p_smp[0 .. size] = 0;
 		}
 
 		return pxtnERR.pxtnOK;

@@ -191,7 +191,7 @@ public:
 
 	void Clear() nothrow @system {
 		if (_eves) {
-			memset(_eves, 0, EVERECORD.sizeof * _eve_allocated_num);
+			_eves[0 .. _eve_allocated_num] = EVERECORD.init;
 		}
 		_start = null;
 	}
@@ -206,7 +206,7 @@ public:
 		if (!(_eves)) {
 			return false;
 		}
-		memset(_eves, 0, EVERECORD.sizeof * max_event_num);
+		_eves[0 .. max_event_num] = EVERECORD.init;
 		_eve_allocated_num = max_event_num;
 		return true;
 	}

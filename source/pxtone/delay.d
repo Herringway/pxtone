@@ -21,8 +21,8 @@ enum DELAYUNIT {
 struct _DELAYSTRUCT {
 	ushort unit;
 	ushort group;
-	float rate;
-	float freq;
+	float rate = 0.0;
+	float freq = 0.0;
 }
 
 struct pxtnDelay {
@@ -155,7 +155,7 @@ public:
 		}
 		int def = 0; // ..
 		for (int i = 0; i < pxtnMAX_CHANNEL; i++) {
-			memset(_bufs[i], def, _smp_num * int.sizeof);
+			_bufs[i][0 .. _smp_num] = def;
 		}
 	}
 
@@ -163,7 +163,6 @@ public:
 		_DELAYSTRUCT dela;
 		int size;
 
-		memset(&dela, 0, _DELAYSTRUCT.sizeof);
 		dela.unit = cast(ushort) _unit;
 		dela.group = cast(ushort) _group;
 		dela.rate = _rate;

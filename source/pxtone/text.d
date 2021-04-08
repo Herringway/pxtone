@@ -25,7 +25,7 @@ bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @s
 		return false;
 	}
 
-	memset(*pp, 0, *p_buf_size + 1);
+	(*pp)[0 .. *p_buf_size + 1] = 0;
 
 	if (*p_buf_size) {
 		if (!p_doc.r(*pp, char.sizeof, *p_buf_size)) {

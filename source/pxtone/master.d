@@ -343,7 +343,6 @@ public:
 		int work;
 		int e;
 
-		memset(&mast, 0, _x4x_MASTER.sizeof);
 		if (!p_doc.r(&size, 4, 1)) {
 			return 0;
 		}

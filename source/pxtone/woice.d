@@ -118,14 +118,14 @@ private void _Voice_Release(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi) nothro
 			deallocate(p_vc.p_oggv);
 		}
 		deallocate(p_vc.envelope.points);
-		memset(&p_vc.envelope, 0, pxtnVOICEENVELOPE.sizeof);
+		p_vc.envelope = pxtnVOICEENVELOPE.init;
 		deallocate(p_vc.wave.points);
-		memset(&p_vc.wave, 0, pxtnVOICEWAVE.sizeof);
+		p_vc.wave = pxtnVOICEWAVE.init;
 	}
 	if (p_vi) {
 		deallocate(p_vi.p_env);
 		deallocate(p_vi.p_smp_w);
-		memset(p_vi, 0, pxtnVOICEINSTANCE.sizeof);
+		*p_vi = pxtnVOICEINSTANCE.init;
 	}
 }
 
@@ -315,7 +315,7 @@ public:
 		if (!name || buf_size < 0 || buf_size > pxtnMAX_TUNEWOICENAME) {
 			return false;
 		}
-		memset(_name_buf.ptr, 0, _name_buf.sizeof);
+		_name_buf[0 .. $] = 0;
 		if (buf_size) {
 			memcpy(_name_buf.ptr, name, buf_size);
 		}
@@ -365,7 +365,7 @@ public:
 			version (pxINCLUDE_OGGVORBIS) {
 				p_vc.p_oggv = allocate!pxtnPulse_Oggv();
 			}
-			memset(&p_vc.envelope, 0, pxtnVOICEENVELOPE.sizeof);
+			p_vc.envelope = pxtnVOICEENVELOPE.init;
 		}
 
 		b_ret = true;
@@ -478,7 +478,7 @@ public:
 				for (int j = i; j < _voice_num; j++) {
 					_voices[j] = _voices[j + 1];
 				}
-				memset(&_voices[_voice_num], 0, pxtnVOICEUNIT.sizeof);
+				_voices[_voice_num] = pxtnVOICEUNIT.init;
 			}
 		}
 	}
@@ -781,8 +781,6 @@ public:
 		const(pxtnVOICEUNIT)* p_vc = &_voices[0];
 		_MATERIALSTRUCT_PCM pcm;
 
-		memset(&pcm, 0, _MATERIALSTRUCT_PCM.sizeof);
-
 		pcm.sps = cast(uint) p_pcm.get_sps();
 		pcm.bps = cast(ushort) p_pcm.get_bps();
 		pcm.ch = cast(ushort) p_pcm.get_ch();
@@ -863,7 +861,6 @@ public:
 		int size = 0;
 
 		// ptv -------------------------
-		memset(&ptn, 0, _MATERIALSTRUCT_PTN.sizeof);
 		ptn.x3x_unit_no = cast(ushort) 0;
 
 		p_vc = &_voices[0];
@@ -949,7 +946,6 @@ public:
 		int size = 0;
 
 		// ptv -------------------------
-		memset(&ptv, 0, _MATERIALSTRUCT_PTV.sizeof);
 		ptv.x3x_unit_no = cast(ushort) 0;
 		ptv.x3x_tuning = 0; //1.0f;//p_w.tuning;
 		ptv.size = 0;
@@ -1162,7 +1158,7 @@ public:
 						res = pxtnERR.pxtnERR_memory;
 						goto term;
 					}
-					memset(p_vi.p_smp_w, 0x00, size);
+					p_vi.p_smp_w[0 .. size] = 0x00;
 					_UpdateWavePTV(p_vc, p_vi, ch, sps, bps);
 					break;
 				}

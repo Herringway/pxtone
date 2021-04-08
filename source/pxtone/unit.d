@@ -46,7 +46,7 @@ private:
 	int _v_VOLUME;
 	int _v_VELOCITY;
 	int _v_GROUPNO;
-	float _v_TUNING;
+	float _v_TUNING = 0.0;
 
 	const(pxtnWoice)* _p_woice;
 
@@ -70,7 +70,7 @@ public:
 
 	void Tone_Clear() nothrow @system {
 		for (int i = 0; i < pxtnMAX_CHANNEL; i++) {
-			memset(_pan_time_bufs[i].ptr, 0, int.sizeof * pxtnBUFSIZE_TIMEPAN);
+			_pan_time_bufs[i][0 .. pxtnBUFSIZE_TIMEPAN] = 0;
 		}
 	}
 
@@ -308,7 +308,7 @@ public:
 		if (!name || buf_size < 0 || buf_size > pxtnMAX_TUNEUNITNAME) {
 			return false;
 		}
-		memset(_name_buf.ptr, 0, _name_buf.sizeof);
+		_name_buf[0 .. $] = 0;
 		if (buf_size) {
 			memcpy(_name_buf.ptr, name, buf_size);
 		}

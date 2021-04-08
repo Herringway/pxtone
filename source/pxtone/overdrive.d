@@ -75,7 +75,6 @@ struct pxtnOverDrive {
 		_OVERDRIVESTRUCT over;
 		int size;
 
-		memset(&over, 0, _OVERDRIVESTRUCT.sizeof);
 		over.cut = _cut_f;
 		over.amp = _amp_f;
 		over.group = cast(ushort) _group;
@@ -96,7 +95,6 @@ struct pxtnOverDrive {
 		_OVERDRIVESTRUCT over = {0};
 		int size = 0;
 
-		memset(&over, 0, _OVERDRIVESTRUCT.sizeof);
 		if (!p_doc.r(&size, 4, 1)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}

@@ -807,8 +807,6 @@ private:
 		_NUM_UNIT data;
 		int size;
 
-		memset(&data, 0, _NUM_UNIT.sizeof);
-
 		data.num = cast(short) _unit_num;
 
 		size = _NUM_UNIT.sizeof;
@@ -1010,7 +1008,6 @@ private:
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
 		}
-		memset(_delays, 0, byte_size);
 		_delay_max = pxtnMAX_TUNEDELAYSTRUCT;
 
 		// over-drive
@@ -1019,7 +1016,6 @@ private:
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
 		}
-		memset(_ovdrvs, 0, byte_size);
 		_ovdrv_max = pxtnMAX_TUNEOVERDRIVESTRUCT;
 
 		// woice
@@ -1028,7 +1024,6 @@ private:
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
 		}
-		memset(_woices, 0, byte_size);
 		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
 
 		// unit
@@ -1037,7 +1032,6 @@ private:
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
 		}
-		memset(_units, 0, byte_size);
 		_unit_max = pxtnMAX_TUNEUNITSTRUCT;
 
 		_group_num = pxtnMAX_TUNEGROUPNUM;
