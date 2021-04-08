@@ -52,9 +52,9 @@ struct pxtnVOICEINSTANCE {
 	int smp_head_w;
 	int smp_body_w;
 	int smp_tail_w;
-	ubyte* p_smp_w;
+	ubyte[] p_smp_w;
 
-	ubyte* p_env;
+	ubyte[] p_env;
 	int env_size;
 	int env_release;
 }
@@ -64,13 +64,13 @@ struct pxtnVOICEENVELOPE {
 	int head_num;
 	int body_num;
 	int tail_num;
-	pxtnPOINT* points;
+	pxtnPOINT[] points;
 }
 
 struct pxtnVOICEWAVE {
 	int num;
 	int reso; // COODINATERESOLUTION
-	pxtnPOINT* points;
+	pxtnPOINT[] points;
 }
 
 struct pxtnVOICEUNIT {
@@ -259,8 +259,8 @@ private:
 	int _name_size;
 
 	pxtnWOICETYPE _type = pxtnWOICETYPE.pxtnWOICE_None;
-	pxtnVOICEUNIT* _voices;
-	pxtnVOICEINSTANCE* _voinsts;
+	pxtnVOICEUNIT[] _voices;
+	pxtnVOICEINSTANCE[] _voinsts;
 
 	float _x3x_tuning;
 	int _x3x_basic_key; // tuning old-fmt when key-event
@@ -339,11 +339,11 @@ public:
 
 		Voice_Release();
 
-		_voices = allocateC!pxtnVOICEUNIT(voice_num);
+		_voices = allocate!pxtnVOICEUNIT(voice_num);
 		if (!_voices) {
 			goto End;
 		}
-		_voinsts = allocateC!pxtnVOICEINSTANCE(voice_num);
+		_voinsts = allocate!pxtnVOICEINSTANCE(voice_num);
 		if (!_voinsts) {
 			goto End;
 		}
@@ -419,7 +419,7 @@ public:
 			p_vc2.envelope.tail_num = p_vc1.envelope.tail_num;
 			num = p_vc2.envelope.head_num + p_vc2.envelope.body_num + p_vc2.envelope.tail_num;
 			size = pxtnPOINT.sizeof * num;
-			p_vc2.envelope.points = allocateC!pxtnPOINT(size / pxtnPOINT.sizeof);
+			p_vc2.envelope.points = allocate!pxtnPOINT(size / pxtnPOINT.sizeof);
 			if (!p_vc2.envelope.points) {
 				goto End;
 			}
@@ -429,7 +429,7 @@ public:
 			p_vc2.wave.num = p_vc1.wave.num;
 			p_vc2.wave.reso = p_vc1.wave.reso;
 			size = pxtnPOINT.sizeof * p_vc2.wave.num;
-			p_vc2.wave.points = allocateC!pxtnPOINT(size / pxtnPOINT.sizeof);
+			p_vc2.wave.points = allocate!pxtnPOINT(size / pxtnPOINT.sizeof);
 			if (!p_vc2.wave.points) {
 				goto End;
 			}
@@ -794,7 +794,7 @@ public:
 		if (!p_doc.w_asfile(&pcm, _MATERIALSTRUCT_PCM.sizeof, 1)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(p_pcm.get_p_buf(), 1, pcm.data_size)) {
+		if (!p_doc.w_asfile(p_pcm.get_p_buf().ptr, 1, pcm.data_size)) {
 			return false;
 		}
 
@@ -1123,7 +1123,7 @@ public:
 					p_vi.smp_head_w = pcm_work.get_smp_head();
 					p_vi.smp_body_w = pcm_work.get_smp_body();
 					p_vi.smp_tail_w = pcm_work.get_smp_tail();
-					p_vi.p_smp_w = cast(ubyte*) pcm_work.Devolve_SamplingBuffer();
+					p_vi.p_smp_w = cast(ubyte[]) pcm_work.Devolve_SamplingBuffer();
 					break;
 				} else {
 					res = pxtnERR.pxtnERR_ogg_no_supported;
@@ -1143,14 +1143,14 @@ public:
 				p_vi.smp_head_w = pcm_work.get_smp_head();
 				p_vi.smp_body_w = pcm_work.get_smp_body();
 				p_vi.smp_tail_w = pcm_work.get_smp_tail();
-				p_vi.p_smp_w = cast(ubyte*) pcm_work.Devolve_SamplingBuffer();
+				p_vi.p_smp_w = cast(ubyte[]) pcm_work.Devolve_SamplingBuffer();
 				break;
 
 			case pxtnVOICETYPE.pxtnVOICE_Overtone:
 			case pxtnVOICETYPE.pxtnVOICE_Coodinate: {
 					p_vi.smp_body_w = 400;
 					int size = p_vi.smp_body_w * ch * bps / 8;
-					p_vi.p_smp_w = allocateC!ubyte(size);
+					p_vi.p_smp_w = allocate!ubyte(size);
 					if (!(p_vi.p_smp_w)) {
 						res = pxtnERR.pxtnERR_memory;
 						goto term;
@@ -1171,7 +1171,7 @@ public:
 						res = pxtnERR.pxtnERR_ptn_build;
 						goto term;
 					}
-					p_vi.p_smp_w = cast(ubyte*) p_pcm.Devolve_SamplingBuffer();
+					p_vi.p_smp_w = cast(ubyte[]) p_pcm.Devolve_SamplingBuffer();
 					p_vi.smp_body_w = p_vc.p_ptn.get_smp_num_44k();
 					break;
 				}
@@ -1198,7 +1198,7 @@ public:
 	pxtnERR Tone_Ready_envelope(int sps) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		int e = 0;
-		pxtnPOINT* p_point = null;
+		pxtnPOINT[] p_point = null;
 
 		for (int v = 0; v < _voice_num; v++) {
 			pxtnVOICEINSTANCE* p_vi = &_voinsts[v];
@@ -1217,12 +1217,12 @@ public:
 					p_vi.env_size = 1;
 				}
 
-				p_vi.p_env = allocateC!ubyte(p_vi.env_size);
+				p_vi.p_env = allocate!ubyte(p_vi.env_size);
 				if (!p_vi.p_env) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;
 				}
-				p_point = allocateC!pxtnPOINT(p_enve.head_num);
+				p_point = allocate!pxtnPOINT(p_enve.head_num);
 				if (!p_point) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;

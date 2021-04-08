@@ -12,7 +12,7 @@ import pxtone.error;
 import pxtone.pulse.pcm;
 
 struct OVMEM {
-	char* p_buf; // ogg vorbis-data on memory.s
+	const(char)[] p_buf; // ogg vorbis-data on memory.s
 	int size; //
 	int pos; // reading position.
 }
@@ -35,12 +35,12 @@ extern (C) size_t _mread(void* p, size_t size, size_t nmemb, void* p_void) nothr
 	int left = pom.size - pom.pos;
 
 	if (cast(int)(size * nmemb) >= left) {
-		p[0 .. pom.size - pom.pos] = pom.p_buf[pom.pos .. pom.size];
+		p[0 .. pom.size - pom.pos] = cast(void[])pom.p_buf[pom.pos .. pom.size];
 		pom.pos = pom.size;
 		return left / size;
 	}
 
-	p[0 .. nmemb * size] = pom.p_buf[pom.pos .. pom.pos + nmemb * size];
+	p[0 .. nmemb * size] = cast(void[])pom.p_buf[pom.pos .. pom.pos + nmemb * size];
 	pom.pos += cast(int)(nmemb * size);
 
 	return nmemb;
@@ -106,7 +106,7 @@ private:
 	int _sps2;
 	int _smp_num;
 	int _size;
-	char* _p_data;
+	char[] _p_data;
 
 	bool _SetInformation() nothrow @system {
 		bool b_ret = false;
@@ -174,7 +174,7 @@ public:
 		int current_section;
 		ubyte[4096] pcmout = 0; //take 4k out of the data segment, not the stack
 
-		ovmem.p_buf = cast(char*) _p_data;
+		ovmem.p_buf = _p_data;
 		ovmem.pos = 0;
 		ovmem.size = _size;
 
@@ -279,7 +279,7 @@ public:
 	bool ogg_write(pxtnDescriptor* desc) const nothrow @system {
 		bool b_ret = false;
 
-		if (!desc.w_asfile(_p_data, 1, _size)) {
+		if (!desc.w_asfile(_p_data.ptr, 1, _size)) {
 			goto End;
 		}
 
@@ -296,12 +296,12 @@ public:
 			res = pxtnERR.pxtnERR_desc_r;
 			goto End;
 		}
-		_p_data = allocateC!char(_size);
+		_p_data = allocate!char(_size);
 		if (!(_p_data)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
 		}
-		if (!desc.r(_p_data, 1, _size)) {
+		if (!desc.r(_p_data.ptr, 1, _size)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto End;
 		}
@@ -339,7 +339,7 @@ public:
 		if (!p_doc.w_asfile(&_size, int.sizeof, 1)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(_p_data, char.sizeof, _size)) {
+		if (!p_doc.w_asfile(_p_data.ptr, char.sizeof, _size)) {
 			return false;
 		}
 
@@ -366,11 +366,11 @@ public:
 			goto End;
 		}
 
-		_p_data = allocateC!char(_size);
+		_p_data = allocate!char(_size);
 		if (!(_p_data)) {
 			goto End;
 		}
-		if (!p_doc.r(_p_data, 1, _size)) {
+		if (!p_doc.r(_p_data.ptr, 1, _size)) {
 			goto End;
 		}
 
@@ -394,7 +394,7 @@ public:
 			return true;
 		}
 
-		p_dst._p_data = allocateC!char(_size);
+		p_dst._p_data = allocate!char(_size);
 		if (!(p_dst._p_data)) {
 			return false;
 		}

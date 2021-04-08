@@ -27,15 +27,6 @@ T[] allocate(T)(size_t count) {
 	}
 	return result;
 }
-T* allocateC(T)(size_t count) {
-	import std.conv : emplace;
-
-	auto result = cast(T*) malloc(T.sizeof * count);
-	foreach (ref element; result[0 .. count]) {
-		element = T.init;
-	}
-	return result;
-}
 
 void deallocate(T)(ref T[] array) nothrow @system {
 	if (!array) {

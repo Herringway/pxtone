@@ -4,7 +4,7 @@
 import pxtone.descriptor;
 import pxtone.mem;
 
-bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @system {
+bool _read4_malloc(char[]* pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @system {
 	if (!pp) {
 		return false;
 	}
@@ -17,7 +17,7 @@ bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @s
 
 	bool b_ret = false;
 
-	*pp = allocateC!char(*p_buf_size + 1);
+	*pp = allocate!char(*p_buf_size + 1);
 	if (!(*pp)) {
 		return false;
 	}
@@ -25,7 +25,7 @@ bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @s
 	(*pp)[0 .. *p_buf_size + 1] = 0;
 
 	if (*p_buf_size) {
-		if (!p_doc.r(*pp, char.sizeof, *p_buf_size)) {
+		if (!p_doc.r((*pp).ptr, char.sizeof, *p_buf_size)) {
 			goto term;
 		}
 	}
@@ -52,10 +52,10 @@ static bool _write4(const char* p, int buf_size, pxtnDescriptor* p_doc) nothrow 
 
 struct pxtnText {
 private:
-	char* _p_comment_buf;
+	char[] _p_comment_buf;
 	int _comment_size;
 
-	char* _p_name_buf;
+	char[] _p_name_buf;
 	int _name_size;
 
 public:
@@ -78,7 +78,7 @@ public:
 			_comment_size = 0;
 			return true;
 		}
-		_p_comment_buf = allocateC!char(buf_size + 1);
+		_p_comment_buf = allocate!char(buf_size + 1);
 		if (!(_p_comment_buf)) {
 			return false;
 		}
@@ -111,7 +111,7 @@ public:
 			_name_size = 0;
 			return true;
 		}
-		_p_name_buf = allocateC!char(buf_size + 1);
+		_p_name_buf = allocate!char(buf_size + 1);
 		if (!(_p_name_buf)) {
 			return false;
 		}
@@ -140,7 +140,7 @@ public:
 		if (!_p_comment_buf) {
 			return false;
 		}
-		return _write4(_p_comment_buf, _comment_size, p_doc);
+		return _write4(_p_comment_buf.ptr, _comment_size, p_doc);
 	}
 
 	bool Name_r(pxtnDescriptor* p_doc) nothrow @system {
@@ -151,6 +151,6 @@ public:
 		if (!_p_name_buf) {
 			return false;
 		}
-		return _write4(_p_name_buf, _name_size, p_doc);
+		return _write4(_p_name_buf.ptr, _name_size, p_doc);
 	}
 }

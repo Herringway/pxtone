@@ -10,7 +10,7 @@ enum _BASIC_FREQUENCY_INDEX = ((_OCTAVE_NUM / 2) * _KEY_PER_OCTAVE * _FREQUENCY_
 enum _TABLE_SIZE = (_OCTAVE_NUM * _KEY_PER_OCTAVE * _FREQUENCY_PER_KEY);
 
 struct pxtnPulse_Frequency {
-	float* _freq_table;
+	float[] _freq_table;
 	double _GetDivideOctaveRate(int divi) nothrow @safe {
 		double parameter = 1.0;
 		double work;
@@ -83,7 +83,7 @@ struct pxtnPulse_Frequency {
 		double oct_x24;
 		double work;
 
-		_freq_table = allocateC!float(_TABLE_SIZE);
+		_freq_table = allocate!float(_TABLE_SIZE);
 		if (!(_freq_table)) {
 			goto End;
 		}
@@ -124,7 +124,7 @@ struct pxtnPulse_Frequency {
 		return _freq_table[i];
 	}
 
-	const(float)* GetDirect(int* p_size) nothrow @safe {
+	const(float)[] GetDirect(int* p_size) nothrow @safe {
 		*p_size = _TABLE_SIZE;
 		return _freq_table;
 	}

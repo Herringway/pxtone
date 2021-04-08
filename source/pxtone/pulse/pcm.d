@@ -26,11 +26,11 @@ private:
 	int _smp_head; // no use. 0
 	int _smp_body;
 	int _smp_tail; // no use. 0
-	ubyte* _p_smp;
+	ubyte[] _p_smp;
 
 	// stereo / mono
 	bool _Convert_ChannelNum(int new_ch) nothrow @system {
-		ubyte* p_work = null;
+		ubyte[] p_work = null;
 		int sample_size;
 		int work_size;
 		int a, b;
@@ -49,7 +49,7 @@ private:
 		// mono to stereo --------
 		if (new_ch == 2) {
 			work_size = sample_size * 2;
-			p_work = allocateC!ubyte(work_size);
+			p_work = allocate!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -80,7 +80,7 @@ private:
 		}  // stereo to mono --------
 		else {
 			work_size = sample_size / 2;
-			p_work = allocateC!ubyte(work_size);
+			p_work = allocate!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -112,7 +112,7 @@ private:
 		deallocate(_p_smp);
 		_p_smp = null;
 
-		_p_smp = allocateC!ubyte(work_size);
+		_p_smp = allocate!ubyte(work_size);
 		if (!(_p_smp)) {
 			deallocate(p_work);
 			return false;
@@ -128,7 +128,7 @@ private:
 
 	// change bps
 	bool _Convert_BitPerSample(int new_bps) nothrow @system {
-		ubyte* p_work;
+		ubyte[] p_work;
 		int sample_size;
 		int work_size;
 		int a, b;
@@ -147,7 +147,7 @@ private:
 			// 16 to 8 --------
 		case 8:
 			work_size = sample_size / 2;
-			p_work = allocateC!ubyte(work_size);
+			p_work = allocate!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -162,7 +162,7 @@ private:
 			//  8 to 16 --------
 		case 16:
 			work_size = sample_size * 2;
-			p_work = allocateC!ubyte(work_size);
+			p_work = allocate!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -183,7 +183,7 @@ private:
 		deallocate(_p_smp);
 		_p_smp = null;
 
-		_p_smp = allocateC!ubyte(work_size);
+		_p_smp = allocate!ubyte(work_size);
 		if (!(_p_smp)) {
 			deallocate(p_work);
 			return false;
@@ -204,13 +204,13 @@ private:
 
 		int head_size, body_size, tail_size;
 
-		ubyte* p1byte_data;
-		ushort* p2byte_data;
-		uint* p4byte_data;
+		ubyte[] p1byte_data;
+		ushort[] p2byte_data;
+		uint[] p4byte_data;
 
-		ubyte* p1byte_work = null;
-		ushort* p2byte_work = null;
-		uint* p4byte_work = null;
+		ubyte[] p1byte_work = null;
+		ushort[] p2byte_work = null;
+		uint[] p4byte_work = null;
 
 		int a, b;
 
@@ -238,8 +238,8 @@ private:
 			_smp_tail = tail_size / 4;
 			sample_num = work_size / 4;
 			work_size = sample_num * 4;
-			p4byte_data = cast(uint*) _p_smp;
-			p4byte_work = allocateC!uint(work_size / uint.sizeof);
+			p4byte_data = cast(uint[]) _p_smp;
+			p4byte_work = allocate!uint(work_size / uint.sizeof);
 			if (!p4byte_work) {
 				goto End;
 			}
@@ -254,8 +254,8 @@ private:
 			_smp_tail = tail_size / 1;
 			sample_num = work_size / 1;
 			work_size = sample_num * 1;
-			p1byte_data = cast(ubyte*) _p_smp;
-			p1byte_work = allocateC!ubyte(work_size);
+			p1byte_data = cast(ubyte[]) _p_smp;
+			p1byte_work = allocate!ubyte(work_size);
 			if (!p1byte_work) {
 				goto End;
 			}
@@ -270,8 +270,8 @@ private:
 			_smp_tail = tail_size / 2;
 			sample_num = work_size / 2;
 			work_size = sample_num * 2;
-			p2byte_data = cast(ushort*) _p_smp;
-			p2byte_work = allocateC!ushort(work_size / ushort.sizeof);
+			p2byte_data = cast(ushort[]) _p_smp;
+			p2byte_work = allocate!ushort(work_size / ushort.sizeof);
 			if (!p2byte_work) {
 				goto End;
 			}
@@ -283,7 +283,7 @@ private:
 
 		// release once.
 		deallocate(_p_smp);
-		_p_smp = allocateC!ubyte(work_size);
+		_p_smp = allocate!ubyte(work_size);
 		if (!_p_smp) {
 			goto End;
 		}
@@ -343,7 +343,7 @@ public:
 		// bit / sample is 8 or 16
 		size = _smp_body * _bps * _ch / 8;
 
-		_p_smp = allocateC!ubyte(size);
+		_p_smp = allocate!ubyte(size);
 		if (!(_p_smp)) {
 			return pxtnERR.pxtnERR_memory;
 		}
@@ -441,7 +441,7 @@ public:
 			goto term;
 		}
 
-		if (!doc.r(_p_smp, ubyte.sizeof, size)) {
+		if (!doc.r(_p_smp.ptr, ubyte.sizeof, size)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -559,7 +559,7 @@ public:
 		if (!doc.w_asfile(&sample_size, int.sizeof, 1)) {
 			goto End;
 		}
-		if (!doc.w_asfile(_p_smp, char.sizeof, sample_size)) {
+		if (!doc.w_asfile(_p_smp.ptr, char.sizeof, sample_size)) {
 			goto End;
 		}
 
@@ -653,8 +653,8 @@ public:
 		return true;
 	}
 
-	void* Devolve_SamplingBuffer() nothrow @safe {
-		void* p = _p_smp;
+	void[] Devolve_SamplingBuffer() nothrow @safe {
+		void[] p = _p_smp;
 		_p_smp = null;
 		return p;
 	}
@@ -691,7 +691,7 @@ public:
 		return (_smp_head + _smp_body + _smp_tail) * _ch * _bps / 8;
 	}
 
-	const(void)* get_p_buf() const nothrow @safe {
+	const(void)[] get_p_buf() const nothrow @safe {
 		return _p_smp;
 	}
 

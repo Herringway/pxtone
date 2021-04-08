@@ -56,7 +56,7 @@ struct pxtnOverDrive {
 		_cut_16bit_top = cast(int)(32767 * (100 - _cut_f) / 100);
 	}
 
-	void Tone_Supple(int* group_smps) const nothrow @system {
+	void Tone_Supple(int[] group_smps) const nothrow @safe {
 		if (!_b_played) {
 			return;
 		}

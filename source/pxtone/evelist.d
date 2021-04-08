@@ -139,7 +139,7 @@ struct pxtnEvelist {
 private:
 
 	int _eve_allocated_num;
-	EVERECORD* _eves;
+	EVERECORD[] _eves;
 	EVERECORD* _start;
 	int _linear;
 
@@ -199,7 +199,7 @@ public:
 
 	bool Allocate(int max_event_num) nothrow @system {
 		Release();
-		_eves = allocateC!EVERECORD(max_event_num);
+		_eves = allocate!EVERECORD(max_event_num);
 		if (!(_eves)) {
 			return false;
 		}

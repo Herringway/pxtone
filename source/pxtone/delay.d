@@ -32,7 +32,7 @@ private:
 
 	int _smp_num = 0;
 	int _offset = 0;
-	int*[pxtnMAX_CHANNEL] _bufs = null;
+	int[][pxtnMAX_CHANNEL] _bufs = null;
 	int _rate_s32 = 0;
 
 public:
@@ -108,7 +108,7 @@ public:
 			}
 
 			for (int c = 0; c < pxtnMAX_CHANNEL; c++) {
-				_bufs[c] = allocateC!int(_smp_num);
+				_bufs[c] = allocate!int(_smp_num);
 				if (!_bufs[c]) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;
@@ -126,7 +126,7 @@ public:
 		return res;
 	}
 
-	void Tone_Supple(int ch, int* group_smps) nothrow @system {
+	void Tone_Supple(int ch, int[] group_smps) nothrow @safe {
 		if (!_smp_num) {
 			return;
 		}

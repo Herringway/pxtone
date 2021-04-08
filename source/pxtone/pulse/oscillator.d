@@ -6,14 +6,14 @@ import core.stdc.math;
 
 struct pxtnPulse_Oscillator {
 private:
-	pxtnPOINT* _p_point = null;
+	pxtnPOINT[] _p_point = null;
 	int _point_num = 0;
 	int _point_reso = 0;
 	int _volume = 0;
 	int _sample_num = 0;
 
 public:
-	void ReadyGetSample(pxtnPOINT* p_point, int point_num, int volume, int sample_num, int point_reso) nothrow @safe {
+	void ReadyGetSample(pxtnPOINT[] p_point, int point_num, int volume, int sample_num, int point_reso) nothrow @safe {
 		_volume = volume;
 		_p_point = p_point;
 		_sample_num = sample_num;
@@ -21,7 +21,7 @@ public:
 		_point_reso = point_reso;
 	}
 
-	double GetOneSample_Overtone(int index) nothrow @system {
+	double GetOneSample_Overtone(int index) nothrow @safe {
 		int o;
 		double work_double;
 		double pi = 3.1415926535897932;
@@ -37,7 +37,7 @@ public:
 		return work_double;
 	}
 
-	double GetOneSample_Coodinate(int index) nothrow @system {
+	double GetOneSample_Coodinate(int index) nothrow @safe {
 		int i;
 		int c;
 		int x1, y1, x2, y2;

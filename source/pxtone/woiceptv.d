@@ -85,7 +85,7 @@ bool _Write_Wave(pxtnDescriptor* p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_total
 
 		size = p_vc.p_pcm.get_buf_size();
 
-		if (!p_doc.w_asfile(p_vc.p_pcm.get_p_buf(), 1, size)) {
+		if (!p_doc.w_asfile(p_vc.p_pcm.get_p_buf().ptr, 1, size)) {
 			goto End;
 		}
 		*p_total += size;
@@ -156,7 +156,7 @@ pxtnERR _Read_Wave(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		num = p_vc.wave.num;
-		p_vc.wave.points = allocateC!pxtnPOINT(num);
+		p_vc.wave.points = allocate!pxtnPOINT(num);
 		if (!p_vc.wave.points) {
 			return pxtnERR.pxtnERR_memory;
 		}
@@ -179,7 +179,7 @@ pxtnERR _Read_Wave(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		num = p_vc.wave.num;
-		p_vc.wave.points = allocateC!pxtnPOINT(num);
+		p_vc.wave.points = allocate!pxtnPOINT(num);
 		if (!p_vc.wave.points) {
 			return pxtnERR.pxtnERR_memory;
 		}
@@ -246,7 +246,7 @@ pxtnERR _Read_Envelope(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @syst
 	}
 
 	num = p_vc.envelope.head_num + p_vc.envelope.body_num + p_vc.envelope.tail_num;
-	p_vc.envelope.points = allocateC!pxtnPOINT(num);
+	p_vc.envelope.points = allocate!pxtnPOINT(num);
 	if (!p_vc.envelope.points) {
 		res = pxtnERR.pxtnERR_memory;
 		goto term;

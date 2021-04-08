@@ -43,7 +43,7 @@ struct pxNOISEDESIGN_OSCILLATOR {
 struct pxNOISEDESIGN_UNIT {
 	bool bEnable;
 	int enve_num;
-	pxtnPOINT* enves;
+	pxtnPOINT[] enves;
 	int pan;
 	pxNOISEDESIGN_OSCILLATOR main;
 	pxNOISEDESIGN_OSCILLATOR freq;
@@ -194,7 +194,7 @@ struct pxtnPulse_Noise {
 private:
 	int _smp_num_44k;
 	int _unit_num;
-	pxNOISEDESIGN_UNIT* _units;
+	pxNOISEDESIGN_UNIT[] _units;
 
 public:
 	 ~this() nothrow @system {
@@ -343,7 +343,7 @@ public:
 		}
 		_unit_num = unit_num;
 
-		_units = allocateC!pxNOISEDESIGN_UNIT(_unit_num);
+		_units = allocate!pxNOISEDESIGN_UNIT(_unit_num);
 		if (!_units) {
 			res = pxtnERR.pxtnERR_memory;
 			goto term;
@@ -372,7 +372,7 @@ public:
 					res = pxtnERR.pxtnERR_fmt_unknown;
 					goto term;
 				}
-				pU.enves = allocateC!pxtnPOINT(pU.enve_num);
+				pU.enves = allocate!pxtnPOINT(pU.enve_num);
 				if (!pU.enves) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;
@@ -444,7 +444,7 @@ public:
 		Release();
 
 		_unit_num = unit_num;
-		_units = allocateC!pxNOISEDESIGN_UNIT(unit_num);
+		_units = allocate!pxNOISEDESIGN_UNIT(unit_num);
 		if (!_units) {
 			goto End;
 		}
@@ -452,7 +452,7 @@ public:
 		for (int u = 0; u < unit_num; u++) {
 			pxNOISEDESIGN_UNIT* p_unit = &_units[u];
 			p_unit.enve_num = envelope_num;
-			p_unit.enves = allocateC!pxtnPOINT(p_unit.enve_num);
+			p_unit.enves = allocate!pxtnPOINT(p_unit.enve_num);
 			if (!p_unit.enves) {
 				goto End;
 			}
@@ -489,7 +489,7 @@ public:
 				p_dst._units[u].main = _units[u].main;
 				p_dst._units[u].pan = _units[u].pan;
 				p_dst._units[u].volu = _units[u].volu;
-				p_dst._units[u].enves = allocateC!pxtnPOINT(enve_num);
+				p_dst._units[u].enves = allocate!pxtnPOINT(enve_num);
 				if (!p_dst._units[u].enves) {
 					goto End;
 				}

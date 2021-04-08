@@ -220,16 +220,16 @@ private:
 
 	int _delay_max;
 	int _delay_num;
-	pxtnDelay** _delays;
+	pxtnDelay*[] _delays;
 	int _ovdrv_max;
 	int _ovdrv_num;
-	pxtnOverDrive** _ovdrvs;
+	pxtnOverDrive*[] _ovdrvs;
 	int _woice_max;
 	int _woice_num;
-	pxtnWoice** _woices;
+	pxtnWoice*[] _woices;
 	int _unit_max;
 	int _unit_num;
-	pxtnUnit** _units;
+	pxtnUnit*[] _units;
 
 	int _group_num;
 
@@ -939,7 +939,7 @@ private:
 	int _moo_bt_clock;
 	int _moo_bt_num;
 
-	int* _moo_group_smps;
+	int[] _moo_group_smps;
 
 	const(EVERECORD)* _moo_p_eve;
 
@@ -1001,7 +1001,7 @@ private:
 		}
 
 		// delay
-		_delays = allocateC!(pxtnDelay*)(pxtnMAX_TUNEDELAYSTRUCT);
+		_delays = allocate!(pxtnDelay*)(pxtnMAX_TUNEDELAYSTRUCT);
 		if (!(_delays)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1009,7 +1009,7 @@ private:
 		_delay_max = pxtnMAX_TUNEDELAYSTRUCT;
 
 		// over-drive
-		_ovdrvs = allocateC!(pxtnOverDrive*)(pxtnMAX_TUNEOVERDRIVESTRUCT);
+		_ovdrvs = allocate!(pxtnOverDrive*)(pxtnMAX_TUNEOVERDRIVESTRUCT);
 		if (!(_ovdrvs)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1017,7 +1017,7 @@ private:
 		_ovdrv_max = pxtnMAX_TUNEOVERDRIVESTRUCT;
 
 		// woice
-		_woices = allocateC!(pxtnWoice*)(pxtnMAX_TUNEWOICESTRUCT);
+		_woices = allocate!(pxtnWoice*)(pxtnMAX_TUNEWOICESTRUCT);
 		if (!(_woices)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1025,7 +1025,7 @@ private:
 		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
 
 		// unit
-		_units = allocateC!(pxtnUnit*)(pxtnMAX_TUNEUNITSTRUCT);
+		_units = allocate!(pxtnUnit*)(pxtnMAX_TUNEUNITSTRUCT);
 		if (!(_units)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1220,7 +1220,7 @@ private:
 		if (!(_moo_freq) || !_moo_freq.Init()) {
 			goto term;
 		}
-		_moo_group_smps = allocateC!int(_group_num);
+		_moo_group_smps = allocate!int(_group_num);
 		if (!_moo_group_smps) {
 			goto term;
 		}

@@ -226,7 +226,7 @@ public:
 		}
 	}
 
-	void Tone_Supple(int* group_smps, int ch, int time_pan_index) const nothrow @system {
+	void Tone_Supple(int[] group_smps, int ch, int time_pan_index) const nothrow @safe {
 		int idx = (time_pan_index - _pan_times[ch]) & (pxtnBUFSIZE_TIMEPAN - 1);
 		group_smps[_v_GROUPNO] += _pan_time_bufs[ch][idx];
 	}
