@@ -45,7 +45,7 @@ void deallocate(T)(ref T[] array) nothrow @system {
 	free(array.ptr);
 	array = null;
 }
-void deallocate(void* ptr) nothrow @system {
+void deallocate(T)(ref T* ptr) nothrow @system {
 	if (!ptr) {
 		return;
 	}
