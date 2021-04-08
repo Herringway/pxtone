@@ -1,4 +1,4 @@
-﻿module pxtone.descriptor;
+module pxtone.descriptor;
 // '11/08/12 pxFile.h
 // '16/01/22 pxFile.h
 // '16/04/27 pxtnFile. (int)
@@ -149,7 +149,7 @@ public:
 		return b_ret;
 	}
 
-	bool r(void* p, int size, int num) nothrow @system {
+	bool r(T)(T[] p) nothrow @system {
 		if (!_p_desc) {
 			return false;
 		}
@@ -160,17 +160,43 @@ public:
 		bool b_ret = false;
 
 		if (_b_file) {
-			if (fread(p, size, num, cast(REALFILE*) _p_desc) != num) {
+			if (fread(p.ptr, T.sizeof, p.length, cast(REALFILE*) _p_desc) != p.length) {
 				goto End;
 			}
 		} else {
-			for (int i = 0; i < num; i++) {
-				if (_cur + size > _size) {
+			for (int i = 0; i < p.length; i++) {
+				if (_cur + T.sizeof > _size) {
 					goto End;
 				}
-				p[i .. i + size] = _p_desc[_cur .. _cur + size];
-				_cur += size;
+				p[i] = (cast(T[])_p_desc[_cur .. _cur + T.sizeof])[0];
+				_cur += T.sizeof;
 			}
+		}
+
+		b_ret = true;
+	End:
+		return b_ret;
+	}
+	bool r(T)(ref T p) nothrow @system {
+		if (!_p_desc) {
+			return false;
+		}
+		if (!_b_read) {
+			return false;
+		}
+
+		bool b_ret = false;
+
+		if (_b_file) {
+			if (fread(&p, T.sizeof, 1, cast(REALFILE*) _p_desc) != 1) {
+				goto End;
+			}
+		} else {
+			if (_cur + T.sizeof > _size) {
+				goto End;
+			}
+			p = (cast(T[])_p_desc[_cur .. _cur + T.sizeof])[0];
+			_cur += T.sizeof;
 		}
 
 		b_ret = true;
@@ -257,7 +283,7 @@ public:
 		ubyte[5] b = 0;
 
 		for (i = 0; i < 5; i++) {
-			if (!r(&a[i], 1, 1)) {
+			if (!r(a[i])) {
 				return false;
 			}
 			if (!(a[i] & 0x80)) {

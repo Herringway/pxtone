@@ -309,7 +309,7 @@ public:
 
 		Release();
 
-		if (!p_doc.r(code.ptr, 1, 8)) {
+		if (!p_doc.r(code[])) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -317,7 +317,7 @@ public:
 			res = pxtnERR.pxtnERR_inv_code;
 			goto term;
 		}
-		if (!p_doc.r(&ver, 4, 1)) {
+		if (!p_doc.r(ver)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -329,7 +329,7 @@ public:
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
-		if (!p_doc.r(&unit_num, 1, 1)) {
+		if (!p_doc.r(unit_num)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -390,7 +390,7 @@ public:
 			}
 			// pan
 			if (flags & NOISEEDITFLAG_PAN) {
-				if (!p_doc.r(&_byte, 1, 1)) {
+				if (!p_doc.r(_byte)) {
 					res = pxtnERR.pxtnERR_desc_r;
 					goto term;
 				}

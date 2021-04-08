@@ -352,10 +352,10 @@ public:
 		_x3x_UNIT unit = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&unit, _x3x_UNIT.sizeof, 1)) {
+		if (!p_doc.r(unit)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PCM && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PTV && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PTN) {
@@ -370,10 +370,10 @@ public:
 		_x1x_UNIT unit;
 		int size;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return false;
 		}
-		if (!p_doc.r(&unit, _x1x_UNIT.sizeof, 1)) {
+		if (!p_doc.r(unit)) {
 			return false;
 		}
 		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PCM) {

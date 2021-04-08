@@ -301,7 +301,7 @@ public:
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
 		}
-		if (!desc.r(_p_data.ptr, 1, _size)) {
+		if (!desc.r(_p_data)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto End;
 		}
@@ -349,16 +349,16 @@ public:
 	bool pxtn_read(pxtnDescriptor* p_doc) nothrow @system {
 		bool b_ret = false;
 
-		if (!p_doc.r(&_ch, int.sizeof, 1)) {
+		if (!p_doc.r(_ch)) {
 			goto End;
 		}
-		if (!p_doc.r(&_sps2, int.sizeof, 1)) {
+		if (!p_doc.r(_sps2)) {
 			goto End;
 		}
-		if (!p_doc.r(&_smp_num, int.sizeof, 1)) {
+		if (!p_doc.r(_smp_num)) {
 			goto End;
 		}
-		if (!p_doc.r(&_size, int.sizeof, 1)) {
+		if (!p_doc.r(_size)) {
 			goto End;
 		}
 
@@ -370,7 +370,7 @@ public:
 		if (!(_p_data)) {
 			goto End;
 		}
-		if (!p_doc.r(_p_data.ptr, 1, _size)) {
+		if (!p_doc.r(_p_data)) {
 			goto End;
 		}
 

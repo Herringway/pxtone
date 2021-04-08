@@ -8,7 +8,7 @@ bool _read4_malloc(char[]* pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @
 	if (!pp) {
 		return false;
 	}
-	if (!p_doc.r(p_buf_size, 4, 1)) {
+	if (!p_doc.r(p_buf_size[0 .. 1])) {
 		return false;
 	}
 	if (*p_buf_size < 0) {
@@ -25,7 +25,7 @@ bool _read4_malloc(char[]* pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @
 	(*pp)[0 .. *p_buf_size + 1] = 0;
 
 	if (*p_buf_size) {
-		if (!p_doc.r((*pp).ptr, char.sizeof, *p_buf_size)) {
+		if (!p_doc.r((*pp)[0 .. *p_buf_size])) {
 			goto term;
 		}
 	}

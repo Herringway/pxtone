@@ -161,11 +161,11 @@ pxtnERR _Read_Wave(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 			return pxtnERR.pxtnERR_memory;
 		}
 		for (i = 0; i < num; i++) {
-			if (!p_doc.r(&uc, 1, 1)) {
+			if (!p_doc.r(uc)) {
 				return pxtnERR.pxtnERR_desc_r;
 			}
 			p_vc.wave.points[i].x = uc;
-			if (!p_doc.r(&sc, 1, 1)) {
+			if (!p_doc.r(sc)) {
 				return pxtnERR.pxtnERR_desc_r;
 			}
 			p_vc.wave.points[i].y = sc;

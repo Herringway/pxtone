@@ -379,7 +379,7 @@ public:
 		_p_smp = null;
 
 		// 'RIFFxxxxWAVEfmt '
-		if (!doc.r(buf.ptr, char.sizeof, 16)) {
+		if (!doc.r(buf[])) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -390,11 +390,11 @@ public:
 		}
 
 		// read format.
-		if (!doc.r(&size, uint.sizeof, 1)) {
+		if (!doc.r(size)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
-		if (!doc.r(&format, 18, 1)) {
+		if (!doc.r(format)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -419,11 +419,11 @@ public:
 		} // skip 'RIFFxxxxWAVE'
 
 		while (1) {
-			if (!doc.r(buf.ptr, char.sizeof, 4)) {
+			if (!doc.r(buf[0 .. 4])) {
 				res = pxtnERR.pxtnERR_desc_r;
 				goto term;
 			}
-			if (!doc.r(&size, uint.sizeof, 1)) {
+			if (!doc.r(size)) {
 				res = pxtnERR.pxtnERR_desc_r;
 				goto term;
 			}
@@ -441,7 +441,7 @@ public:
 			goto term;
 		}
 
-		if (!doc.r(_p_smp.ptr, ubyte.sizeof, size)) {
+		if (!doc.r(_p_smp[0 .. size])) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -695,8 +695,8 @@ public:
 		return _p_smp;
 	}
 
-	void* get_p_buf_variable() const nothrow @system {
-		return cast(void*) _p_smp;
+	ubyte[] get_p_buf_variable() nothrow @system {
+		return _p_smp;
 	}
 
 }

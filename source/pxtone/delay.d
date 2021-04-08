@@ -181,10 +181,10 @@ public:
 		_DELAYSTRUCT dela = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&dela, _DELAYSTRUCT.sizeof, 1)) {
+		if (!p_doc.r(dela)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (dela.unit >= DELAYUNIT.DELAYUNIT_num) {

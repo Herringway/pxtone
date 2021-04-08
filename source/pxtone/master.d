@@ -189,26 +189,26 @@ public:
 
 		uint size = 0;
 
-		if (!p_doc.r(&size, uint.sizeof, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (size != 15) {
 			return pxtnERR.pxtnERR_fmt_unknown;
 		}
 
-		if (!p_doc.r(&beat_clock, short.sizeof, 1)) {
+		if (!p_doc.r(beat_clock)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&beat_num, byte.sizeof, 1)) {
+		if (!p_doc.r(beat_num)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&beat_tempo, float.sizeof, 1)) {
+		if (!p_doc.r(beat_tempo)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&clock_repeat, int.sizeof, 1)) {
+		if (!p_doc.r(clock_repeat)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&clock_last, int.sizeof, 1)) {
+		if (!p_doc.r(clock_last)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -224,14 +224,14 @@ public:
 
 	int io_r_v5_EventNum(pxtnDescriptor* p_doc) nothrow @system {
 		uint size;
-		if (!p_doc.r(&size, uint.sizeof, 1)) {
+		if (!p_doc.r(size)) {
 			return 0;
 		}
 		if (size != 15) {
 			return 0;
 		}
 		byte[15] buf;
-		if (!p_doc.r(buf.ptr, byte.sizeof, 15)) {
+		if (!p_doc.r(buf[])) {
 			return 0;
 		}
 		return 5;
@@ -249,10 +249,10 @@ public:
 		int beat_clock, beat_num, repeat_clock, last_clock;
 		float beat_tempo = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&mast, _x4x_MASTER.sizeof, 1)) {
+		if (!p_doc.r(mast)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -341,10 +341,10 @@ public:
 		int work;
 		int e;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return 0;
 		}
-		if (!p_doc.r(&mast, _x4x_MASTER.sizeof, 1)) {
+		if (!p_doc.r(mast)) {
 			return 0;
 		}
 

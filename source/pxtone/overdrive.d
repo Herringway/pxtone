@@ -93,10 +93,10 @@ struct pxtnOverDrive {
 		_OVERDRIVESTRUCT over = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&over, _OVERDRIVESTRUCT.sizeof, 1)) {
+		if (!p_doc.r(over)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 

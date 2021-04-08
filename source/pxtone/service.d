@@ -241,7 +241,7 @@ private:
 		char[_VERSIONSIZE] version_ = '\0';
 		ushort dummy;
 
-		if (!p_doc.r(version_.ptr, 1, _VERSIONSIZE)) {
+		if (!p_doc.r(version_[])) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -275,10 +275,10 @@ private:
 		}
 
 		// exe version
-		if (!p_doc.r(p_exe_ver, ushort.sizeof, 1)) {
+		if (!p_doc.r(*p_exe_ver)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&dummy, ushort.sizeof, 1)) {
+		if (!p_doc.r(dummy)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -299,7 +299,7 @@ private:
 
 		/// must the unit before the voice.
 		while (!b_end) {
-			if (!p_doc.r(code.ptr, 1, _CODESIZE)) {
+			if (!p_doc.r(code[0 .._CODESIZE])) {
 				res = pxtnERR.pxtnERR_desc_r;
 				goto term;
 			}
@@ -478,10 +478,10 @@ private:
 		int size;
 		float beat_tempo;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return false;
 		}
-		if (!p_doc.r(&prjc, _x1x_PROJECT.sizeof, 1)) {
+		if (!p_doc.r(prjc)) {
 			return false;
 		}
 
@@ -713,13 +713,13 @@ private:
 		_ASSIST_WOICE assi = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (size != assi.sizeof) {
 			return pxtnERR.pxtnERR_fmt_unknown;
 		}
-		if (!p_doc.r(&assi, size, 1)) {
+		if (!p_doc.r(assi)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (assi.rrr) {
@@ -771,13 +771,13 @@ private:
 		_ASSIST_UNIT assi = {0};
 		int size;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (size != assi.sizeof) {
 			return pxtnERR.pxtnERR_fmt_unknown;
 		}
-		if (!p_doc.r(&assi, assi.sizeof, 1)) {
+		if (!p_doc.r(assi)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (assi.rrr) {
@@ -826,13 +826,13 @@ private:
 		_NUM_UNIT data = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (size != _NUM_UNIT.sizeof) {
 			return pxtnERR.pxtnERR_fmt_unknown;
 		}
-		if (!p_doc.r(&data, _NUM_UNIT.sizeof, 1)) {
+		if (!p_doc.r(data)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (data.rrr) {
@@ -1127,7 +1127,7 @@ private:
 		}
 
 		while (!b_end) {
-			if (!p_doc.r(code.ptr, 1, _CODESIZE)) {
+			if (!p_doc.r(code[0 .. _CODESIZE])) {
 				res = pxtnERR.pxtnERR_desc_r;
 				goto term;
 			}
@@ -1168,7 +1168,7 @@ private:
 			case _enum_Tag._TAG_assiUNIT:
 			case _enum_Tag._TAG_assiWOIC:
 
-				if (!p_doc.r(&size, int.sizeof, 1)) {
+				if (!p_doc.r(size)) {
 					res = pxtnERR.pxtnERR_desc_r;
 					goto term;
 				}

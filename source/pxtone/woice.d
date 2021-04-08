@@ -663,11 +663,11 @@ public:
 		int total = 0;
 		int num = 0;
 
-		if (!p_doc.r(code.ptr, 1, 8)) {
+		if (!p_doc.r(code[])) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
-		if (!p_doc.r(&version_, int.sizeof, 1)) {
+		if (!p_doc.r(version_)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -675,7 +675,7 @@ public:
 			res = pxtnERR.pxtnERR_inv_code;
 			goto term;
 		}
-		if (!p_doc.r(&total, int.sizeof, 1)) {
+		if (!p_doc.r(total)) {
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
@@ -806,10 +806,10 @@ public:
 		_MATERIALSTRUCT_PCM pcm = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&pcm, _MATERIALSTRUCT_PCM.sizeof, 1)) {
+		if (!p_doc.r(pcm)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -831,7 +831,7 @@ public:
 			if (res != pxtnERR.pxtnOK) {
 				goto term;
 			}
-			if (!p_doc.r(p_vc.p_pcm.get_p_buf_variable(), 1, pcm.data_size)) {
+			if (!p_doc.r(p_vc.p_pcm.get_p_buf_variable()[0 .. pcm.data_size])) {
 				res = pxtnERR.pxtnERR_desc_r;
 				goto term;
 			}
@@ -895,10 +895,10 @@ public:
 		_MATERIALSTRUCT_PTN ptn = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, int.sizeof, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&ptn, _MATERIALSTRUCT_PTN.sizeof, 1)) {
+		if (!p_doc.r(ptn)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -982,10 +982,10 @@ public:
 		_MATERIALSTRUCT_PTV ptv = {0};
 		int size = 0;
 
-		if (!p_doc.r(&size, int.sizeof, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&ptv, _MATERIALSTRUCT_PTV.sizeof, 1)) {
+		if (!p_doc.r(ptv)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		if (ptv.rrr) {
@@ -1046,10 +1046,10 @@ public:
 			_MATERIALSTRUCT_OGGV mate = {0};
 			int size = 0;
 
-			if (!p_doc.r(&size, 4, 1)) {
+			if (!p_doc.r(size)) {
 				return pxtnERR.pxtnERR_desc_r;
 			}
-			if (!p_doc.r(&mate, _MATERIALSTRUCT_OGGV.sizeof, 1)) {
+			if (!p_doc.r(mate)) {
 				return pxtnERR.pxtnERR_desc_r;
 			}
 

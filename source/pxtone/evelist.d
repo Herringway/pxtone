@@ -909,10 +909,10 @@ public:
 		int size = 0;
 		int eve_num = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&eve_num, 4, 1)) {
+		if (!p_doc.r(eve_num)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -926,10 +926,10 @@ public:
 			if (!p_doc.v_r(&clock)) {
 				return pxtnERR.pxtnERR_desc_r;
 			}
-			if (!p_doc.r(&unit_no, 1, 1)) {
+			if (!p_doc.r(unit_no)) {
 				return pxtnERR.pxtnERR_desc_r;
 			}
-			if (!p_doc.r(&kind, 1, 1)) {
+			if (!p_doc.r(kind)) {
 				return pxtnERR.pxtnERR_desc_r;
 			}
 			if (!p_doc.v_r(&value)) {
@@ -947,10 +947,10 @@ public:
 		int size = 0;
 		int eve_num = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return 0;
 		}
-		if (!p_doc.r(&eve_num, 4, 1)) {
+		if (!p_doc.r(eve_num)) {
 			return 0;
 		}
 
@@ -964,10 +964,10 @@ public:
 			if (!p_doc.v_r(&clock)) {
 				return 0;
 			}
-			if (!p_doc.r(&unit_no, 1, 1)) {
+			if (!p_doc.r(unit_no)) {
 				return 0;
 			}
-			if (!p_doc.r(&kind, 1, 1)) {
+			if (!p_doc.r(kind)) {
 				return 0;
 			}
 			if (!p_doc.v_r(&value)) {
@@ -1068,10 +1068,10 @@ public:
 		int e = 0;
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&evnt, _x4x_EVENTSTRUCT.sizeof, 1)) {
+		if (!p_doc.r(evnt)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
@@ -1119,10 +1119,10 @@ public:
 		int e = 0;
 		int size = 0;
 
-		if (!p_doc.r(&size, 4, 1)) {
+		if (!p_doc.r(size)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
-		if (!p_doc.r(&evnt, _x4x_EVENTSTRUCT.sizeof, 1)) {
+		if (!p_doc.r(evnt)) {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 
