@@ -33,7 +33,7 @@ enum PTV_DATAFLAG_WAVE = 0x00000001;
 enum PTV_DATAFLAG_ENVELOPE = 0x00000002;
 enum PTV_DATAFLAG_UNCOVERED = 0xfffffffc;
 
-__gshared const(char)* _code = "PTVOICE-";
+immutable _code = "PTVOICE-";
 
 enum pxtnWOICETYPE {
 	pxtnWOICE_None = 0,
@@ -575,7 +575,7 @@ public:
 		int v = 0;
 		int total = 0;
 
-		if (!p_doc.w_asfile(_code, 1, 8)) {
+		if (!p_doc.w_asfile(_code.ptr, 1, 8)) {
 			goto End;
 		}
 		if (!p_doc.w_asfile(&_version, uint.sizeof, 1)) {
@@ -674,7 +674,7 @@ public:
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
-		if (memcmp(code.ptr, _code, 8)) {
+		if (code[0 .. 8] != _code) {
 			res = pxtnERR.pxtnERR_inv_code;
 			goto term;
 		}

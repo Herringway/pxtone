@@ -30,43 +30,43 @@ enum _VERSIONSIZE = 16;
 enum _CODESIZE = 8;
 
 //                                       0123456789012345
-__gshared const(char)* _code_tune_x2x = "PTTUNE--20050608";
-__gshared const(char)* _code_tune_x3x = "PTTUNE--20060115";
-__gshared const(char)* _code_tune_x4x = "PTTUNE--20060930";
-__gshared const(char)* _code_tune_v5 = "PTTUNE--20071119";
+immutable _code_tune_x2x = "PTTUNE--20050608";
+immutable _code_tune_x3x = "PTTUNE--20060115";
+immutable _code_tune_x4x = "PTTUNE--20060930";
+immutable _code_tune_v5 = "PTTUNE--20071119";
 
-__gshared const(char)* _code_proj_x1x = "PTCOLLAGE-050227";
-__gshared const(char)* _code_proj_x2x = "PTCOLLAGE-050608";
-__gshared const(char)* _code_proj_x3x = "PTCOLLAGE-060115";
-__gshared const(char)* _code_proj_x4x = "PTCOLLAGE-060930";
-__gshared const(char)* _code_proj_v5 = "PTCOLLAGE-071119";
+immutable _code_proj_x1x = "PTCOLLAGE-050227";
+immutable _code_proj_x2x = "PTCOLLAGE-050608";
+immutable _code_proj_x3x = "PTCOLLAGE-060115";
+immutable _code_proj_x4x = "PTCOLLAGE-060930";
+immutable _code_proj_v5 = "PTCOLLAGE-071119";
 
-__gshared const(char)* _code_x1x_PROJ = "PROJECT=";
-__gshared const(char)* _code_x1x_EVEN = "EVENT===";
-__gshared const(char)* _code_x1x_UNIT = "UNIT====";
-__gshared const(char)* _code_x1x_END = "END=====";
-__gshared const(char)* _code_x1x_PCM = "matePCM=";
+immutable _code_x1x_PROJ = "PROJECT=";
+immutable _code_x1x_EVEN = "EVENT===";
+immutable _code_x1x_UNIT = "UNIT====";
+immutable _code_x1x_END = "END=====";
+immutable _code_x1x_PCM = "matePCM=";
 
-__gshared const(char)* _code_x3x_pxtnUNIT = "pxtnUNIT";
-__gshared const(char)* _code_x4x_evenMAST = "evenMAST";
-__gshared const(char)* _code_x4x_evenUNIT = "evenUNIT";
+immutable _code_x3x_pxtnUNIT = "pxtnUNIT";
+immutable _code_x4x_evenMAST = "evenMAST";
+immutable _code_x4x_evenUNIT = "evenUNIT";
 
-__gshared const(char)* _code_antiOPER = "antiOPER"; // anti operation(edit)
+immutable _code_antiOPER = "antiOPER"; // anti operation(edit)
 
-__gshared const(char)* _code_num_UNIT = "num UNIT";
-__gshared const(char)* _code_MasterV5 = "MasterV5";
-__gshared const(char)* _code_Event_V5 = "Event V5";
-__gshared const(char)* _code_matePCM = "matePCM ";
-__gshared const(char)* _code_matePTV = "matePTV ";
-__gshared const(char)* _code_matePTN = "matePTN ";
-__gshared const(char)* _code_mateOGGV = "mateOGGV";
-__gshared const(char)* _code_effeDELA = "effeDELA";
-__gshared const(char)* _code_effeOVER = "effeOVER";
-__gshared const(char)* _code_textNAME = "textNAME";
-__gshared const(char)* _code_textCOMM = "textCOMM";
-__gshared const(char)* _code_assiUNIT = "assiUNIT";
-__gshared const(char)* _code_assiWOIC = "assiWOIC";
-__gshared const(char)* _code_pxtoneND = "pxtoneND";
+immutable _code_num_UNIT = "num UNIT";
+immutable _code_MasterV5 = "MasterV5";
+immutable _code_Event_V5 = "Event V5";
+immutable _code_matePCM = "matePCM ";
+immutable _code_matePTV = "matePTV ";
+immutable _code_matePTN = "matePTN ";
+immutable _code_mateOGGV = "mateOGGV";
+immutable _code_effeDELA = "effeDELA";
+immutable _code_effeOVER = "effeOVER";
+immutable _code_textNAME = "textNAME";
+immutable _code_textCOMM = "textCOMM";
+immutable _code_assiUNIT = "assiUNIT";
+immutable _code_assiWOIC = "assiWOIC";
+immutable _code_pxtoneND = "pxtoneND";
 
 enum _enum_Tag {
 	_TAG_Unknown = 0,
@@ -99,51 +99,51 @@ enum _enum_Tag {
 };
 
 private _enum_Tag _CheckTagCode(const char* p_code) nothrow @system {
-	if (!memcmp(p_code, _code_antiOPER, _CODESIZE)) {
+	if (p_code[0 .. _CODESIZE] == _code_antiOPER) {
 		return _enum_Tag._TAG_antiOPER;
-	} else if (!memcmp(p_code, _code_x1x_PROJ, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PROJ) {
 		return _enum_Tag._TAG_x1x_PROJ;
-	} else if (!memcmp(p_code, _code_x1x_UNIT, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x1x_UNIT) {
 		return _enum_Tag._TAG_x1x_UNIT;
-	} else if (!memcmp(p_code, _code_x1x_PCM, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PCM) {
 		return _enum_Tag._TAG_x1x_PCM;
-	} else if (!memcmp(p_code, _code_x1x_EVEN, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x1x_EVEN) {
 		return _enum_Tag._TAG_x1x_EVEN;
-	} else if (!memcmp(p_code, _code_x1x_END, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x1x_END) {
 		return _enum_Tag._TAG_x1x_END;
-	} else if (!memcmp(p_code, _code_x3x_pxtnUNIT, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x3x_pxtnUNIT) {
 		return _enum_Tag._TAG_x3x_pxtnUNIT;
-	} else if (!memcmp(p_code, _code_x4x_evenMAST, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x4x_evenMAST) {
 		return _enum_Tag._TAG_x4x_evenMAST;
-	} else if (!memcmp(p_code, _code_x4x_evenUNIT, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_x4x_evenUNIT) {
 		return _enum_Tag._TAG_x4x_evenUNIT;
-	} else if (!memcmp(p_code, _code_num_UNIT, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_num_UNIT) {
 		return _enum_Tag._TAG_num_UNIT;
-	} else if (!memcmp(p_code, _code_Event_V5, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_Event_V5) {
 		return _enum_Tag._TAG_Event_V5;
-	} else if (!memcmp(p_code, _code_MasterV5, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_MasterV5) {
 		return _enum_Tag._TAG_MasterV5;
-	} else if (!memcmp(p_code, _code_matePCM, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_matePCM) {
 		return _enum_Tag._TAG_matePCM;
-	} else if (!memcmp(p_code, _code_matePTV, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_matePTV) {
 		return _enum_Tag._TAG_matePTV;
-	} else if (!memcmp(p_code, _code_matePTN, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_matePTN) {
 		return _enum_Tag._TAG_matePTN;
-	} else if (!memcmp(p_code, _code_mateOGGV, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_mateOGGV) {
 		return _enum_Tag._TAG_mateOGGV;
-	} else if (!memcmp(p_code, _code_effeDELA, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_effeDELA) {
 		return _enum_Tag._TAG_effeDELA;
-	} else if (!memcmp(p_code, _code_effeOVER, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_effeOVER) {
 		return _enum_Tag._TAG_effeOVER;
-	} else if (!memcmp(p_code, _code_textNAME, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_textNAME) {
 		return _enum_Tag._TAG_textNAME;
-	} else if (!memcmp(p_code, _code_textCOMM, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_textCOMM) {
 		return _enum_Tag._TAG_textCOMM;
-	} else if (!memcmp(p_code, _code_assiUNIT, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_assiUNIT) {
 		return _enum_Tag._TAG_assiUNIT;
-	} else if (!memcmp(p_code, _code_assiWOIC, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_assiWOIC) {
 		return _enum_Tag._TAG_assiWOIC;
-	} else if (!memcmp(p_code, _code_pxtoneND, _CODESIZE)) {
+	} else if (p_code[0 .. _CODESIZE] == _code_pxtoneND) {
 		return _enum_Tag._TAG_pxtoneND;
 	}
 	return _enum_Tag._TAG_Unknown;
@@ -248,29 +248,29 @@ private:
 		}
 
 		// fmt version
-		if (!memcmp(version_.ptr, _code_proj_x1x, _VERSIONSIZE)) {
+		if (version_[0 .. _VERSIONSIZE] == _code_proj_x1x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x1x;
 			*p_exe_ver = 0;
 			return pxtnERR.pxtnOK;
-		} else if (!memcmp(version_.ptr, _code_proj_x2x, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x2x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
 			*p_exe_ver = 0;
 			return pxtnERR.pxtnOK;
-		} else if (!memcmp(version_.ptr, _code_proj_x3x, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x3x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
-		} else if (!memcmp(version_.ptr, _code_proj_x4x, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x4x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x4x;
-		} else if (!memcmp(version_.ptr, _code_proj_v5, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_v5) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
-		} else if (!memcmp(version_.ptr, _code_tune_x2x, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x2x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
 			*p_exe_ver = 0;
 			return pxtnERR.pxtnOK;
-		} else if (!memcmp(version_.ptr, _code_tune_x3x, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x3x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
-		} else if (!memcmp(version_.ptr, _code_tune_x4x, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x4x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x4x;
-		} else if (!memcmp(version_.ptr, _code_tune_v5, _VERSIONSIZE)) {
+		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_v5) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
 		} else {
 			return pxtnERR.pxtnERR_fmt_unknown;
@@ -1588,12 +1588,12 @@ public:
 
 		// format version
 		if (b_tune) {
-			if (!p_doc.w_asfile(_code_tune_v5, 1, _VERSIONSIZE)) {
+			if (!p_doc.w_asfile(_code_tune_v5.ptr, 1, _VERSIONSIZE)) {
 				res = pxtnERR.pxtnERR_desc_w;
 				goto End;
 			}
 		} else {
-			if (!p_doc.w_asfile(_code_proj_v5, 1, _VERSIONSIZE)) {
+			if (!p_doc.w_asfile(_code_proj_v5.ptr, 1, _VERSIONSIZE)) {
 				res = pxtnERR.pxtnERR_desc_w;
 				goto End;
 			}
@@ -1610,7 +1610,7 @@ public:
 		}
 
 		// master
-		if (!p_doc.w_asfile(_code_MasterV5, 1, _CODESIZE)) {
+		if (!p_doc.w_asfile(_code_MasterV5.ptr, 1, _CODESIZE)) {
 			res = pxtnERR.pxtnERR_desc_w;
 			goto End;
 		}
@@ -1620,7 +1620,7 @@ public:
 		}
 
 		// event
-		if (!p_doc.w_asfile(_code_Event_V5, 1, _CODESIZE)) {
+		if (!p_doc.w_asfile(_code_Event_V5.ptr, 1, _CODESIZE)) {
 			res = pxtnERR.pxtnERR_desc_w;
 			goto End;
 		}
@@ -1631,7 +1631,7 @@ public:
 
 		// name
 		if (text.is_name_buf()) {
-			if (!p_doc.w_asfile(_code_textNAME, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_textNAME.ptr, 1, _CODESIZE)) {
 				res = pxtnERR.pxtnERR_desc_w;
 				goto End;
 			}
@@ -1643,7 +1643,7 @@ public:
 
 		// comment
 		if (text.is_comment_buf()) {
-			if (!p_doc.w_asfile(_code_textCOMM, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_textCOMM.ptr, 1, _CODESIZE)) {
 				res = pxtnERR.pxtnERR_desc_w;
 				goto End;
 			}
@@ -1655,7 +1655,7 @@ public:
 
 		// delay
 		for (int d = 0; d < _delay_num; d++) {
-			if (!p_doc.w_asfile(_code_effeDELA, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_effeDELA.ptr, 1, _CODESIZE)) {
 				res = pxtnERR.pxtnERR_desc_w;
 				goto End;
 			}
@@ -1667,7 +1667,7 @@ public:
 
 		// overdrive
 		for (int o = 0; o < _ovdrv_num; o++) {
-			if (!p_doc.w_asfile(_code_effeOVER, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_effeOVER.ptr, 1, _CODESIZE)) {
 				res = pxtnERR.pxtnERR_desc_w;
 				goto End;
 			}
@@ -1683,7 +1683,7 @@ public:
 
 			switch (p_w.get_type()) {
 			case pxtnWOICETYPE.pxtnWOICE_PCM:
-				if (!p_doc.w_asfile(_code_matePCM, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_matePCM.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.pxtnERR_desc_w;
 					goto End;
 				}
@@ -1693,7 +1693,7 @@ public:
 				}
 				break;
 			case pxtnWOICETYPE.pxtnWOICE_PTV:
-				if (!p_doc.w_asfile(_code_matePTV, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_matePTV.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.pxtnERR_desc_w;
 					goto End;
 				}
@@ -1703,7 +1703,7 @@ public:
 				}
 				break;
 			case pxtnWOICETYPE.pxtnWOICE_PTN:
-				if (!p_doc.w_asfile(_code_matePTN, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_matePTN.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.pxtnERR_desc_w;
 					goto End;
 				}
@@ -1715,7 +1715,7 @@ public:
 			case pxtnWOICETYPE.pxtnWOICE_OGGV:
 
 				version (pxINCLUDE_OGGVORBIS) {
-					if (!p_doc.w_asfile(_code_mateOGGV, 1, _CODESIZE)) {
+					if (!p_doc.w_asfile(_code_mateOGGV.ptr, 1, _CODESIZE)) {
 						res = pxtnERR.pxtnERR_desc_w;
 						goto End;
 					}
@@ -1734,7 +1734,7 @@ public:
 			}
 
 			if (!b_tune && p_w.is_name_buf()) {
-				if (!p_doc.w_asfile(_code_assiWOIC, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_assiWOIC.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.pxtnERR_desc_w;
 					goto End;
 				}
@@ -1746,7 +1746,7 @@ public:
 		}
 
 		// unit
-		if (!p_doc.w_asfile(_code_num_UNIT, 1, _CODESIZE)) {
+		if (!p_doc.w_asfile(_code_num_UNIT.ptr, 1, _CODESIZE)) {
 			res = pxtnERR.pxtnERR_desc_w;
 			goto End;
 		}
@@ -1757,7 +1757,7 @@ public:
 
 		for (int u = 0; u < _unit_num; u++) {
 			if (!b_tune && _units[u].is_name_buf()) {
-				if (!p_doc.w_asfile(_code_assiUNIT, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_assiUNIT.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.pxtnERR_desc_w;
 					goto End;
 				}
@@ -1770,7 +1770,7 @@ public:
 
 		{
 			int end_size = 0;
-			if (!p_doc.w_asfile(_code_pxtoneND, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_pxtoneND.ptr, 1, _CODESIZE)) {
 				res = pxtnERR.pxtnERR_desc_w;
 				goto End;
 			}

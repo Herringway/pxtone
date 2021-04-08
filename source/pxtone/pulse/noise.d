@@ -316,7 +316,7 @@ public:
 			res = pxtnERR.pxtnERR_desc_r;
 			goto term;
 		}
-		if (memcmp(code.ptr, _code, 8)) {
+		if (code != _code[0 .. 8]) {
 			res = pxtnERR.pxtnERR_inv_code;
 			goto term;
 		}
