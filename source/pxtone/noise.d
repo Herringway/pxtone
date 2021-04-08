@@ -2,7 +2,7 @@
 
 // '12/03/29
 
-import pxtone.pxtn;
+import pxtone.mem;
 
 import pxtone.descriptor;
 
@@ -19,13 +19,13 @@ struct pxtoneNoise {
 	int _bps = 16;
 
 	~this() nothrow @system {
-		SAFE_DELETE(_bldr);
+		deallocate(_bldr);
 	}
 
 	bool init() nothrow @system {
 		pxtnPulse_NoiseBuilder* bldr = allocate!pxtnPulse_NoiseBuilder();
 		if (!bldr.Init()) {
-			free(cast(void*) bldr);
+			deallocate(bldr);
 			return false;
 		}
 		_bldr = cast(void*) bldr;
@@ -97,8 +97,8 @@ struct pxtoneNoise {
 
 		b_ret = true;
 	End:
-		SAFE_DELETE(noise);
-		SAFE_DELETE(pcm);
+		deallocate(noise);
+		deallocate(pcm);
 
 		return b_ret;
 	}

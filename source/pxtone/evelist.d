@@ -1,9 +1,8 @@
 ﻿module pxtone.evelist;
 
-import pxtone.pxtn;
-
 import pxtone.descriptor;
 import pxtone.error;
+import pxtone.mem;
 
 import core.stdc.stdlib;
 import core.stdc.string;
@@ -183,7 +182,7 @@ public:
 
 	void Release() nothrow @system {
 		if (_eves) {
-			free(_eves);
+			deallocate(_eves);
 		}
 		_eves = null;
 		_start = null;
@@ -203,7 +202,7 @@ public:
 
 	bool Allocate(int max_event_num) nothrow @system {
 		Release();
-		_eves = cast(EVERECORD*) malloc(EVERECORD.sizeof * max_event_num);
+		_eves = allocateC!EVERECORD(max_event_num);
 		if (!(_eves)) {
 			return false;
 		}

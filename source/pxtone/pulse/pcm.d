@@ -50,7 +50,7 @@ private:
 		// mono to stereo --------
 		if (new_ch == 2) {
 			work_size = sample_size * 2;
-			p_work = cast(ubyte*) malloc(work_size);
+			p_work = allocateC!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -81,7 +81,7 @@ private:
 		}  // stereo to mono --------
 		else {
 			work_size = sample_size / 2;
-			p_work = cast(ubyte*) malloc(work_size);
+			p_work = allocateC!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -110,16 +110,16 @@ private:
 		}
 
 		// release once.
-		free(_p_smp);
+		deallocate(_p_smp);
 		_p_smp = null;
 
-		_p_smp = cast(ubyte*) malloc(work_size);
+		_p_smp = allocateC!ubyte(work_size);
 		if (!(_p_smp)) {
-			free(p_work);
+			deallocate(p_work);
 			return false;
 		}
 		memcpy(_p_smp, p_work, work_size);
-		free(p_work);
+		deallocate(p_work);
 
 		// update param.
 		_ch = new_ch;
@@ -148,7 +148,7 @@ private:
 			// 16 to 8 --------
 		case 8:
 			work_size = sample_size / 2;
-			p_work = cast(ubyte*) malloc(work_size);
+			p_work = allocateC!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -163,7 +163,7 @@ private:
 			//  8 to 16 --------
 		case 16:
 			work_size = sample_size * 2;
-			p_work = cast(ubyte*) malloc(work_size);
+			p_work = allocateC!ubyte(work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -181,16 +181,16 @@ private:
 		}
 
 		// release once.
-		free(_p_smp);
+		deallocate(_p_smp);
 		_p_smp = null;
 
-		_p_smp = cast(ubyte*) malloc(work_size);
+		_p_smp = allocateC!ubyte(work_size);
 		if (!(_p_smp)) {
-			free(p_work);
+			deallocate(p_work);
 			return false;
 		}
 		memcpy(_p_smp, p_work, work_size);
-		free(p_work);
+		deallocate(p_work);
 
 		// update param.
 		_bps = new_bps;
@@ -240,7 +240,8 @@ private:
 			sample_num = work_size / 4;
 			work_size = sample_num * 4;
 			p4byte_data = cast(uint*) _p_smp;
-			if (!pxtnMem_zero_alloc(cast(void**)&p4byte_work, work_size)) {
+			p4byte_work = allocateC!uint(work_size / uint.sizeof);
+			if (!p4byte_work) {
 				goto End;
 			}
 			for (a = 0; a < sample_num; a++) {
@@ -255,7 +256,8 @@ private:
 			sample_num = work_size / 1;
 			work_size = sample_num * 1;
 			p1byte_data = cast(ubyte*) _p_smp;
-			if (!pxtnMem_zero_alloc(cast(void**)&p1byte_work, work_size)) {
+			p1byte_work = allocateC!ubyte(work_size);
+			if (!p1byte_work) {
 				goto End;
 			}
 			for (a = 0; a < sample_num; a++) {
@@ -270,7 +272,8 @@ private:
 			sample_num = work_size / 2;
 			work_size = sample_num * 2;
 			p2byte_data = cast(ushort*) _p_smp;
-			if (!pxtnMem_zero_alloc(cast(void**)&p2byte_work, work_size)) {
+			p2byte_work = allocateC!ushort(work_size / ushort.sizeof);
+			if (!p2byte_work) {
 				goto End;
 			}
 			for (a = 0; a < sample_num; a++) {
@@ -280,8 +283,9 @@ private:
 		}
 
 		// release once.
-		pxtnMem_free(cast(void**)&_p_smp);
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_smp, work_size)) {
+		deallocate(_p_smp);
+		_p_smp = allocateC!ubyte(work_size);
+		if (!_p_smp) {
 			goto End;
 		}
 
@@ -302,15 +306,15 @@ private:
 	End:
 
 		if (!b_ret) {
-			pxtnMem_free(cast(void**)&_p_smp);
+			deallocate(_p_smp);
 			_smp_head = 0;
 			_smp_body = 0;
 			_smp_tail = 0;
 		}
 
-		pxtnMem_free(cast(void**)&p2byte_work);
-		pxtnMem_free(cast(void**)&p1byte_work);
-		pxtnMem_free(cast(void**)&p4byte_work);
+		deallocate(p2byte_work);
+		deallocate(p1byte_work);
+		deallocate(p4byte_work);
 
 		return b_ret;
 	}
@@ -340,7 +344,7 @@ public:
 		// bit / sample is 8 or 16
 		size = _smp_body * _bps * _ch / 8;
 
-		_p_smp = cast(ubyte*) malloc(size);
+		_p_smp = allocateC!ubyte(size);
 		if (!(_p_smp)) {
 			return pxtnERR.pxtnERR_memory;
 		}
@@ -356,7 +360,7 @@ public:
 
 	void Release() nothrow @system {
 		if (_p_smp) {
-			free(_p_smp);
+			deallocate(_p_smp);
 		}
 		_p_smp = null;
 		_ch = 0;
@@ -447,7 +451,7 @@ public:
 	term:
 
 		if (res != pxtnERR.pxtnOK && _p_smp) {
-			free(_p_smp);
+			deallocate(_p_smp);
 			_p_smp = null;
 		}
 		return res;

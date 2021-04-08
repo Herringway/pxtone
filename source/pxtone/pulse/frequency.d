@@ -1,6 +1,6 @@
 ﻿module pxtone.pulse.frequency;
 
-import pxtone.pxtn;
+import pxtone.mem;
 
 import core.stdc.stdlib;
 
@@ -55,7 +55,7 @@ struct pxtnPulse_Frequency {
 
 	~this() nothrow @system {
 		if (_freq_table) {
-			free(_freq_table);
+			deallocate(_freq_table);
 		}
 		_freq_table = null;
 	}
@@ -85,7 +85,7 @@ struct pxtnPulse_Frequency {
 		double oct_x24;
 		double work;
 
-		_freq_table = cast(float*) malloc(float.sizeof * _TABLE_SIZE);
+		_freq_table = allocateC!float(_TABLE_SIZE);
 		if (!(_freq_table)) {
 			goto End;
 		}

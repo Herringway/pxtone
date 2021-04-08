@@ -156,7 +156,8 @@ pxtnERR _Read_Wave(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		num = p_vc.wave.num;
-		if (!pxtnMem_zero_alloc(cast(void**)&p_vc.wave.points, pxtnPOINT.sizeof * num)) {
+		p_vc.wave.points = allocateC!pxtnPOINT(num);
+		if (!p_vc.wave.points) {
 			return pxtnERR.pxtnERR_memory;
 		}
 		for (i = 0; i < num; i++) {
@@ -178,7 +179,8 @@ pxtnERR _Read_Wave(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 			return pxtnERR.pxtnERR_desc_r;
 		}
 		num = p_vc.wave.num;
-		if (!pxtnMem_zero_alloc(cast(void**)&p_vc.wave.points, pxtnPOINT.sizeof * num)) {
+		p_vc.wave.points = allocateC!pxtnPOINT(num);
+		if (!p_vc.wave.points) {
 			return pxtnERR.pxtnERR_memory;
 		}
 		for (i = 0; i < num; i++) {
@@ -244,7 +246,8 @@ pxtnERR _Read_Envelope(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @syst
 	}
 
 	num = p_vc.envelope.head_num + p_vc.envelope.body_num + p_vc.envelope.tail_num;
-	if (!pxtnMem_zero_alloc(cast(void**)&p_vc.envelope.points, pxtnPOINT.sizeof * num)) {
+	p_vc.envelope.points = allocateC!pxtnPOINT(num);
+	if (!p_vc.envelope.points) {
 		res = pxtnERR.pxtnERR_memory;
 		goto term;
 	}
@@ -262,7 +265,7 @@ pxtnERR _Read_Envelope(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @syst
 	res = pxtnERR.pxtnOK;
 term:
 	if (res != pxtnERR.pxtnOK) {
-		pxtnMem_free(cast(void**)&p_vc.envelope.points);
+		deallocate(p_vc.envelope.points);
 	}
 
 	return res;

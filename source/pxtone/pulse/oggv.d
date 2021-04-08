@@ -8,7 +8,7 @@ import core.stdc.stdint;
 import core.stdc.stdlib;
 import core.stdc.stdio;
 
-import pxtone.pxtn;
+import pxtone.mem;
 
 import pxtone.descriptor;
 import pxtone.error;
@@ -245,7 +245,7 @@ public:
 
 	void Release() nothrow @system {
 		if (_p_data) {
-			free(_p_data);
+			deallocate(_p_data);
 		}
 		_p_data = null;
 		_ch = 0;
@@ -299,7 +299,7 @@ public:
 			res = pxtnERR.pxtnERR_desc_r;
 			goto End;
 		}
-		_p_data = cast(char*) malloc(_size);
+		_p_data = allocateC!char(_size);
 		if (!(_p_data)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -317,7 +317,7 @@ public:
 
 		if (res != pxtnERR.pxtnOK) {
 			if (_p_data) {
-				free(_p_data);
+				deallocate(_p_data);
 			}
 			_p_data = null;
 			_size = 0;
@@ -369,7 +369,7 @@ public:
 			goto End;
 		}
 
-		_p_data = cast(char*) malloc(_size);
+		_p_data = allocateC!char(_size);
 		if (!(_p_data)) {
 			goto End;
 		}
@@ -382,7 +382,7 @@ public:
 
 		if (!b_ret) {
 			if (_p_data) {
-				free(_p_data);
+				deallocate(_p_data);
 			}
 			_p_data = null;
 			_size = 0;
@@ -397,7 +397,7 @@ public:
 			return true;
 		}
 
-		p_dst._p_data = cast(char*) malloc(_size);
+		p_dst._p_data = allocateC!char(_size);
 		if (!(p_dst._p_data)) {
 			return false;
 		}

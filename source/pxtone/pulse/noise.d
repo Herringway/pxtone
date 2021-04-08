@@ -37,9 +37,9 @@ enum pxWAVETYPE {
 
 struct pxNOISEDESIGN_OSCILLATOR {
 	pxWAVETYPE type;
-	float freq;
-	float volume;
-	float offset;
+	float freq = 0.0;
+	float volume = 0.0;
+	float offset = 0.0;
 	bool b_rev;
 }
 
@@ -346,7 +346,8 @@ public:
 		}
 		_unit_num = unit_num;
 
-		if (!pxtnMem_zero_alloc(cast(void**)&_units, pxNOISEDESIGN_UNIT.sizeof * _unit_num)) {
+		_units = allocateC!pxNOISEDESIGN_UNIT(_unit_num);
+		if (!_units) {
 			res = pxtnERR.pxtnERR_memory;
 			goto term;
 		}
@@ -374,7 +375,8 @@ public:
 					res = pxtnERR.pxtnERR_fmt_unknown;
 					goto term;
 				}
-				if (!pxtnMem_zero_alloc(cast(void**)&pU.enves, pxtnPOINT.sizeof * pU.enve_num)) {
+				pU.enves = allocateC!pxtnPOINT(pU.enve_num);
+				if (!pU.enves) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;
 				}
@@ -431,10 +433,10 @@ public:
 		if (_units) {
 			for (int u = 0; u < _unit_num; u++) {
 				if (_units[u].enves) {
-					pxtnMem_free(cast(void**)&_units[u].enves);
+					deallocate(_units[u].enves);
 				}
 			}
-			pxtnMem_free(cast(void**)&_units);
+			deallocate(_units);
 			_unit_num = 0;
 		}
 	}
@@ -445,14 +447,16 @@ public:
 		Release();
 
 		_unit_num = unit_num;
-		if (!pxtnMem_zero_alloc(cast(void**)&_units, pxNOISEDESIGN_UNIT.sizeof * unit_num)) {
+		_units = allocateC!pxNOISEDESIGN_UNIT(unit_num);
+		if (!_units) {
 			goto End;
 		}
 
 		for (int u = 0; u < unit_num; u++) {
 			pxNOISEDESIGN_UNIT* p_unit = &_units[u];
 			p_unit.enve_num = envelope_num;
-			if (!pxtnMem_zero_alloc(cast(void**)&p_unit.enves, pxtnPOINT.sizeof * p_unit.enve_num)) {
+			p_unit.enves = allocateC!pxtnPOINT(p_unit.enve_num);
+			if (!p_unit.enves) {
 				goto End;
 			}
 		}
@@ -488,7 +492,7 @@ public:
 				p_dst._units[u].main = _units[u].main;
 				p_dst._units[u].pan = _units[u].pan;
 				p_dst._units[u].volu = _units[u].volu;
-				p_dst._units[u].enves = cast(pxtnPOINT*) malloc(pxtnPOINT.sizeof * enve_num);
+				p_dst._units[u].enves = allocateC!pxtnPOINT(enve_num);
 				if (!p_dst._units[u].enves) {
 					goto End;
 				}

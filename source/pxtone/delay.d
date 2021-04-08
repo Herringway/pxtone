@@ -82,7 +82,7 @@ public:
 
 	void Tone_Release() nothrow @system {
 		for (int i = 0; i < pxtnMAX_CHANNEL; i++) {
-			pxtnMem_free(cast(void**)&_bufs[i]);
+			deallocate(_bufs[i]);
 		}
 		_smp_num = 0;
 	}
@@ -111,7 +111,8 @@ public:
 			}
 
 			for (int c = 0; c < pxtnMAX_CHANNEL; c++) {
-				if (!pxtnMem_zero_alloc(cast(void**)&_bufs[c], _smp_num * int.sizeof)) {
+				_bufs[c] = allocateC!int(_smp_num);
+				if (!_bufs[c]) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;
 				}

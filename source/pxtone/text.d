@@ -1,9 +1,8 @@
 ﻿module pxtone.text;
 // '12/03/03
 
-import pxtone.pxtn;
-
 import pxtone.descriptor;
+import pxtone.mem;
 
 import core.stdc.stdlib;
 import core.stdc.string;
@@ -21,7 +20,7 @@ bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @s
 
 	bool b_ret = false;
 
-	*pp = cast(char*) malloc(*p_buf_size + 1);
+	*pp = allocateC!char(*p_buf_size + 1);
 	if (!(*pp)) {
 		return false;
 	}
@@ -37,7 +36,7 @@ bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @s
 	b_ret = true;
 term:
 	if (!b_ret) {
-		free(*pp);
+		deallocate(*pp);
 		*pp = null;
 	}
 
@@ -64,9 +63,9 @@ private:
 
 public:
 	 ~this() nothrow @system {
-		SAFE_DELETE(_p_comment_buf);
+		deallocate(_p_comment_buf);
 		_comment_size = 0;
-		SAFE_DELETE(_p_name_buf);
+		deallocate(_p_name_buf);
 		_name_size = 0;
 	}
 
@@ -75,14 +74,14 @@ public:
 			return false;
 		}
 		if (_p_comment_buf) {
-			free(_p_comment_buf);
+			deallocate(_p_comment_buf);
 		}
 		_p_comment_buf = null;
 		if (buf_size <= 0) {
 			_comment_size = 0;
 			return true;
 		}
-		_p_comment_buf = cast(char*) malloc(buf_size + 1);
+		_p_comment_buf = allocateC!char(buf_size + 1);
 		if (!(_p_comment_buf)) {
 			return false;
 		}
@@ -108,14 +107,14 @@ public:
 			return false;
 		}
 		if (_p_name_buf) {
-			free(_p_name_buf);
+			deallocate(_p_name_buf);
 		}
 		_p_name_buf = null;
 		if (buf_size <= 0) {
 			_name_size = 0;
 			return true;
 		}
-		_p_name_buf = cast(char*) malloc(buf_size + 1);
+		_p_name_buf = allocateC!char(buf_size + 1);
 		if (!(_p_name_buf)) {
 			return false;
 		}

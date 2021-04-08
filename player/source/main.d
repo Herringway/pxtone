@@ -90,7 +90,7 @@ int main(string[] args) {
 		if (!okay) {
 			errorf("ERROR: pxtnERR[ %s ]", pxtnError_get_string(pxtn_err).fromStringz);
 		}
-		SAFE_DELETE(pxtn);
+		deallocate(pxtn);
 	}
 	pxtn_err = pxtn.init_();
 	if (pxtn_err != pxtnERR.pxtnOK) {

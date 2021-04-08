@@ -528,7 +528,7 @@ private:
 			_delays[_delay_num] = delay;
 			_delay_num++;
 		} else {
-			SAFE_DELETE(delay);
+			deallocate(delay);
 		}
 		return res;
 	}
@@ -556,7 +556,7 @@ private:
 			_ovdrvs[_ovdrv_num] = ovdrv;
 			_ovdrv_num++;
 		} else {
-			SAFE_DELETE(ovdrv);
+			deallocate(ovdrv);
 		}
 
 		return res;
@@ -617,7 +617,7 @@ private:
 		res = pxtnERR.pxtnOK;
 	term:
 		if (res != pxtnERR.pxtnOK) {
-			SAFE_DELETE(woice);
+			deallocate(woice);
 		}
 		return res;
 	}
@@ -669,7 +669,7 @@ private:
 			_units[_unit_num] = unit;
 			_unit_num++;
 		} else {
-			SAFE_DELETE(unit);
+			deallocate(unit);
 		}
 
 		return res;
@@ -1005,8 +1005,7 @@ private:
 		}
 
 		// delay
-		byte_size = (pxtnDelay*).sizeof * pxtnMAX_TUNEDELAYSTRUCT;
-		_delays = cast(pxtnDelay**) malloc(byte_size);
+		_delays = allocateC!(pxtnDelay*)(pxtnMAX_TUNEDELAYSTRUCT);
 		if (!(_delays)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1015,8 +1014,7 @@ private:
 		_delay_max = pxtnMAX_TUNEDELAYSTRUCT;
 
 		// over-drive
-		byte_size = (pxtnOverDrive*).sizeof * pxtnMAX_TUNEOVERDRIVESTRUCT;
-		_ovdrvs = cast(pxtnOverDrive**) malloc(byte_size);
+		_ovdrvs = allocateC!(pxtnOverDrive*)(pxtnMAX_TUNEOVERDRIVESTRUCT);
 		if (!(_ovdrvs)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1025,8 +1023,7 @@ private:
 		_ovdrv_max = pxtnMAX_TUNEOVERDRIVESTRUCT;
 
 		// woice
-		byte_size = (pxtnWoice*).sizeof * pxtnMAX_TUNEWOICESTRUCT;
-		_woices = cast(pxtnWoice**) malloc(byte_size);
+		_woices = allocateC!(pxtnWoice*)(pxtnMAX_TUNEWOICESTRUCT);
 		if (!(_woices)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1035,8 +1032,7 @@ private:
 		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
 
 		// unit
-		byte_size = (pxtnUnit*).sizeof * pxtnMAX_TUNEUNITSTRUCT;
-		_units = cast(pxtnUnit**) malloc(byte_size);
+		_units = allocateC!(pxtnUnit*)(pxtnMAX_TUNEUNITSTRUCT);
 		if (!(_units)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -1073,36 +1069,36 @@ private:
 
 		_moo_destructer();
 
-		SAFE_DELETE(text);
-		SAFE_DELETE(master);
-		SAFE_DELETE(evels);
-		SAFE_DELETE(_ptn_bldr);
+		deallocate(text);
+		deallocate(master);
+		deallocate(evels);
+		deallocate(_ptn_bldr);
 		if (_delays) {
 			for (int i = 0; i < _delay_num; i++) {
-				SAFE_DELETE(_delays[i]);
+				deallocate(_delays[i]);
 			}
-			free(_delays);
+			deallocate(_delays);
 			_delays = null;
 		}
 		if (_ovdrvs) {
 			for (int i = 0; i < _ovdrv_num; i++) {
-				SAFE_DELETE(_ovdrvs[i]);
+				deallocate(_ovdrvs[i]);
 			}
-			free(_ovdrvs);
+			deallocate(_ovdrvs);
 			_ovdrvs = null;
 		}
 		if (_woices) {
 			for (int i = 0; i < _woice_num; i++) {
-				SAFE_DELETE(_woices[i]);
+				deallocate(_woices[i]);
 			}
-			free(_woices);
+			deallocate(_woices);
 			_woices = null;
 		}
 		if (_units) {
 			for (int i = 0; i < _unit_num; i++) {
-				SAFE_DELETE(_units[i]);
+				deallocate(_units[i]);
 			}
-			free(_units);
+			deallocate(_units);
 			_units = null;
 		}
 		return true;
@@ -1232,7 +1228,8 @@ private:
 		if (!(_moo_freq) || !_moo_freq.Init()) {
 			goto term;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_moo_group_smps, int.sizeof * _group_num)) {
+		_moo_group_smps = allocateC!int(_group_num);
+		if (!_moo_group_smps) {
 			goto term;
 		}
 
@@ -1251,9 +1248,9 @@ private:
 			return false;
 		}
 		_moo_b_init = false;
-		SAFE_DELETE(_moo_freq);
+		deallocate(_moo_freq);
 		if (_moo_group_smps) {
-			free(_moo_group_smps);
+			deallocate(_moo_group_smps);
 		}
 		_moo_group_smps = null;
 		return true;
@@ -1555,19 +1552,19 @@ public:
 		evels.Clear();
 
 		for (int i = 0; i < _delay_num; i++) {
-			SAFE_DELETE(_delays[i]);
+			deallocate(_delays[i]);
 		}
 		_delay_num = 0;
 		for (int i = 0; i < _delay_num; i++) {
-			SAFE_DELETE(_ovdrvs[i]);
+			deallocate(_ovdrvs[i]);
 		}
 		_ovdrv_num = 0;
 		for (int i = 0; i < _woice_num; i++) {
-			SAFE_DELETE(_woices[i]);
+			deallocate(_woices[i]);
 		}
 		_woice_num = 0;
 		for (int i = 0; i < _unit_num; i++) {
-			SAFE_DELETE(_units[i]);
+			deallocate(_units[i]);
 		}
 		_unit_num = 0;
 
@@ -1980,7 +1977,7 @@ public:
 			return false;
 		}
 
-		SAFE_DELETE(_delays[idx]);
+		deallocate(_delays[idx]);
 		_delay_num--;
 		for (int i = idx; i < _delay_num; i++) {
 			_delays[i] = _delays[i + 1];
@@ -2053,7 +2050,7 @@ public:
 			return false;
 		}
 
-		SAFE_DELETE(_ovdrvs[idx]);
+		deallocate(_ovdrvs[idx]);
 		_ovdrv_num--;
 		for (int i = idx; i < _ovdrv_num; i++) {
 			_ovdrvs[i] = _ovdrvs[i + 1];
@@ -2156,7 +2153,7 @@ public:
 		if (idx < 0 || idx >= _woice_num) {
 			return false;
 		}
-		SAFE_DELETE(_woices[idx]);
+		deallocate(_woices[idx]);
 		_woice_num--;
 		for (int i = idx; i < _woice_num; i++) {
 			_woices[i] = _woices[i + 1];
@@ -2237,7 +2234,7 @@ public:
 		if (idx < 0 || idx >= _unit_num) {
 			return false;
 		}
-		SAFE_DELETE(_units[idx]);
+		deallocate(_units[idx]);
 		_unit_num--;
 		for (int i = idx; i < _unit_num; i++) {
 			_units[i] = _units[i + 1];

@@ -112,19 +112,19 @@ struct pxtnVOICETONE {
 
 private void _Voice_Release(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi) nothrow @system {
 	if (p_vc) {
-		SAFE_DELETE(p_vc.p_pcm);
-		SAFE_DELETE(p_vc.p_ptn);
+		deallocate(p_vc.p_pcm);
+		deallocate(p_vc.p_ptn);
 		version (pxINCLUDE_OGGVORBIS) {
-			SAFE_DELETE(p_vc.p_oggv);
+			deallocate(p_vc.p_oggv);
 		}
-		pxtnMem_free(cast(void**)&p_vc.envelope.points);
+		deallocate(p_vc.envelope.points);
 		memset(&p_vc.envelope, 0, pxtnVOICEENVELOPE.sizeof);
-		pxtnMem_free(cast(void**)&p_vc.wave.points);
+		deallocate(p_vc.wave.points);
 		memset(&p_vc.wave, 0, pxtnVOICEWAVE.sizeof);
 	}
 	if (p_vi) {
-		pxtnMem_free(cast(void**)&p_vi.p_env);
-		pxtnMem_free(cast(void**)&p_vi.p_smp_w);
+		deallocate(p_vi.p_env);
+		deallocate(p_vi.p_smp_w);
 		memset(p_vi, 0, pxtnVOICEINSTANCE.sizeof);
 	}
 }
@@ -342,10 +342,12 @@ public:
 
 		Voice_Release();
 
-		if (!pxtnMem_zero_alloc(cast(void**)&_voices, pxtnVOICEUNIT.sizeof * voice_num)) {
+		_voices = allocateC!pxtnVOICEUNIT(voice_num);
+		if (!_voices) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_voinsts, pxtnVOICEINSTANCE.sizeof * voice_num)) {
+		_voinsts = allocateC!pxtnVOICEINSTANCE(voice_num);
+		if (!_voinsts) {
 			goto End;
 		}
 		_voice_num = voice_num;
@@ -380,8 +382,8 @@ public:
 		for (int v = 0; v < _voice_num; v++) {
 			_Voice_Release(&_voices[v], &_voinsts[v]);
 		}
-		pxtnMem_free(cast(void**)&_voices);
-		pxtnMem_free(cast(void**)&_voinsts);
+		deallocate(_voices);
+		deallocate(_voinsts);
 		_voice_num = 0;
 	}
 
@@ -420,7 +422,8 @@ public:
 			p_vc2.envelope.tail_num = p_vc1.envelope.tail_num;
 			num = p_vc2.envelope.head_num + p_vc2.envelope.body_num + p_vc2.envelope.tail_num;
 			size = pxtnPOINT.sizeof * num;
-			if (!pxtnMem_zero_alloc(cast(void**)&p_vc2.envelope.points, size)) {
+			p_vc2.envelope.points = allocateC!pxtnPOINT(size / pxtnPOINT.sizeof);
+			if (!p_vc2.envelope.points) {
 				goto End;
 			}
 			memcpy(p_vc2.envelope.points, p_vc1.envelope.points, size);
@@ -429,7 +432,8 @@ public:
 			p_vc2.wave.num = p_vc1.wave.num;
 			p_vc2.wave.reso = p_vc1.wave.reso;
 			size = pxtnPOINT.sizeof * p_vc2.wave.num;
-			if (!pxtnMem_zero_alloc(cast(void**)&p_vc2.wave.points, size)) {
+			p_vc2.wave.points = allocateC!pxtnPOINT(size / pxtnPOINT.sizeof);
+			if (!p_vc2.wave.points) {
 				goto End;
 			}
 			memcpy(p_vc2.wave.points, p_vc1.wave.points, size);
@@ -1102,7 +1106,7 @@ public:
 
 		for (int v = 0; v < _voice_num; v++) {
 			p_vi = &_voinsts[v];
-			pxtnMem_free(cast(void**)&p_vi.p_smp_w);
+			deallocate(p_vi.p_smp_w);
 			p_vi.smp_head_w = 0;
 			p_vi.smp_body_w = 0;
 			p_vi.smp_tail_w = 0;
@@ -1153,7 +1157,7 @@ public:
 			case pxtnVOICETYPE.pxtnVOICE_Coodinate: {
 					p_vi.smp_body_w = 400;
 					int size = p_vi.smp_body_w * ch * bps / 8;
-					p_vi.p_smp_w = cast(ubyte*) malloc(size);
+					p_vi.p_smp_w = allocateC!ubyte(size);
 					if (!(p_vi.p_smp_w)) {
 						res = pxtnERR.pxtnERR_memory;
 						goto term;
@@ -1188,7 +1192,7 @@ public:
 		if (res != pxtnERR.pxtnOK) {
 			for (int v = 0; v < _voice_num; v++) {
 				p_vi = &_voinsts[v];
-				pxtnMem_free(cast(void**)&p_vi.p_smp_w);
+				deallocate(p_vi.p_smp_w);
 				p_vi.smp_head_w = 0;
 				p_vi.smp_body_w = 0;
 				p_vi.smp_tail_w = 0;
@@ -1209,7 +1213,7 @@ public:
 			pxtnVOICEENVELOPE* p_enve = &p_vc.envelope;
 			int size = 0;
 
-			pxtnMem_free(cast(void**)&p_vi.p_env);
+			deallocate(p_vi.p_env);
 
 			if (p_enve.head_num) {
 				for (e = 0; e < p_enve.head_num; e++) {
@@ -1220,11 +1224,13 @@ public:
 					p_vi.env_size = 1;
 				}
 
-				if (!pxtnMem_zero_alloc(cast(void**)&p_vi.p_env, p_vi.env_size)) {
+				p_vi.p_env = allocateC!ubyte(p_vi.env_size);
+				if (!p_vi.p_env) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;
 				}
-				if (!pxtnMem_zero_alloc(cast(void**)&p_point, pxtnPOINT.sizeof * p_enve.head_num)) {
+				p_point = allocateC!pxtnPOINT(p_enve.head_num);
+				if (!p_point) {
 					res = pxtnERR.pxtnERR_memory;
 					goto term;
 				}
@@ -1257,7 +1263,7 @@ public:
 					}
 				}
 
-				pxtnMem_free(cast(void**)&p_point);
+				deallocate(p_point);
 			}
 
 			if (p_enve.tail_num) {
@@ -1270,11 +1276,11 @@ public:
 		res = pxtnERR.pxtnOK;
 	term:
 
-		pxtnMem_free(cast(void**)&p_point);
+		deallocate(p_point);
 
 		if (res != pxtnERR.pxtnOK) {
 			for (int v = 0; v < _voice_num; v++) {
-				pxtnMem_free(cast(void**)&_voinsts[v].p_env);
+				deallocate(_voinsts[v].p_env);
 			}
 		}
 

@@ -142,9 +142,9 @@ private:
 public:
 	 ~this() nothrow @system {
 		_b_init = false;
-		SAFE_DELETE(_freq);
+		deallocate(_freq);
 		for (int i = 0; i < pxWAVETYPE.pxWAVETYPE_num; i++) {
-			pxtnMem_free(cast(void**)&_p_tables[i]);
+			deallocate(_p_tables[i]);
 		}
 	}
 
@@ -178,56 +178,73 @@ public:
 			_p_tables[s] = null;
 		}
 
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_None], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_None] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_None]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Sine], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Sine] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Sine]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Saw], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Rect], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Random], short.sizeof * _smp_num_rand)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Random] = allocateC!short(_smp_num_rand);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Random]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Saw2], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw2] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw2]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Rect2], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect2] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect2]) {
 			goto End;
 		}
 
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Tri], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Tri] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Tri]) {
 			goto End;
 		}
-		//if( !pxtnMem_zero_alloc(cast(void **)&_p_tables[ pxWAVETYPE.pxWAVETYPE_Random2 ], short.sizeof * _smp_num_rand ) ) {
+		//_p_tables[pxWAVETYPE.pxWAVETYPE_Random2] = allocateC!short(_smp_num_rand);
+		//if(!_p_tables[pxWAVETYPE.pxWAVETYPE_Random2]) {
 		//	goto End;
 		//}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Rect3], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect3] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect3]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Rect4], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect4] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect4]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Rect8], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect8] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect8]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Rect16], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect16] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect16]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Saw3], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw3] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw3]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Saw4], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw4] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw4]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Saw6], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw6] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw6]) {
 			goto End;
 		}
-		if (!pxtnMem_zero_alloc(cast(void**)&_p_tables[pxWAVETYPE.pxWAVETYPE_Saw8], short.sizeof * _smp_num)) {
+		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw8] = allocateC!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw8]) {
 			goto End;
 		}
 
@@ -516,7 +533,8 @@ public:
 
 		unit_num = p_noise.get_unit_num();
 
-		if (!pxtnMem_zero_alloc(cast(void**)&units, _UNIT.sizeof * unit_num)) {
+		units = allocateC!_UNIT(unit_num);
+		if (!units) {
 			goto End;
 		}
 
@@ -538,7 +556,8 @@ public:
 				pU.pan[0] = cast(double)(100.0f - p_du.pan) / 100;
 			}
 
-			if (!pxtnMem_zero_alloc(cast(void**)&pU.enves, _POINT.sizeof * pU.enve_num)) {
+			pU.enves = allocateC!_POINT(pU.enve_num);
+			if (!pU.enves) {
 				goto End;
 			}
 
@@ -723,13 +742,13 @@ public:
 	End:
 		if (units) {
 			for (int i = 0; i < unit_num; i++) {
-				pxtnMem_free(cast(void**)&units[i].enves);
+				deallocate(units[i].enves);
 			}
-			pxtnMem_free(cast(void**)&units);
+			deallocate(units);
 		}
 
 		if (!b_ret && p_pcm) {
-			SAFE_DELETE(p_pcm);
+			deallocate(p_pcm);
 		}
 
 		return p_pcm;
