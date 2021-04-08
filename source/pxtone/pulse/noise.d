@@ -9,9 +9,6 @@ import pxtone.pulse.frequency;
 import pxtone.pulse.oscillator;
 import pxtone.pulse.pcm;
 
-import core.stdc.stdlib;
-import core.stdc.string;
-
 enum pxWAVETYPE {
 	pxWAVETYPE_None = 0,
 	pxWAVETYPE_Sine,

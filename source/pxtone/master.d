@@ -7,8 +7,6 @@ import pxtone.descriptor;
 import pxtone.error;
 import pxtone.evelist;
 
-import core.stdc.string;
-
 /////////////////////////////////
 // file io
 /////////////////////////////////
@@ -295,7 +293,7 @@ public:
 				}
 				break;
 			case EVENTKIND_BEATTEMPO:
-				memcpy(&beat_tempo, &volume, float.sizeof);
+				beat_tempo = *(cast(float*)&volume);
 				if (clock) {
 					return pxtnERR.pxtnERR_desc_broken;
 				}

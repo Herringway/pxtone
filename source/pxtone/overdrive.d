@@ -5,8 +5,6 @@ import pxtone.pxtn;
 import pxtone.error;
 import pxtone.descriptor;
 
-import core.stdc.string;
-
 enum TUNEOVERDRIVE_CUT_MAX = 99.9f;
 enum TUNEOVERDRIVE_CUT_MIN = 50.0f;
 enum TUNEOVERDRIVE_AMP_MAX = 8.0f;

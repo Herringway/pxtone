@@ -4,9 +4,6 @@ import pxtone.descriptor;
 import pxtone.error;
 import pxtone.mem;
 
-import core.stdc.stdlib;
-import core.stdc.string;
-
 ///////////////////////
 // global
 ///////////////////////

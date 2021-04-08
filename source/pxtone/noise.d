@@ -2,15 +2,13 @@
 
 // '12/03/29
 
-import pxtone.mem;
-
 import pxtone.descriptor;
+import pxtone.mem;
 
 import pxtone.pulse.noisebuilder;
 import pxtone.pulse.noise;
 import pxtone.pulse.pcm;
 import pxtone.error;
-import core.stdc.stdlib;
 
 struct pxtoneNoise {
 	void* _bldr;

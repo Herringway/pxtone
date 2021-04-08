@@ -18,8 +18,6 @@ import pxtone.unit;
 import pxtone.evelist;
 
 import core.stdc.stdio;
-import core.stdc.stdlib;
-import core.stdc.string;
 
 enum PXTONEERRORSIZE = 64;
 
@@ -693,7 +691,7 @@ private:
 			return false;
 		}
 
-		memcpy(assi.name.ptr, p_name, name_size);
+		assi.name[0 .. name_size] = p_name[0 .. name_size];
 		assi.woice_index = cast(ushort) idx;
 
 		size = _ASSIST_WOICE.sizeof;
@@ -751,7 +749,7 @@ private:
 		int name_size;
 		const char* p_name = _units[idx].get_name_buf(&name_size);
 
-		memcpy(assi.name.ptr, p_name, name_size);
+		assi.name[0 .. name_size] = p_name[0 .. name_size];
 		assi.unit_index = cast(ushort) idx;
 
 		size = assi.sizeof;

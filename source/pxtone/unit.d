@@ -9,8 +9,6 @@ import pxtone.evelist;
 import pxtone.max;
 import pxtone.woice;
 
-import core.stdc.string;
-
 // v1x (20byte) =================
 struct _x1x_UNIT {
 	char[pxtnMAX_TUNEUNITNAME] name;
@@ -310,7 +308,7 @@ public:
 		}
 		_name_buf[0 .. $] = 0;
 		if (buf_size) {
-			memcpy(_name_buf.ptr, name, buf_size);
+			_name_buf[0 .. buf_size] = name[0 .. buf_size];
 		}
 		_name_size = buf_size;
 		return true;
@@ -382,7 +380,7 @@ public:
 			return false;
 		}
 
-		memcpy(_name_buf.ptr, unit.name.ptr, pxtnMAX_TUNEUNITNAME);
+		_name_buf[0 .. pxtnMAX_TUNEUNITNAME] = unit.name[0 .. pxtnMAX_TUNEUNITNAME];
 		_name_buf[pxtnMAX_TUNEUNITNAME] = '\0';
 		*p_group = unit.group;
 		return true;

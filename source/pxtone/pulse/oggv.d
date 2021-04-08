@@ -3,9 +3,6 @@
 version (pxINCLUDE_OGGVORBIS)  : import derelict.vorbis.codec;
 import derelict.vorbis.file;
 
-import core.stdc.string;
-import core.stdc.stdint;
-import core.stdc.stdlib;
 import core.stdc.stdio;
 
 import pxtone.mem;
@@ -38,12 +35,12 @@ extern (C) size_t _mread(void* p, size_t size, size_t nmemb, void* p_void) nothr
 	int left = pom.size - pom.pos;
 
 	if (cast(int)(size * nmemb) >= left) {
-		memcpy(p, &pom.p_buf[pom.pos], pom.size - pom.pos);
+		p[0 .. pom.size - pom.pos] = pom.p_buf[pom.pos .. pom.size];
 		pom.pos = pom.size;
 		return left / size;
 	}
 
-	memcpy(p, &pom.p_buf[pom.pos], nmemb * size);
+	p[0 .. nmemb * size] = pom.p_buf[pom.pos .. pom.pos + nmemb * size];
 	pom.pos += cast(int)(nmemb * size);
 
 	return nmemb;
@@ -175,7 +172,7 @@ public:
 
 		OVMEM ovmem;
 		int current_section;
-		char[4096] pcmout = 0; //take 4k out of the data segment, not the stack
+		ubyte[4096] pcmout = 0; //take 4k out of the data segment, not the stack
 
 		ovmem.p_buf = cast(char*) _p_data;
 		ovmem.pos = 0;
@@ -223,11 +220,11 @@ public:
 		// decode..
 		{
 			int ret = 0;
-			uint8_t* p = cast(uint8_t*) p_pcm.get_p_buf_variable();
+			ubyte* p = cast(ubyte*) p_pcm.get_p_buf_variable();
 			do {
 				ret = ov_read(&vf, cast(byte*) pcmout.ptr, 4096, 0, 2, 1, &current_section);
 				if (ret > 0) {
-					memcpy(p, pcmout.ptr, ret); //fwrite( pcmout, 1, ret, of );
+					p[0 .. ret] = pcmout[0 .. ret]; //fwrite( pcmout, 1, ret, of );
 				}
 				p += ret;
 			}
@@ -401,7 +398,7 @@ public:
 		if (!(p_dst._p_data)) {
 			return false;
 		}
-		memcpy(p_dst._p_data, _p_data, _size);
+		p_dst._p_data[0 .. _size] = _p_data[0 .. _size];
 
 		p_dst._ch = _ch;
 		p_dst._sps2 = _sps2;

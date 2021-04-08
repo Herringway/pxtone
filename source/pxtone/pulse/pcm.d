@@ -6,7 +6,6 @@ import pxtone.error;
 import pxtone.descriptor;
 import pxtone.mem;
 
-import core.stdc.stdlib;
 import core.stdc.string;
 
 struct WAVEFORMATCHUNK {
@@ -118,7 +117,7 @@ private:
 			deallocate(p_work);
 			return false;
 		}
-		memcpy(_p_smp, p_work, work_size);
+		_p_smp[0 .. work_size] = p_work[0 .. work_size];
 		deallocate(p_work);
 
 		// update param.
@@ -189,7 +188,7 @@ private:
 			deallocate(p_work);
 			return false;
 		}
-		memcpy(_p_smp, p_work, work_size);
+		_p_smp[0 .. work_size] = p_work[0 .. work_size];
 		deallocate(p_work);
 
 		// update param.
@@ -290,11 +289,11 @@ private:
 		}
 
 		if (p4byte_work) {
-			memcpy(_p_smp, p4byte_work, work_size);
+			_p_smp[0 .. work_size] = (cast(ubyte*)p4byte_work)[0 .. work_size];
 		} else if (p2byte_work) {
-			memcpy(_p_smp, p2byte_work, work_size);
+			_p_smp[0 .. work_size] = (cast(ubyte*)p2byte_work)[0 .. work_size];
 		} else if (p1byte_work) {
-			memcpy(_p_smp, p1byte_work, work_size);
+			_p_smp[0 .. work_size] = p1byte_work[0 .. work_size];
 		} else {
 			goto End;
 		}
@@ -626,7 +625,8 @@ public:
 		if (res != pxtnERR.pxtnOK) {
 			return res;
 		}
-		memcpy(p_dst._p_smp, _p_smp, (_smp_head + _smp_body + _smp_tail) * _ch * _bps / 8);
+		const size = (_smp_head + _smp_body + _smp_tail) * _ch * _bps / 8;
+		p_dst._p_smp[0 .. size] =_p_smp[0 .. size];
 		return pxtnERR.pxtnOK;
 	}
 
@@ -648,7 +648,7 @@ public:
 			return false;
 		}
 
-		memcpy(p_dst._p_smp, &_p_smp[offset], size);
+		p_dst._p_smp[0 .. size] = _p_smp[offset .. offset + size];
 
 		return true;
 	}

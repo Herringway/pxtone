@@ -4,9 +4,6 @@
 import pxtone.descriptor;
 import pxtone.mem;
 
-import core.stdc.stdlib;
-import core.stdc.string;
-
 bool _read4_malloc(char** pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @system {
 	if (!pp) {
 		return false;
@@ -85,7 +82,7 @@ public:
 		if (!(_p_comment_buf)) {
 			return false;
 		}
-		memcpy(_p_comment_buf, comment, buf_size);
+		_p_comment_buf[0 .. buf_size] = comment[0 .. buf_size];
 		_p_comment_buf[buf_size] = '\0';
 		_comment_size = buf_size;
 		return true;
@@ -118,7 +115,7 @@ public:
 		if (!(_p_name_buf)) {
 			return false;
 		}
-		memcpy(_p_name_buf, name, buf_size);
+		_p_name_buf[0 .. buf_size] = name[0 .. buf_size];
 		_p_name_buf[buf_size] = '\0';
 		_name_size = buf_size;
 		return true;

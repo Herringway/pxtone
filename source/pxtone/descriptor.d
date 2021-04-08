@@ -8,8 +8,6 @@ import pxtone.pxtn;
 
 import core.stdc.stdio : fwrite, fread, fseek, fpos_t, fgetpos, SEEK_END, SEEK_SET, SEEK_CUR;
 import core.stdc.stdio : REALFILE = FILE;
-import core.stdc.stdlib;
-import core.stdc.string;
 
 struct _iobuf;
 alias FILE = _iobuf;
@@ -170,7 +168,7 @@ public:
 				if (_cur + size > _size) {
 					goto End;
 				}
-				memcpy(&(cast(char*) p)[i], cast(ubyte*) _p_desc + _cur, size);
+				p[i .. i + size] = _p_desc[_cur .. _cur + size];
 				_cur += size;
 			}
 		}

@@ -14,9 +14,6 @@ import pxtone.pulse.pcm;
 import pxtone.pulse.oggv;
 import pxtone.woiceptv;
 
-import core.stdc.stdlib;
-import core.stdc.string;
-
 enum pxtnMAX_TUNEWOICENAME = 16; // fixture.
 
 enum pxtnMAX_UNITCONTROLVOICE = 2; // max-woice per unit
@@ -317,7 +314,7 @@ public:
 		}
 		_name_buf[0 .. $] = 0;
 		if (buf_size) {
-			memcpy(_name_buf.ptr, name, buf_size);
+			_name_buf[0 ..buf_size] = name[0 .. buf_size];
 		}
 		_name_size = buf_size;
 		return true;
@@ -400,7 +397,7 @@ public:
 
 		p_dst._type = _type;
 
-		memcpy(p_dst._name_buf.ptr, _name_buf.ptr, _name_buf.sizeof);
+		p_dst._name_buf[0 .. _name_buf.sizeof] = _name_buf[0 .. $];
 		p_dst._name_size = _name_size;
 
 		for (v = 0; v < _voice_num; v++) {
@@ -426,7 +423,7 @@ public:
 			if (!p_vc2.envelope.points) {
 				goto End;
 			}
-			memcpy(p_vc2.envelope.points, p_vc1.envelope.points, size);
+			p_vc2.envelope.points[0 .. size] = p_vc1.envelope.points[0 .. size];
 
 			// wave
 			p_vc2.wave.num = p_vc1.wave.num;
@@ -436,7 +433,7 @@ public:
 			if (!p_vc2.wave.points) {
 				goto End;
 			}
-			memcpy(p_vc2.wave.points, p_vc1.wave.points, size);
+			p_vc2.wave.points[0 .. size] = p_vc1.wave.points[0 .. size];
 
 			if (p_vc1.p_pcm.Copy(p_vc2.p_pcm) != pxtnERR.pxtnOK) {
 				goto End;
@@ -617,7 +614,7 @@ public:
 			if (!p_doc.v_w_asfile(p_vc.pan, &total)) {
 				goto End;
 			}
-			memcpy(&work, &p_vc.tuning, 4);
+			work = *(cast(uint*)&p_vc.tuning);
 			if (!p_doc.v_w_asfile(work, &total)) {
 				goto End;
 			}
@@ -736,7 +733,7 @@ public:
 				res = pxtnERR.pxtnERR_desc_r;
 				goto term;
 			}
-			memcpy(&p_vc.tuning, &work1, 4);
+			p_vc.tuning = *(cast(float*)&work1);
 			if (!p_doc.v_r(cast(int*)&p_vc.voice_flags)) {
 				res = pxtnERR.pxtnERR_desc_r;
 				goto term;

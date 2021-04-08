@@ -7,9 +7,6 @@ import pxtone.error;
 import pxtone.max;
 import pxtone.mem;
 
-import core.stdc.stdlib;
-import core.stdc.string;
-
 enum DELAYUNIT {
 	DELAYUNIT_Beat = 0,
 	DELAYUNIT_Meas,
