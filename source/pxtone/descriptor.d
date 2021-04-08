@@ -298,7 +298,7 @@ public:
 			break;
 		}
 
-		*p = *(cast(int*) b);
+		*p = *(cast(int*) b.ptr);
 
 		return true;
 	}
