@@ -6,8 +6,7 @@ module pxtone.descriptor;
 
 import pxtone.pxtn;
 
-import core.stdc.stdio : fwrite, fread, fseek, fpos_t, fgetpos, SEEK_END, SEEK_SET, SEEK_CUR;
-import core.stdc.stdio : REALFILE = FILE;
+import std.stdio;
 
 struct _iobuf;
 alias FILE = _iobuf;
@@ -28,7 +27,8 @@ private:
 		_TAGLINE_NUM = 128,
 	};
 
-	void* _p_desc;
+	ubyte[] _p_desc;
+	File file;
 	bool _b_file;
 	bool _b_read;
 	int _size;
@@ -36,28 +36,22 @@ private:
 
 public:
 
-	bool set_file_r(FILE* fd) nothrow @system {
-		if (!fd) {
+	bool set_file_r(ref File fd) nothrow @system {
+		if (!fd.isOpen) {
 			return false;
 		}
 
-		fpos_t sz;
-		if (fseek(cast(REALFILE*) fd, 0, SEEK_END)) {
+		ulong sz;
+		try {
+			fd.seek(0, SEEK_END);
+			sz = fd.tell;
+			fd.seek(0, SEEK_SET);
+			file = fd;
+		} catch (Exception) {
 			return false;
 		}
-		if (fgetpos(cast(REALFILE*) fd, &sz)) {
-			return false;
-		}
-		if (fseek(cast(REALFILE*) fd, 0, SEEK_SET)) {
-			return false;
-		}
-		_p_desc = fd;
 
-		static if (pxSCE) {
-			_size = cast(int) sz._Off;
-		} else {
-			_size = cast(int) sz;
-		}
+		_size = cast(int) sz;
 
 		_b_file = true;
 		_b_read = true;
@@ -65,12 +59,15 @@ public:
 		return true;
 	}
 
-	bool set_file_w(FILE* fd) nothrow @safe {
-		if (!fd) {
+	bool set_file_w(ref File fd) nothrow @safe {
+		if (!fd.isOpen) {
 			return false;
 		}
-
-		_p_desc = fd;
+		try {
+			file = fd;
+		} catch (Exception) {
+			return false;
+		}
 		_size = 0;
 		_b_file = true;
 		_b_read = false;
@@ -78,28 +75,40 @@ public:
 		return true;
 	}
 
-	bool set_memory_r(void* p_mem, int size) nothrow @safe {
+	bool set_memory_r(void* p_mem, int size) nothrow @system {
 		if (!p_mem || size < 1) {
 			return false;
 		}
-		_p_desc = p_mem;
+		_p_desc = (cast(ubyte*)p_mem)[0 .. size];
 		_size = size;
 		_b_file = false;
 		_b_read = true;
 		_cur = 0;
 		return true;
 	}
+	bool set_memory_r(ubyte[] buf) nothrow @safe {
+		if (buf.length < 1) {
+			return false;
+		}
+		_p_desc = buf;
+		_b_file = false;
+		_b_read = true;
+		_cur = 0;
+		return true;
+	}
 
-	bool seek(pxtnSEEK mode, int val) nothrow @system {
+	bool seek(pxtnSEEK mode, int val) nothrow @safe {
 		if (_b_file) {
 			int[pxtnSEEK.pxtnSEEK_num] seek_tbl = [SEEK_SET, SEEK_CUR, SEEK_END];
-			if (fseek(cast(REALFILE*) _p_desc, val, seek_tbl[mode])) {
+			try {
+				file.seek(val, seek_tbl[mode]);
+			} catch (Exception) {
 				return false;
 			}
 		} else {
 			switch (mode) {
 			case pxtnSEEK.pxtnSEEK_set:
-				if (val >= _size) {
+				if (val >= _p_desc.length) {
 					return false;
 				}
 				if (val < 0) {
@@ -108,7 +117,7 @@ public:
 				_cur = val;
 				break;
 			case pxtnSEEK.pxtnSEEK_cur:
-				if (_cur + val >= _size) {
+				if (_cur + val >= _p_desc.length) {
 					return false;
 				}
 				if (_cur + val < 0) {
@@ -117,13 +126,13 @@ public:
 				_cur += val;
 				break;
 			case pxtnSEEK.pxtnSEEK_end:
-				if (_size + val >= _size) {
+				if (_p_desc.length + val >= _p_desc.length) {
 					return false;
 				}
-				if (_size + val < 0) {
+				if (_p_desc.length + val < 0) {
 					return false;
 				}
-				_cur = _size + val;
+				_cur = cast(int)_p_desc.length + val;
 				break;
 			default:
 				break;
@@ -139,7 +148,9 @@ public:
 			goto End;
 		}
 
-		if (fwrite(p, size, num, cast(REALFILE*) _p_desc) != num) {
+		try {
+			file.rawWrite(p[0 .. size*num]);
+		} catch (Exception) {
 			goto End;
 		}
 		_size += size * num;
@@ -160,12 +171,14 @@ public:
 		bool b_ret = false;
 
 		if (_b_file) {
-			if (fread(p.ptr, T.sizeof, p.length, cast(REALFILE*) _p_desc) != p.length) {
+			try {
+				file.rawRead(p);
+			} catch (Exception) {
 				goto End;
 			}
 		} else {
 			for (int i = 0; i < p.length; i++) {
-				if (_cur + T.sizeof > _size) {
+				if (_cur + T.sizeof > _p_desc.length) {
 					goto End;
 				}
 				p[i] = (cast(T[])_p_desc[_cur .. _cur + T.sizeof])[0];
@@ -188,11 +201,15 @@ public:
 		bool b_ret = false;
 
 		if (_b_file) {
-			if (fread(&p, T.sizeof, 1, cast(REALFILE*) _p_desc) != 1) {
+			ubyte[T.sizeof] buf;
+			try {
+				file.rawRead(buf[]);
+			} catch (Exception) {
 				goto End;
 			}
+			p = (cast(T[])(buf[]))[0];
 		} else {
-			if (_cur + T.sizeof > _size) {
+			if (_cur + T.sizeof > _p_desc.length) {
 				goto End;
 			}
 			p = (cast(T[])_p_desc[_cur .. _cur + T.sizeof])[0];
@@ -258,7 +275,9 @@ public:
 			b[3] = (a[2] >> 5) | ((a[3] << 3) & 0x7F) | 0x80;
 			b[4] = (a[3] >> 4) | ((a[4] << 4) & 0x7F);
 		}
-		if (fwrite(b.ptr, 1, bytes, cast(REALFILE*) _p_desc) != bytes) {
+		try {
+			file.rawWrite(b[0 .. bytes]);
+		} catch (Exception) {
 			return false;
 		}
 		if (p_add) {
@@ -328,7 +347,7 @@ public:
 	}
 
 	int get_size_bytes() const nothrow @safe {
-		return _size;
+		return _b_file ? _size : cast(int)_p_desc.length;
 	}
 };
 
