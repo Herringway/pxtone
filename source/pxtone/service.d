@@ -17,7 +17,7 @@ import pxtone.pulse.frequency;
 import pxtone.unit;
 import pxtone.evelist;
 
-import core.stdc.stdio;
+import std.format;
 
 enum PXTONEERRORSIZE = 64;
 
@@ -900,8 +900,12 @@ private:
 		}
 
 		for (int i = 0; i < _woice_num; i++) {
-			char[pxtnMAX_TUNEWOICENAME + 1] name;
-			sprintf(name.ptr, "voice_%02d", i);
+			char[pxtnMAX_TUNEWOICENAME + 1] name = 0;
+			try {
+				sformat(name[], "voice_%02d", i);
+			} catch (Exception) { //This will never actually happen...
+				return false;
+			}
 			_woices[i].set_name_buf(name.ptr, 8);
 		}
 		return true;
