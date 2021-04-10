@@ -177,7 +177,7 @@ public:
 	End:
 		return b_ret;
 	}
-	bool r(T)(ref T p) nothrow @system {
+	bool r(T)(ref T p) nothrow @system if (!is(T : U[], U)) {
 		if (!_p_desc) {
 			return false;
 		}
