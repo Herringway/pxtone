@@ -156,7 +156,7 @@ public:
 		}
 	}
 
-	bool Write(pxtnDescriptor* p_doc) const nothrow @system {
+	bool Write(ref pxtnDescriptor p_doc) const nothrow @system {
 		_DELAYSTRUCT dela;
 		int size;
 
@@ -177,7 +177,7 @@ public:
 		return true;
 	}
 
-	pxtnERR Read(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR Read(ref pxtnDescriptor p_doc) nothrow @system {
 		_DELAYSTRUCT dela = {0};
 		int size = 0;
 

@@ -76,7 +76,7 @@ struct pxtoneNoise {
 		}
 	}
 
-	bool generate(pxtnDescriptor* p_doc, void[]* pp_buf, int* p_size) const nothrow @system {
+	bool generate(ref pxtnDescriptor p_doc, void[]* pp_buf, int* p_size) const nothrow @system {
 		bool b_ret = false;
 		pxtnPulse_NoiseBuilder* bldr = cast(pxtnPulse_NoiseBuilder*) _bldr;
 		pxtnPulse_Noise* noise = allocate!pxtnPulse_Noise();

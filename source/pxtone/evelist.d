@@ -849,7 +849,7 @@ public:
 	// io
 	// ------------
 
-	bool io_Write(pxtnDescriptor* p_doc, int rough) const nothrow @system {
+	bool io_Write(ref pxtnDescriptor p_doc, int rough) const nothrow @system {
 		int eve_num = get_Count();
 		int ralatived_size = 0;
 		int absolute = 0;
@@ -905,7 +905,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_Read(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR io_Read(ref pxtnDescriptor p_doc) nothrow @system {
 		int size = 0;
 		int eve_num = 0;
 
@@ -943,7 +943,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	int io_Read_EventNum(pxtnDescriptor* p_doc) const nothrow @system {
+	int io_Read_EventNum(ref pxtnDescriptor p_doc) const nothrow @system {
 		int size = 0;
 		int eve_num = 0;
 
@@ -1060,7 +1060,7 @@ public:
 	}
 
 	// write event.
-	pxtnERR io_Unit_Read_x4x_EVENT(pxtnDescriptor* p_doc, bool bTailAbsolute, bool bCheckRRR) nothrow @system {
+	pxtnERR io_Unit_Read_x4x_EVENT(ref pxtnDescriptor p_doc, bool bTailAbsolute, bool bCheckRRR) nothrow @system {
 		_x4x_EVENTSTRUCT evnt = {0};
 		int clock = 0;
 		int value = 0;
@@ -1109,8 +1109,8 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	pxtnERR io_Read_x4x_EventNum(pxtnDescriptor* p_doc, int* p_num) const nothrow @system {
-		if (!p_doc || !p_num) {
+	pxtnERR io_Read_x4x_EventNum(ref pxtnDescriptor p_doc, int* p_num) const nothrow @system {
+		if (!p_num) {
 			return pxtnERR.pxtnERR_param;
 		}
 

@@ -276,7 +276,7 @@ public:
 		return cast(int)(int.sizeof * 4 + _size);
 	}
 
-	bool ogg_write(pxtnDescriptor* desc) const nothrow @system {
+	bool ogg_write(ref pxtnDescriptor desc) const nothrow @system {
 		bool b_ret = false;
 
 		if (!desc.w_asfile(_p_data.ptr, 1, _size)) {
@@ -288,7 +288,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR ogg_read(pxtnDescriptor* desc) nothrow @system {
+	pxtnERR ogg_read(ref pxtnDescriptor desc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		_size = desc.get_size_bytes();
@@ -322,7 +322,7 @@ public:
 		return res;
 	}
 
-	bool pxtn_write(pxtnDescriptor* p_doc) const nothrow @system {
+	bool pxtn_write(ref pxtnDescriptor p_doc) const nothrow @system {
 		if (!_p_data) {
 			return false;
 		}
@@ -339,14 +339,14 @@ public:
 		if (!p_doc.w_asfile(&_size, int.sizeof, 1)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(_p_data.ptr, char.sizeof, _size)) {
+		if (!p_doc.w_asfile(_p_data.ptr, ubyte.sizeof, _size)) {
 			return false;
 		}
 
 		return true;
 	}
 
-	bool pxtn_read(pxtnDescriptor* p_doc) nothrow @system {
+	bool pxtn_read(ref pxtnDescriptor p_doc) nothrow @system {
 		bool b_ret = false;
 
 		if (!p_doc.r(_ch)) {

@@ -348,7 +348,7 @@ public:
 		return _bPlayed;
 	}
 
-	pxtnERR Read_v3x(pxtnDescriptor* p_doc, int* p_group) nothrow @system {
+	pxtnERR Read_v3x(ref pxtnDescriptor p_doc, int* p_group) nothrow @system {
 		_x3x_UNIT unit = {0};
 		int size = 0;
 
@@ -366,7 +366,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	bool Read_v1x(pxtnDescriptor* p_doc, int* p_group) nothrow @system {
+	bool Read_v1x(ref pxtnDescriptor p_doc, int* p_group) nothrow @system {
 		_x1x_UNIT unit;
 		int size;
 

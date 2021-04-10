@@ -29,7 +29,7 @@ bool _load_ptcop(ref pxtnService pxtn, void[] data, out pxtnERR p_pxtn_err) noth
 		return false;
 	}
 
-	p_pxtn_err = pxtn.read(desc);
+	p_pxtn_err = pxtn.read(*desc);
 	if (p_pxtn_err != pxtnERR.pxtnOK) {
 		return false;
 	}

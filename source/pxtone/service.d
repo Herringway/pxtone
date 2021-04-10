@@ -233,7 +233,7 @@ private:
 
 	int _group_num;
 
-	pxtnERR _ReadVersion(pxtnDescriptor* p_doc, _enum_FMTVER* p_fmt_ver, ushort* p_exe_ver) nothrow @system {
+	pxtnERR _ReadVersion(ref pxtnDescriptor p_doc, _enum_FMTVER* p_fmt_ver, ushort* p_exe_ver) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -288,7 +288,7 @@ private:
 	// Read Project //////////////
 	////////////////////////////////////////
 
-	pxtnERR _ReadTuneItems(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR _ReadTuneItems(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -468,7 +468,7 @@ private:
 
 	}
 
-	bool _x1x_Project_Read(pxtnDescriptor* p_doc) nothrow @system {
+	bool _x1x_Project_Read(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -502,7 +502,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_Read_Delay(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR _io_Read_Delay(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -531,7 +531,7 @@ private:
 		return res;
 	}
 
-	pxtnERR _io_Read_OverDrive(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR _io_Read_OverDrive(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -560,7 +560,7 @@ private:
 		return res;
 	}
 
-	pxtnERR _io_Read_Woice(pxtnDescriptor* p_doc, pxtnWOICETYPE type) nothrow @system {
+	pxtnERR _io_Read_Woice(ref pxtnDescriptor p_doc, pxtnWOICETYPE type) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		if (!_b_init) {
@@ -620,7 +620,7 @@ private:
 		return res;
 	}
 
-	pxtnERR _io_Read_OldUnit(pxtnDescriptor* p_doc, int ver) nothrow @system {
+	pxtnERR _io_Read_OldUnit(ref pxtnDescriptor p_doc, int ver) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -677,7 +677,7 @@ private:
 	// assi woice
 	/////////////
 
-	bool _io_assiWOIC_w(pxtnDescriptor* p_doc, int idx) const nothrow @system {
+	bool _io_assiWOIC_w(ref pxtnDescriptor p_doc, int idx) const nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -705,7 +705,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_assiWOIC_r(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR _io_assiWOIC_r(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -739,7 +739,7 @@ private:
 	// assi unit.
 	// -----
 
-	bool _io_assiUNIT_w(pxtnDescriptor* p_doc, int idx) const nothrow @system {
+	bool _io_assiUNIT_w(ref pxtnDescriptor p_doc, int idx) const nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -763,7 +763,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_assiUNIT_r(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR _io_assiUNIT_r(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -797,7 +797,7 @@ private:
 	// unit num
 	// -----
 
-	bool _io_UNIT_num_w(pxtnDescriptor* p_doc) const nothrow @system {
+	bool _io_UNIT_num_w(ref pxtnDescriptor p_doc) const nothrow @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -818,7 +818,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_UNIT_num_r(pxtnDescriptor* p_doc, int* p_num) nothrow @system {
+	pxtnERR _io_UNIT_num_r(ref pxtnDescriptor p_doc, int* p_num) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1096,7 +1096,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _pre_count_event(pxtnDescriptor* p_doc, int* p_count) nothrow @system {
+	pxtnERR _pre_count_event(ref pxtnDescriptor p_doc, int* p_count) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1574,7 +1574,7 @@ public:
 	// save               //////////////////
 	////////////////////////////////////////
 
-	pxtnERR write(pxtnDescriptor* p_doc, bool b_tune, ushort exe_ver) nothrow @system {
+	pxtnERR write(ref pxtnDescriptor p_doc, bool b_tune, ushort exe_ver) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -1784,7 +1784,7 @@ public:
 		return res;
 	}
 
-	pxtnERR read(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR read(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}
@@ -2104,7 +2104,7 @@ public:
 		return _woices[idx];
 	}
 
-	pxtnERR Woice_read(int idx, pxtnDescriptor* desc, pxtnWOICETYPE type) nothrow @system {
+	pxtnERR Woice_read(int idx, ref pxtnDescriptor desc, pxtnWOICETYPE type) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.pxtnERR_INIT;
 		}

@@ -4,7 +4,7 @@
 import pxtone.descriptor;
 import pxtone.mem;
 
-bool _read4_malloc(char[]* pp, int* p_buf_size, pxtnDescriptor* p_doc) nothrow @system {
+bool _read4_malloc(char[]* pp, int* p_buf_size, ref pxtnDescriptor p_doc) nothrow @system {
 	if (!pp) {
 		return false;
 	}
@@ -40,7 +40,7 @@ term:
 	return b_ret;
 }
 
-static bool _write4(const char* p, int buf_size, pxtnDescriptor* p_doc) nothrow @system {
+static bool _write4(const char* p, int buf_size, ref pxtnDescriptor p_doc) nothrow @system {
 	if (!p_doc.w_asfile(&buf_size, 4, 1)) {
 		return false;
 	}
@@ -132,22 +132,22 @@ public:
 		return false;
 	}
 
-	bool Comment_r(pxtnDescriptor* p_doc) nothrow @system {
+	bool Comment_r(ref pxtnDescriptor p_doc) nothrow @system {
 		return _read4_malloc(&_p_comment_buf, &_comment_size, p_doc);
 	}
 
-	bool Comment_w(pxtnDescriptor* p_doc) nothrow @system {
+	bool Comment_w(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_p_comment_buf) {
 			return false;
 		}
 		return _write4(_p_comment_buf.ptr, _comment_size, p_doc);
 	}
 
-	bool Name_r(pxtnDescriptor* p_doc) nothrow @system {
+	bool Name_r(ref pxtnDescriptor p_doc) nothrow @system {
 		return _read4_malloc(&_p_name_buf, &_name_size, p_doc);
 	}
 
-	bool Name_w(pxtnDescriptor* p_doc) nothrow @system {
+	bool Name_w(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_p_name_buf) {
 			return false;
 		}

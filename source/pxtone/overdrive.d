@@ -69,7 +69,7 @@ struct pxtnOverDrive {
 		group_smps[_group] = cast(int)(cast(float) work * _amp_f);
 	}
 
-	bool Write(pxtnDescriptor* p_doc) const nothrow @system {
+	bool Write(ref pxtnDescriptor p_doc) const nothrow @system {
 		_OVERDRIVESTRUCT over;
 		int size;
 
@@ -89,7 +89,7 @@ struct pxtnOverDrive {
 		return true;
 	}
 
-	pxtnERR Read(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR Read(ref pxtnDescriptor p_doc) nothrow @system {
 		_OVERDRIVESTRUCT over = {0};
 		int size = 0;
 

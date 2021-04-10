@@ -11,7 +11,7 @@ import pxtone.woice;
 
 __gshared int _version = 20060111; // support no-envelope
 
-bool _Write_Wave(pxtnDescriptor* p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_total) nothrow @system {
+bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_total) nothrow @system {
 	bool b_ret = false;
 	int num, i, size;
 	byte sc;
@@ -103,7 +103,7 @@ End:
 	return b_ret;
 }
 
-bool _Write_Envelope(pxtnDescriptor* p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_total) nothrow @system {
+bool _Write_Envelope(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_total) nothrow @system {
 	bool b_ret = false;
 	int num, i;
 
@@ -137,7 +137,7 @@ End:
 	return b_ret;
 }
 
-pxtnERR _Read_Wave(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
+pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 	int i, num;
 	byte sc;
 	ubyte uc;
@@ -215,7 +215,7 @@ pxtnERR _Read_Wave(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 	return pxtnERR.pxtnOK;
 }
 
-pxtnERR _Read_Envelope(pxtnDescriptor* p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
+pxtnERR _Read_Envelope(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
 	pxtnERR res = pxtnERR.pxtnOK;
 	int num, i;
 

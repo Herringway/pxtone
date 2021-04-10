@@ -370,7 +370,7 @@ public:
 		_smp_tail = 0;
 	}
 
-	pxtnERR read(pxtnDescriptor* doc) nothrow @system {
+	pxtnERR read(ref pxtnDescriptor doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		char[16] buf = 0;
 		uint size = 0;
@@ -456,7 +456,7 @@ public:
 		return res;
 	}
 
-	bool write(pxtnDescriptor* doc, const char* pstrLIST) const nothrow @system {
+	bool write(ref pxtnDescriptor doc, const char* pstrLIST) const nothrow @system {
 		if (!_p_smp) {
 			return false;
 		}

@@ -149,7 +149,7 @@ public:
 		return _beat_num * _beat_clock * meas + _beat_clock * beat + clock;
 	}
 
-	bool io_w_v5(pxtnDescriptor* p_doc, int rough) const nothrow @system {
+	bool io_w_v5(ref pxtnDescriptor p_doc, int rough) const nothrow @system {
 
 		uint size = 15;
 		short bclock = cast(short)(_beat_clock / rough);
@@ -179,7 +179,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_r_v5(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR io_r_v5(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		short beat_clock = 0;
 		byte beat_num = 0;
@@ -222,7 +222,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	int io_r_v5_EventNum(pxtnDescriptor* p_doc) nothrow @system {
+	int io_r_v5_EventNum(ref pxtnDescriptor p_doc) nothrow @system {
 		uint size;
 		if (!p_doc.r(size)) {
 			return 0;
@@ -237,7 +237,7 @@ public:
 		return 5;
 	}
 
-	pxtnERR io_r_x4x(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR io_r_x4x(ref pxtnDescriptor p_doc) nothrow @system {
 		_x4x_MASTER mast = {0};
 		int size = 0;
 		int e = 0;
@@ -335,7 +335,7 @@ public:
 		return pxtnERR.pxtnOK;
 	}
 
-	int io_r_x4x_EventNum(pxtnDescriptor* p_doc) nothrow @system {
+	int io_r_x4x_EventNum(ref pxtnDescriptor p_doc) nothrow @system {
 		_x4x_MASTER mast;
 		int size;
 		int work;

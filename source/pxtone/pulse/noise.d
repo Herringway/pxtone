@@ -99,7 +99,7 @@ __gshared const(char)* _code = "PTNOISE-";
 //_ver =  20051028 ; -v.0.9.2.3
 __gshared const uint _ver = 20120418; // 16 wave types.
 
-static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, pxtnDescriptor* p_doc, int* p_add) nothrow @system {
+static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor p_doc, int* p_add) nothrow @system {
 	int work;
 	work = cast(int) p_osc.type;
 	if (!p_doc.v_w_asfile(work, p_add)) {
@@ -124,7 +124,7 @@ static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, pxtnDescrip
 	return true;
 }
 
-static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, pxtnDescriptor* p_doc) nothrow @system {
+static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescriptor p_doc) nothrow @system {
 	int work;
 	if (!p_doc.v_r(&work)) {
 		return pxtnERR.pxtnERR_desc_r;
@@ -201,7 +201,7 @@ public:
 		Release();
 	}
 
-	bool write(pxtnDescriptor* p_doc, int* p_add) const nothrow @system {
+	bool write(ref pxtnDescriptor p_doc, int* p_add) const nothrow @system {
 		bool b_ret = false;
 		int u, e, seek, num_seek, flags;
 		char _byte;
@@ -296,7 +296,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR read(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR read(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		uint flags = 0;
 		char unit_num = 0;

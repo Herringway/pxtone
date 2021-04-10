@@ -480,7 +480,7 @@ public:
 		}
 	}
 
-	pxtnERR read(pxtnDescriptor* desc, pxtnWOICETYPE type) nothrow @system {
+	pxtnERR read(ref pxtnDescriptor desc, pxtnWOICETYPE type) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 
 		switch (type) {
@@ -565,7 +565,7 @@ public:
 		return res;
 	}
 
-	bool PTV_Write(pxtnDescriptor* p_doc, int* p_total) const nothrow @system {
+	bool PTV_Write(ref pxtnDescriptor p_doc, int* p_total) const nothrow @system {
 		bool b_ret = false;
 		const(pxtnVOICEUNIT)* p_vc = null;
 		uint work = 0;
@@ -653,7 +653,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR PTV_Read(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR PTV_Read(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		pxtnVOICEUNIT* p_vc = null;
 		ubyte[8] code = 0;
@@ -773,7 +773,7 @@ public:
 		return res;
 	}
 
-	bool io_matePCM_w(pxtnDescriptor* p_doc) const nothrow @system {
+	bool io_matePCM_w(ref pxtnDescriptor p_doc) const nothrow @system {
 		const pxtnPulse_PCM* p_pcm = _voices[0].p_pcm;
 		const(pxtnVOICEUNIT)* p_vc = &_voices[0];
 		_MATERIALSTRUCT_PCM pcm;
@@ -801,7 +801,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_matePCM_r(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR io_matePCM_r(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PCM pcm = {0};
 		int size = 0;
@@ -852,7 +852,7 @@ public:
 		return res;
 	}
 
-	bool io_matePTN_w(pxtnDescriptor* p_doc) const nothrow @system {
+	bool io_matePTN_w(ref pxtnDescriptor p_doc) const nothrow @system {
 		_MATERIALSTRUCT_PTN ptn;
 		const(pxtnVOICEUNIT)* p_vc;
 		int size = 0;
@@ -890,7 +890,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_matePTN_r(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR io_matePTN_r(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PTN ptn = {0};
 		int size = 0;
@@ -937,7 +937,7 @@ public:
 		return res;
 	}
 
-	bool io_matePTV_w(pxtnDescriptor* p_doc) const nothrow @system {
+	bool io_matePTV_w(ref pxtnDescriptor p_doc) const nothrow @system {
 		_MATERIALSTRUCT_PTV ptv;
 		int head_size = _MATERIALSTRUCT_PTV.sizeof + int.sizeof;
 		int size = 0;
@@ -977,7 +977,7 @@ public:
 		return true;
 	}
 
-	pxtnERR io_matePTV_r(pxtnDescriptor* p_doc) nothrow @system {
+	pxtnERR io_matePTV_r(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.pxtnERR_VOID;
 		_MATERIALSTRUCT_PTV ptv = {0};
 		int size = 0;
@@ -1009,7 +1009,7 @@ public:
 	}
 
 	version (pxINCLUDE_OGGVORBIS) {
-		bool io_mateOGGV_w(pxtnDescriptor* p_doc) const nothrow @system {
+		bool io_mateOGGV_w(ref pxtnDescriptor p_doc) const nothrow @system {
 			if (!_voices) {
 				return false;
 			}
@@ -1041,7 +1041,7 @@ public:
 			return true;
 		}
 
-		pxtnERR io_mateOGGV_r(pxtnDescriptor* p_doc) nothrow @system {
+		pxtnERR io_mateOGGV_r(ref pxtnDescriptor p_doc) nothrow @system {
 			pxtnERR res = pxtnERR.pxtnERR_VOID;
 			_MATERIALSTRUCT_OGGV mate = {0};
 			int size = 0;
