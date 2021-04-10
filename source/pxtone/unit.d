@@ -358,7 +358,7 @@ public:
 		if (!p_doc.r(unit)) {
 			return pxtnERR.desc_r;
 		}
-		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PCM && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PTV && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PTN) {
+		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PCM && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PTV && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PTN) {
 			return pxtnERR.fmt_unknown;
 		}
 		*p_group = unit.group;
@@ -376,7 +376,7 @@ public:
 		if (!p_doc.r(unit)) {
 			return false;
 		}
-		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PCM) {
+		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PCM) {
 			return false;
 		}
 

@@ -337,19 +337,19 @@ private:
 				break;
 
 			case _enum_Tag._TAG_matePCM:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PCM);
+				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_matePTV:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PTV);
+				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PTV);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_matePTN:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PTN);
+				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PTN);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
@@ -358,7 +358,7 @@ private:
 			case _enum_Tag._TAG_mateOGGV:
 
 				version (pxINCLUDE_OGGVORBIS) {
-					res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_OGGV);
+					res = _io_Read_Woice(p_doc, pxtnWOICETYPE.OGGV);
 					if (res != pxtnERR.OK) {
 						goto term;
 					}
@@ -440,7 +440,7 @@ private:
 				}
 				break;
 			case _enum_Tag._TAG_x1x_PCM:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PCM);
+				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
@@ -576,25 +576,25 @@ private:
 		pxtnWoice* woice = allocate!pxtnWoice();
 
 		switch (type) {
-		case pxtnWOICETYPE.pxtnWOICE_PCM:
+		case pxtnWOICETYPE.PCM:
 			res = woice.io_matePCM_r(p_doc);
 			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			break;
-		case pxtnWOICETYPE.pxtnWOICE_PTV:
+		case pxtnWOICETYPE.PTV:
 			res = woice.io_matePTV_r(p_doc);
 			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			break;
-		case pxtnWOICETYPE.pxtnWOICE_PTN:
+		case pxtnWOICETYPE.PTN:
 			res = woice.io_matePTN_r(p_doc);
 			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			break;
-		case pxtnWOICETYPE.pxtnWOICE_OGGV:
+		case pxtnWOICETYPE.OGGV:
 			version (pxINCLUDE_OGGVORBIS) {
 				res = woice.io_mateOGGV_r(p_doc);
 				if (res != pxtnERR.OK) {
@@ -1684,7 +1684,7 @@ public:
 			pxtnWoice* p_w = _woices[w];
 
 			switch (p_w.get_type()) {
-			case pxtnWOICETYPE.pxtnWOICE_PCM:
+			case pxtnWOICETYPE.PCM:
 				if (!p_doc.w_asfile(_code_matePCM.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.desc_w;
 					goto End;
@@ -1694,7 +1694,7 @@ public:
 					goto End;
 				}
 				break;
-			case pxtnWOICETYPE.pxtnWOICE_PTV:
+			case pxtnWOICETYPE.PTV:
 				if (!p_doc.w_asfile(_code_matePTV.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.desc_w;
 					goto End;
@@ -1704,7 +1704,7 @@ public:
 					goto End;
 				}
 				break;
-			case pxtnWOICETYPE.pxtnWOICE_PTN:
+			case pxtnWOICETYPE.PTN:
 				if (!p_doc.w_asfile(_code_matePTN.ptr, 1, _CODESIZE)) {
 					res = pxtnERR.desc_w;
 					goto End;
@@ -1714,7 +1714,7 @@ public:
 					goto End;
 				}
 				break;
-			case pxtnWOICETYPE.pxtnWOICE_OGGV:
+			case pxtnWOICETYPE.OGGV:
 
 				version (pxINCLUDE_OGGVORBIS) {
 					if (!p_doc.w_asfile(_code_mateOGGV.ptr, 1, _CODESIZE)) {

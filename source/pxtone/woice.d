@@ -33,19 +33,19 @@ enum PTV_DATAFLAG_UNCOVERED = 0xfffffffc;
 immutable _code = "PTVOICE-";
 
 enum pxtnWOICETYPE {
-	pxtnWOICE_None = 0,
-	pxtnWOICE_PCM,
-	pxtnWOICE_PTV,
-	pxtnWOICE_PTN,
-	pxtnWOICE_OGGV,
+	None = 0,
+	PCM,
+	PTV,
+	PTN,
+	OGGV,
 };
 
 enum pxtnVOICETYPE {
-	pxtnVOICE_Coodinate = 0,
-	pxtnVOICE_Overtone,
-	pxtnVOICE_Noise,
-	pxtnVOICE_Sampling,
-	pxtnVOICE_OggVorbis,
+	Coodinate = 0,
+	Overtone,
+	Noise,
+	Sampling,
+	OggVorbis,
 };
 
 struct pxtnVOICEINSTANCE {
@@ -145,7 +145,7 @@ void _UpdateWavePTV(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int ch, int sp
 
 	osci.ReadyGetSample(p_vc.wave.points, p_vc.wave.num, p_vc.volume, p_vi.smp_body_w, p_vc.wave.reso);
 
-	if (p_vc.type == pxtnVOICETYPE.pxtnVOICE_Overtone) {
+	if (p_vc.type == pxtnVOICETYPE.Overtone) {
 		b_ovt = true;
 	} else {
 		b_ovt = false;
@@ -258,7 +258,7 @@ private:
 	char[pxtnMAX_TUNEWOICENAME + 1] _name_buf;
 	int _name_size;
 
-	pxtnWOICETYPE _type = pxtnWOICETYPE.pxtnWOICE_None;
+	pxtnWOICETYPE _type = pxtnWOICETYPE.None;
 	pxtnVOICEUNIT[] _voices;
 	pxtnVOICEINSTANCE[] _voinsts;
 
@@ -465,7 +465,7 @@ public:
 				b_remove = true;
 			}
 
-			if (_voices[i].type == pxtnVOICETYPE.pxtnVOICE_Coodinate && _voices[i].wave.num <= 1) {
+			if (_voices[i].type == pxtnVOICETYPE.Coodinate && _voices[i].wave.num <= 1) {
 				b_remove = true;
 			}
 
@@ -485,13 +485,13 @@ public:
 
 		switch (type) {
 			// PCM
-		case pxtnWOICETYPE.pxtnWOICE_PCM: {
+		case pxtnWOICETYPE.PCM: {
 				pxtnVOICEUNIT* p_vc;
 				if (!Voice_Allocate(1)) {
 					goto term;
 				}
 				p_vc = &_voices[0];
-				p_vc.type = pxtnVOICETYPE.pxtnVOICE_Sampling;
+				p_vc.type = pxtnVOICETYPE.Sampling;
 				res = p_vc.p_pcm.read(desc);
 				if (res != pxtnERR.OK) {
 					goto term;
@@ -502,12 +502,12 @@ public:
 				} else {
 					p_vc.voice_flags &= ~PTV_VOICEFLAG_WAVELOOP;
 				}
-				_type = pxtnWOICETYPE.pxtnWOICE_PCM;
+				_type = pxtnWOICETYPE.PCM;
 			}
 			break;
 
 			// PTV
-		case pxtnWOICETYPE.pxtnWOICE_PTV: {
+		case pxtnWOICETYPE.PTV: {
 				res = PTV_Read(desc);
 				if (res != pxtnERR.OK) {
 					goto term;
@@ -516,24 +516,24 @@ public:
 			break;
 
 			// PTN
-		case pxtnWOICETYPE.pxtnWOICE_PTN:
+		case pxtnWOICETYPE.PTN:
 			if (!Voice_Allocate(1)) {
 				res = pxtnERR.memory;
 				goto term;
 			}
 			{
 				pxtnVOICEUNIT* p_vc = &_voices[0];
-				p_vc.type = pxtnVOICETYPE.pxtnVOICE_Noise;
+				p_vc.type = pxtnVOICETYPE.Noise;
 				res = p_vc.p_ptn.read(desc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
-				_type = pxtnWOICETYPE.pxtnWOICE_PTN;
+				_type = pxtnWOICETYPE.PTN;
 			}
 			break;
 
 			// OGGV
-		case pxtnWOICETYPE.pxtnWOICE_OGGV:
+		case pxtnWOICETYPE.OGGV:
 			version (pxINCLUDE_OGGVORBIS) {
 				if (!Voice_Allocate(1)) {
 					res = pxtnERR.memory;
@@ -542,12 +542,12 @@ public:
 				{
 					pxtnVOICEUNIT* p_vc;
 					p_vc = &_voices[0];
-					p_vc.type = pxtnVOICETYPE.pxtnVOICE_OggVorbis;
+					p_vc.type = pxtnVOICETYPE.OggVorbis;
 					res = p_vc.p_oggv.ogg_read(desc);
 					if (res != pxtnERR.OK) {
 						goto term;
 					}
-					_type = pxtnWOICETYPE.pxtnWOICE_OGGV;
+					_type = pxtnWOICETYPE.OGGV;
 				}
 				break;
 			} else {
@@ -765,7 +765,7 @@ public:
 				}
 			}
 		}
-		_type = pxtnWOICETYPE.pxtnWOICE_PTV;
+		_type = pxtnWOICETYPE.PTV;
 
 		res = pxtnERR.OK;
 	term:
@@ -825,7 +825,7 @@ public:
 		{
 			pxtnVOICEUNIT* p_vc = &_voices[0];
 
-			p_vc.type = pxtnVOICETYPE.pxtnVOICE_Sampling;
+			p_vc.type = pxtnVOICETYPE.Sampling;
 
 			res = p_vc.p_pcm.Create(pcm.ch, pcm.sps, pcm.bps, pcm.data_size / (pcm.bps / 8 * pcm.ch));
 			if (res != pxtnERR.OK) {
@@ -835,7 +835,7 @@ public:
 				res = pxtnERR.desc_r;
 				goto term;
 			}
-			_type = pxtnWOICETYPE.pxtnWOICE_PCM;
+			_type = pxtnWOICETYPE.PCM;
 
 			p_vc.voice_flags = pcm.voice_flags;
 			p_vc.basic_key = pcm.basic_key;
@@ -915,12 +915,12 @@ public:
 		{
 			pxtnVOICEUNIT* p_vc = &_voices[0];
 
-			p_vc.type = pxtnVOICETYPE.pxtnVOICE_Noise;
+			p_vc.type = pxtnVOICETYPE.Noise;
 			res = p_vc.p_ptn.read(p_doc);
 			if (res != pxtnERR.OK) {
 				goto term;
 			}
-			_type = pxtnWOICETYPE.pxtnWOICE_PTN;
+			_type = pxtnWOICETYPE.PTN;
 			p_vc.voice_flags = ptn.voice_flags;
 			p_vc.basic_key = ptn.basic_key;
 			p_vc.tuning = ptn.tuning;
@@ -1063,7 +1063,7 @@ public:
 
 			{
 				pxtnVOICEUNIT* p_vc = &_voices[0];
-				p_vc.type = pxtnVOICETYPE.pxtnVOICE_OggVorbis;
+				p_vc.type = pxtnVOICETYPE.OggVorbis;
 
 				if (!p_vc.p_oggv.pxtn_read(p_doc)) {
 					goto End;
@@ -1076,7 +1076,7 @@ public:
 
 			_x3x_basic_key = mate.basic_key;
 			_x3x_tuning = 0;
-			_type = pxtnWOICETYPE.pxtnWOICE_OGGV;
+			_type = pxtnWOICETYPE.OGGV;
 
 			res = pxtnERR.OK;
 		End:
@@ -1110,7 +1110,7 @@ public:
 			p_vc = &_voices[v];
 
 			switch (p_vc.type) {
-			case pxtnVOICETYPE.pxtnVOICE_OggVorbis:
+			case pxtnVOICETYPE.OggVorbis:
 
 				version (pxINCLUDE_OGGVORBIS) {
 					res = p_vc.p_oggv.Decode(&pcm_work);
@@ -1130,7 +1130,7 @@ public:
 					goto term;
 				}
 
-			case pxtnVOICETYPE.pxtnVOICE_Sampling:
+			case pxtnVOICETYPE.Sampling:
 
 				res = p_vc.p_pcm.Copy(&pcm_work);
 				if (res != pxtnERR.OK) {
@@ -1146,8 +1146,8 @@ public:
 				p_vi.p_smp_w = cast(ubyte[]) pcm_work.Devolve_SamplingBuffer();
 				break;
 
-			case pxtnVOICETYPE.pxtnVOICE_Overtone:
-			case pxtnVOICETYPE.pxtnVOICE_Coodinate: {
+			case pxtnVOICETYPE.Overtone:
+			case pxtnVOICETYPE.Coodinate: {
 					p_vi.smp_body_w = 400;
 					int size = p_vi.smp_body_w * ch * bps / 8;
 					p_vi.p_smp_w = allocate!ubyte(size);
@@ -1160,7 +1160,7 @@ public:
 					break;
 				}
 
-			case pxtnVOICETYPE.pxtnVOICE_Noise: {
+			case pxtnVOICETYPE.Noise: {
 					pxtnPulse_PCM* p_pcm = null;
 					if (!ptn_bldr) {
 						res = pxtnERR.ptn_init;

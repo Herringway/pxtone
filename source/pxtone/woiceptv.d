@@ -23,7 +23,7 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_to
 
 	switch (p_vc.type) {
 		// Coodinate (3)
-	case pxtnVOICETYPE.pxtnVOICE_Coodinate:
+	case pxtnVOICETYPE.Coodinate:
 		if (!p_doc.v_w_asfile(p_vc.wave.num, p_total)) {
 			goto End;
 		}
@@ -46,7 +46,7 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_to
 		break;
 
 		// Overtone (2)
-	case pxtnVOICETYPE.pxtnVOICE_Overtone:
+	case pxtnVOICETYPE.Overtone:
 
 		if (!p_doc.v_w_asfile(p_vc.wave.num, p_total)) {
 			goto End;
@@ -63,7 +63,7 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_to
 		break;
 
 		// sampling (7)
-	case pxtnVOICETYPE.pxtnVOICE_Sampling:
+	case pxtnVOICETYPE.Sampling:
 		if (!p_doc.v_w_asfile(p_vc.p_pcm.get_ch(), p_total)) {
 			goto End;
 		}
@@ -91,7 +91,7 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_to
 		*p_total += size;
 		break;
 
-	case pxtnVOICETYPE.pxtnVOICE_OggVorbis:
+	case pxtnVOICETYPE.OggVorbis:
 		goto End; // not support.
 	default:
 		break;
@@ -148,7 +148,7 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 
 	switch (p_vc.type) {
 		// coodinate (3)
-	case pxtnVOICETYPE.pxtnVOICE_Coodinate:
+	case pxtnVOICETYPE.Coodinate:
 		if (!p_doc.v_r(&p_vc.wave.num)) {
 			return pxtnERR.desc_r;
 		}
@@ -173,7 +173,7 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 		num = p_vc.wave.num;
 		break;
 		// overtone (2)
-	case pxtnVOICETYPE.pxtnVOICE_Overtone:
+	case pxtnVOICETYPE.Overtone:
 
 		if (!p_doc.v_r(&p_vc.wave.num)) {
 			return pxtnERR.desc_r;
@@ -194,7 +194,7 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 		break;
 
 		// p_vc.sampring. (7)
-	case pxtnVOICETYPE.pxtnVOICE_Sampling:
+	case pxtnVOICETYPE.Sampling:
 		return pxtnERR.fmt_unknown; // un-support
 
 		//if( !p_doc.v_r( &p_vc.pcm.ch       ) ) goto End;
