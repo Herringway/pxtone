@@ -45,11 +45,10 @@ bool _load_ptcop(ref pxtnService pxtn, void[] data, out pxtnERR p_pxtn_err) noth
 
 bool initAudio(SDL_AudioCallback fun, ubyte channels, uint sampleRate, void* userdata = null) {
 	import bindbc.sdl;
-	import core.stdc.stdio;
 
 	assert(loadSDL() == sdlSupport);
 	if (SDL_Init(SDL_INIT_AUDIO) != 0) {
-		fprintf(stderr, "SDL init failed: %s\n", SDL_GetError());
+		criticalf("SDL init failed: %s", SDL_GetError().fromStringz);
 		return false;
 	}
 	SDL_AudioSpec want, have;
@@ -61,7 +60,7 @@ bool initAudio(SDL_AudioCallback fun, ubyte channels, uint sampleRate, void* use
 	want.userdata = userdata;
 	dev = SDL_OpenAudioDevice(null, 0, &want, &have, 0);
 	if (dev == 0) {
-		fprintf(stderr, "SDL_OpenAudioDevice failed: %s\n", SDL_GetError());
+		criticalf("SDL_OpenAudioDevice failed: %s", SDL_GetError().fromStringz);
 		return false;
 	}
 	SDL_PauseAudioDevice(dev, 0);
@@ -88,7 +87,7 @@ int main(string[] args) {
 	pxtnService* pxtn = allocate!pxtnService();
 	scope (exit) {
 		if (!okay) {
-			errorf("ERROR: pxtnERR[ %s ]", pxtnError_get_string(pxtn_err).fromStringz);
+			criticalf("pxtone: %s", pxtnError_get_string(pxtn_err).fromStringz);
 		}
 		deallocate(pxtn);
 	}
