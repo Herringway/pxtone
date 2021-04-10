@@ -2,7 +2,7 @@
 
 import pxtone.pxtn;
 
-import core.stdc.math;
+import std.math;
 
 struct pxtnPulse_Oscillator {
 private:

@@ -1,15 +1,15 @@
 ﻿module pxtone.pulse.oggv;
 
-version (pxINCLUDE_OGGVORBIS)  : import derelict.vorbis.codec;
+version (pxINCLUDE_OGGVORBIS):
+import derelict.vorbis.codec;
 import derelict.vorbis.file;
-
-import core.stdc.stdio;
-
-import pxtone.mem;
 
 import pxtone.descriptor;
 import pxtone.error;
+import pxtone.mem;
 import pxtone.pulse.pcm;
+
+import std.stdio;
 
 struct OVMEM {
 	const(ubyte)[] p_buf; // ogg vorbis-data on memory.s
