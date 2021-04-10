@@ -12,7 +12,7 @@ import pxtone.error;
 import pxtone.pulse.pcm;
 
 struct OVMEM {
-	const(char)[] p_buf; // ogg vorbis-data on memory.s
+	const(ubyte)[] p_buf; // ogg vorbis-data on memory.s
 	int size; //
 	int pos; // reading position.
 }
@@ -106,7 +106,7 @@ private:
 	int _sps2;
 	int _smp_num;
 	int _size;
-	char[] _p_data;
+	ubyte[] _p_data;
 
 	bool _SetInformation() nothrow @system {
 		bool b_ret = false;
@@ -296,7 +296,7 @@ public:
 			res = pxtnERR.pxtnERR_desc_r;
 			goto End;
 		}
-		_p_data = allocate!char(_size);
+		_p_data = allocate!ubyte(_size);
 		if (!(_p_data)) {
 			res = pxtnERR.pxtnERR_memory;
 			goto End;
@@ -366,7 +366,7 @@ public:
 			goto End;
 		}
 
-		_p_data = allocate!char(_size);
+		_p_data = allocate!ubyte(_size);
 		if (!(_p_data)) {
 			goto End;
 		}
@@ -394,7 +394,7 @@ public:
 			return true;
 		}
 
-		p_dst._p_data = allocate!char(_size);
+		p_dst._p_data = allocate!ubyte(_size);
 		if (!(p_dst._p_data)) {
 			return false;
 		}
