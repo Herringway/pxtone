@@ -120,11 +120,13 @@ int main(string[] args) {
 	}
 	tracef("SDL audio init success");
 
-	auto name = pxtn.text.get_name_buf();
-	auto comment = pxtn.text.get_comment_buf();
+	writefln!"file: %s"(filePath.baseName);
+	writefln!"name: %s"(pxtn.text.get_name_buf());
+	writefln!"comment: %s"(pxtn.text.get_comment_buf());
 
-	char[250] text = 0;
-	writeln(sformat(text, "file: %s\nname: %s\ncomment: %s", filePath.baseName, name, comment));
+	debug foreach (voice; 0 .. pxtn.Woice_Num()) {
+		writefln!"Voice %d: %s"(voice, pxtn.Woice_Get(voice).get_name_buf(null).fromStringz);
+	}
 
 	writeln("Press enter to exit");
 	readln();
