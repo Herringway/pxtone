@@ -125,7 +125,10 @@ int main(string[] args) {
 	writefln!"comment: %s"(pxtn.text.get_comment_buf());
 
 	debug foreach (voice; 0 .. pxtn.Woice_Num()) {
-		writefln!"Voice %d: %s"(voice, pxtn.Woice_Get(voice).get_name_buf(null).fromStringz);
+		import std.algorithm : map;
+		import std.range : iota;
+		auto woice = pxtn.Woice_Get(voice);
+		writefln!"Voice %d \"%s\": %s - %s"(voice, woice.get_name_buf(null).fromStringz, woice.get_type(), iota(woice.get_voice_num()).map!(x => woice.get_voice(x).type));
 	}
 
 	writeln("Press enter to exit");
