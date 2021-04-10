@@ -46,11 +46,9 @@ enum pxtnERR {
 
 	x3x_add_tuning,
 	x3x_key,
-
-	num,
 }
 
-__gshared const(char)*[pxtnERR.num + 1] _err_msg_tbl = [
+immutable string[pxtnERR.max] _err_msg_tbl = [
 	"OK",
 	"VOID",
 	"INIT",
@@ -77,13 +75,12 @@ __gshared const(char)*[pxtnERR.num + 1] _err_msg_tbl = [
 	"woice full",
 	"x1x ignore",
 	"x3x add tuning",
-	"x3x key ",
-	"?"
+	"x3x key "
 ];
 
-const(char)* pxtnError_get_string(pxtnERR err_code) @system {
-	if (err_code < 0 || err_code >= pxtnERR.num) {
-		return _err_msg_tbl[pxtnERR.num];
+string pxtnError_get_string(pxtnERR err_code) @system {
+	if (err_code < 0 || err_code > pxtnERR.max) {
+		return "?";
 	}
 	return _err_msg_tbl[err_code];
 }

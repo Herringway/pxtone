@@ -87,7 +87,7 @@ int main(string[] args) {
 	pxtnService* pxtn = allocate!pxtnService();
 	scope (exit) {
 		if (!okay) {
-			criticalf("pxtone: %s", pxtnError_get_string(pxtn_err).fromStringz);
+			criticalf("pxtone: %s", pxtnError_get_string(pxtn_err));
 		}
 		deallocate(pxtn);
 	}
