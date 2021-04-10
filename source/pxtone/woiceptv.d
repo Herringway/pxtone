@@ -143,30 +143,30 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 	ubyte uc;
 
 	if (!p_doc.v_r(cast(int*)&p_vc.type)) {
-		return pxtnERR.pxtnERR_desc_r;
+		return pxtnERR.desc_r;
 	}
 
 	switch (p_vc.type) {
 		// coodinate (3)
 	case pxtnVOICETYPE.pxtnVOICE_Coodinate:
 		if (!p_doc.v_r(&p_vc.wave.num)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.v_r(&p_vc.wave.reso)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		num = p_vc.wave.num;
 		p_vc.wave.points = allocate!pxtnPOINT(num);
 		if (!p_vc.wave.points) {
-			return pxtnERR.pxtnERR_memory;
+			return pxtnERR.memory;
 		}
 		for (i = 0; i < num; i++) {
 			if (!p_doc.r(uc)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			p_vc.wave.points[i].x = uc;
 			if (!p_doc.r(sc)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			p_vc.wave.points[i].y = sc;
 		}
@@ -176,26 +176,26 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 	case pxtnVOICETYPE.pxtnVOICE_Overtone:
 
 		if (!p_doc.v_r(&p_vc.wave.num)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		num = p_vc.wave.num;
 		p_vc.wave.points = allocate!pxtnPOINT(num);
 		if (!p_vc.wave.points) {
-			return pxtnERR.pxtnERR_memory;
+			return pxtnERR.memory;
 		}
 		for (i = 0; i < num; i++) {
 			if (!p_doc.v_r(&p_vc.wave.points[i].x)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			if (!p_doc.v_r(&p_vc.wave.points[i].y)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 		}
 		break;
 
 		// p_vc.sampring. (7)
 	case pxtnVOICETYPE.pxtnVOICE_Sampling:
-		return pxtnERR.pxtnERR_fmt_unknown; // un-support
+		return pxtnERR.fmt_unknown; // un-support
 
 		//if( !p_doc.v_r( &p_vc.pcm.ch       ) ) goto End;
 		//if( !p_doc.v_r( &p_vc.pcm.bps      ) ) goto End;
@@ -209,62 +209,62 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 		//break;
 
 	default:
-		return pxtnERR.pxtnERR_ptv_no_supported; // un-support
+		return pxtnERR.ptv_no_supported; // un-support
 	}
 
-	return pxtnERR.pxtnOK;
+	return pxtnERR.OK;
 }
 
 pxtnERR _Read_Envelope(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @system {
-	pxtnERR res = pxtnERR.pxtnOK;
+	pxtnERR res = pxtnERR.OK;
 	int num, i;
 
 	//p_vc.envelope. (5)
 	if (!p_doc.v_r(&p_vc.envelope.fps)) {
-		res = pxtnERR.pxtnERR_desc_r;
+		res = pxtnERR.desc_r;
 		goto term;
 	}
 	if (!p_doc.v_r(&p_vc.envelope.head_num)) {
-		res = pxtnERR.pxtnERR_desc_r;
+		res = pxtnERR.desc_r;
 		goto term;
 	}
 	if (!p_doc.v_r(&p_vc.envelope.body_num)) {
-		res = pxtnERR.pxtnERR_desc_r;
+		res = pxtnERR.desc_r;
 		goto term;
 	}
 	if (!p_doc.v_r(&p_vc.envelope.tail_num)) {
-		res = pxtnERR.pxtnERR_desc_r;
+		res = pxtnERR.desc_r;
 		goto term;
 	}
 	if (p_vc.envelope.body_num) {
-		res = pxtnERR.pxtnERR_fmt_unknown;
+		res = pxtnERR.fmt_unknown;
 		goto term;
 	}
 	if (p_vc.envelope.tail_num != 1) {
-		res = pxtnERR.pxtnERR_fmt_unknown;
+		res = pxtnERR.fmt_unknown;
 		goto term;
 	}
 
 	num = p_vc.envelope.head_num + p_vc.envelope.body_num + p_vc.envelope.tail_num;
 	p_vc.envelope.points = allocate!pxtnPOINT(num);
 	if (!p_vc.envelope.points) {
-		res = pxtnERR.pxtnERR_memory;
+		res = pxtnERR.memory;
 		goto term;
 	}
 	for (i = 0; i < num; i++) {
 		if (!p_doc.v_r(&p_vc.envelope.points[i].x)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (!p_doc.v_r(&p_vc.envelope.points[i].y)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 	}
 
-	res = pxtnERR.pxtnOK;
+	res = pxtnERR.OK;
 term:
-	if (res != pxtnERR.pxtnOK) {
+	if (res != pxtnERR.OK) {
 		deallocate(p_vc.envelope.points);
 	}
 

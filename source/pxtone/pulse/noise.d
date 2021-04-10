@@ -127,30 +127,30 @@ static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDes
 static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescriptor p_doc) nothrow @system {
 	int work;
 	if (!p_doc.v_r(&work)) {
-		return pxtnERR.pxtnERR_desc_r;
+		return pxtnERR.desc_r;
 	}
 	p_osc.type = cast(pxWAVETYPE) work;
 	if (p_osc.type >= pxWAVETYPE.pxWAVETYPE_num) {
-		return pxtnERR.pxtnERR_fmt_unknown;
+		return pxtnERR.fmt_unknown;
 	}
 	if (!p_doc.v_r(&work)) {
-		return pxtnERR.pxtnERR_desc_r;
+		return pxtnERR.desc_r;
 	}
 	p_osc.b_rev = work ? true : false;
 	if (!p_doc.v_r(&work)) {
-		return pxtnERR.pxtnERR_desc_r;
+		return pxtnERR.desc_r;
 	}
 	p_osc.freq = cast(float) work / 10;
 	if (!p_doc.v_r(&work)) {
-		return pxtnERR.pxtnERR_desc_r;
+		return pxtnERR.desc_r;
 	}
 	p_osc.volume = cast(float) work / 10;
 	if (!p_doc.v_r(&work)) {
-		return pxtnERR.pxtnERR_desc_r;
+		return pxtnERR.desc_r;
 	}
 	p_osc.offset = cast(float) work / 10;
 
-	return pxtnERR.pxtnOK;
+	return pxtnERR.OK;
 }
 
 static uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow @safe {
@@ -297,7 +297,7 @@ public:
 	}
 
 	pxtnERR read(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		uint flags = 0;
 		char unit_num = 0;
 		char _byte = 0;
@@ -310,42 +310,42 @@ public:
 		Release();
 
 		if (!p_doc.r(code[])) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (code != _code[0 .. 8]) {
-			res = pxtnERR.pxtnERR_inv_code;
+			res = pxtnERR.inv_code;
 			goto term;
 		}
 		if (!p_doc.r(ver)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (ver > _ver) {
-			res = pxtnERR.pxtnERR_fmt_new;
+			res = pxtnERR.fmt_new;
 			goto term;
 		}
 		if (!p_doc.v_r(&_smp_num_44k)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (!p_doc.r(unit_num)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (unit_num < 0) {
-			res = pxtnERR.pxtnERR_inv_data;
+			res = pxtnERR.inv_data;
 			goto term;
 		}
 		if (unit_num > MAX_NOISEEDITUNITNUM) {
-			res = pxtnERR.pxtnERR_fmt_unknown;
+			res = pxtnERR.fmt_unknown;
 			goto term;
 		}
 		_unit_num = unit_num;
 
 		_units = allocate!pxNOISEDESIGN_UNIT(_unit_num);
 		if (!_units) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto term;
 		}
 
@@ -354,36 +354,36 @@ public:
 			pU.bEnable = true;
 
 			if (!p_doc.v_r(cast(int*)&flags)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			if (flags & NOISEEDITFLAG_UNCOVERED) {
-				res = pxtnERR.pxtnERR_fmt_unknown;
+				res = pxtnERR.fmt_unknown;
 				goto term;
 			}
 
 			// envelope
 			if (flags & NOISEEDITFLAG_ENVELOPE) {
 				if (!p_doc.v_r(&pU.enve_num)) {
-					res = pxtnERR.pxtnERR_desc_r;
+					res = pxtnERR.desc_r;
 					goto term;
 				}
 				if (pU.enve_num > MAX_NOISEEDITENVELOPENUM) {
-					res = pxtnERR.pxtnERR_fmt_unknown;
+					res = pxtnERR.fmt_unknown;
 					goto term;
 				}
 				pU.enves = allocate!pxtnPOINT(pU.enve_num);
 				if (!pU.enves) {
-					res = pxtnERR.pxtnERR_memory;
+					res = pxtnERR.memory;
 					goto term;
 				}
 				for (int e = 0; e < pU.enve_num; e++) {
 					if (!p_doc.v_r(&pU.enves[e].x)) {
-						res = pxtnERR.pxtnERR_desc_r;
+						res = pxtnERR.desc_r;
 						goto term;
 					}
 					if (!p_doc.v_r(&pU.enves[e].y)) {
-						res = pxtnERR.pxtnERR_desc_r;
+						res = pxtnERR.desc_r;
 						goto term;
 					}
 				}
@@ -391,7 +391,7 @@ public:
 			// pan
 			if (flags & NOISEEDITFLAG_PAN) {
 				if (!p_doc.r(_byte)) {
-					res = pxtnERR.pxtnERR_desc_r;
+					res = pxtnERR.desc_r;
 					goto term;
 				}
 				pU.pan = _byte;
@@ -399,27 +399,27 @@ public:
 
 			if (flags & NOISEEDITFLAG_OSC_MAIN) {
 				res = _ReadOscillator(&pU.main, p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 			}
 			if (flags & NOISEEDITFLAG_OSC_FREQ) {
 				res = _ReadOscillator(&pU.freq, p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 			}
 			if (flags & NOISEEDITFLAG_OSC_VOLU) {
 				res = _ReadOscillator(&pU.volu, p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 			}
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			Release();
 		}
 

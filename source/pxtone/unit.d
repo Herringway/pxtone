@@ -353,17 +353,17 @@ public:
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(unit)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PCM && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PTV && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.pxtnWOICE_PTN) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		*p_group = unit.group;
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	bool Read_v1x(ref pxtnDescriptor p_doc, int* p_group) nothrow @system {

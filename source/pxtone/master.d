@@ -180,7 +180,7 @@ public:
 	}
 
 	pxtnERR io_r_v5(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		short beat_clock = 0;
 		byte beat_num = 0;
 		float beat_tempo = 0;
@@ -190,26 +190,26 @@ public:
 		uint size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (size != 15) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		if (!p_doc.r(beat_clock)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(beat_num)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(beat_tempo)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(clock_repeat)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(clock_last)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		_beat_clock = beat_clock;
@@ -219,7 +219,7 @@ public:
 		set_repeat_meas(clock_repeat / (beat_num * beat_clock));
 		set_last_meas(clock_last / (beat_num * beat_clock));
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	int io_r_v5_EventNum(ref pxtnDescriptor p_doc) nothrow @system {
@@ -250,18 +250,18 @@ public:
 		float beat_tempo = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(mast)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		// unknown format
 		if (mast.data_num != 3) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (mast.rrr) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		beat_clock = EVENTDEFAULT_BEATCLOCK;
@@ -289,40 +289,40 @@ public:
 			case EVENTKIND_BEATCLOCK:
 				beat_clock = volume;
 				if (clock) {
-					return pxtnERR.pxtnERR_desc_broken;
+					return pxtnERR.desc_broken;
 				}
 				break;
 			case EVENTKIND_BEATTEMPO:
 				beat_tempo = *(cast(float*)&volume);
 				if (clock) {
-					return pxtnERR.pxtnERR_desc_broken;
+					return pxtnERR.desc_broken;
 				}
 				break;
 			case EVENTKIND_BEATNUM:
 				beat_num = volume;
 				if (clock) {
-					return pxtnERR.pxtnERR_desc_broken;
+					return pxtnERR.desc_broken;
 				}
 				break;
 			case EVENTKIND_REPEAT:
 				repeat_clock = clock;
 				if (volume) {
-					return pxtnERR.pxtnERR_desc_broken;
+					return pxtnERR.desc_broken;
 				}
 				break;
 			case EVENTKIND_LAST:
 				last_clock = clock;
 				if (volume) {
-					return pxtnERR.pxtnERR_desc_broken;
+					return pxtnERR.desc_broken;
 				}
 				break;
 			default:
-				return pxtnERR.pxtnERR_fmt_unknown;
+				return pxtnERR.fmt_unknown;
 			}
 		}
 
 		if (e != mast.event_num) {
-			return pxtnERR.pxtnERR_desc_broken;
+			return pxtnERR.desc_broken;
 		}
 
 		_beat_num = beat_num;
@@ -332,7 +332,7 @@ public:
 		set_repeat_meas(repeat_clock / (beat_num * beat_clock));
 		set_last_meas(last_clock / (beat_num * beat_clock));
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	int io_r_x4x_EventNum(ref pxtnDescriptor p_doc) nothrow @system {

@@ -235,25 +235,25 @@ private:
 
 	pxtnERR _ReadVersion(ref pxtnDescriptor p_doc, _enum_FMTVER* p_fmt_ver, ushort* p_exe_ver) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
 		char[_VERSIONSIZE] version_ = '\0';
 		ushort dummy;
 
 		if (!p_doc.r(version_[])) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		// fmt version
 		if (version_[0 .. _VERSIONSIZE] == _code_proj_x1x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x1x;
 			*p_exe_ver = 0;
-			return pxtnERR.pxtnOK;
+			return pxtnERR.OK;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x2x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
 			*p_exe_ver = 0;
-			return pxtnERR.pxtnOK;
+			return pxtnERR.OK;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x3x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x4x) {
@@ -263,7 +263,7 @@ private:
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x2x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
 			*p_exe_ver = 0;
-			return pxtnERR.pxtnOK;
+			return pxtnERR.OK;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x3x) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x4x) {
@@ -271,18 +271,18 @@ private:
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_v5) {
 			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
 		} else {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		// exe version
 		if (!p_doc.r(*p_exe_ver)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(dummy)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 	////////////////////////////////////////
 	// Read Project //////////////
@@ -290,31 +290,31 @@ private:
 
 	pxtnERR _ReadTuneItems(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		bool b_end = false;
 		char[_CODESIZE + 1] code = '\0';
 
 		/// must the unit before the voice.
 		while (!b_end) {
 			if (!p_doc.r(code[0 .._CODESIZE])) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 
 			_enum_Tag tag = _CheckTagCode(code.ptr);
 			switch (tag) {
 			case _enum_Tag._TAG_antiOPER:
-				res = pxtnERR.pxtnERR_anti_opreation;
+				res = pxtnERR.anti_opreation;
 				goto term;
 
 				// new -------
 			case _enum_Tag._TAG_num_UNIT: {
 					int num = 0;
 					res = _io_UNIT_num_r(p_doc, &num);
-					if (res != pxtnERR.pxtnOK) {
+					if (res != pxtnERR.OK) {
 						goto term;
 					}
 					for (int i = 0; i < num; i++) {
@@ -325,32 +325,32 @@ private:
 				}
 			case _enum_Tag._TAG_MasterV5:
 				res = master.io_r_v5(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_Event_V5:
 				res = evels.io_Read(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 
 			case _enum_Tag._TAG_matePCM:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PCM);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_matePTV:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PTV);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_matePTN:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PTN);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
@@ -359,48 +359,48 @@ private:
 
 				version (pxINCLUDE_OGGVORBIS) {
 					res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_OGGV);
-					if (res != pxtnERR.pxtnOK) {
+					if (res != pxtnERR.OK) {
 						goto term;
 					}
 					break;
 				} else {
-					res = pxtnERR.pxtnERR_ogg_no_supported;
+					res = pxtnERR.ogg_no_supported;
 					goto term;
 				}
 
 			case _enum_Tag._TAG_effeDELA:
 				res = _io_Read_Delay(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_effeOVER:
 				res = _io_Read_OverDrive(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_textNAME:
 				if (!text.Name_r(p_doc)) {
-					res = pxtnERR.pxtnERR_desc_r;
+					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_textCOMM:
 				if (!text.Comment_r(p_doc)) {
-					res = pxtnERR.pxtnERR_desc_r;
+					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_assiWOIC:
 				res = _io_assiWOIC_r(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_assiUNIT:
 				res = _io_assiUNIT_r(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
@@ -411,43 +411,43 @@ private:
 				// old -------
 			case _enum_Tag._TAG_x4x_evenMAST:
 				res = master.io_r_x4x(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_x4x_evenUNIT:
 				res = evels.io_Unit_Read_x4x_EVENT(p_doc, false, true);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_x3x_pxtnUNIT:
 				res = _io_Read_OldUnit(p_doc, 3);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_x1x_PROJ:
 				if (!_x1x_Project_Read(p_doc)) {
-					res = pxtnERR.pxtnERR_desc_r;
+					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_x1x_UNIT:
 				res = _io_Read_OldUnit(p_doc, 1);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_x1x_PCM:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.pxtnWOICE_PCM);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			case _enum_Tag._TAG_x1x_EVEN:
 				res = evels.io_Unit_Read_x4x_EVENT(p_doc, true, false);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
@@ -456,12 +456,12 @@ private:
 				break;
 
 			default:
-				res = pxtnERR.pxtnERR_fmt_unknown;
+				res = pxtnERR.fmt_unknown;
 				goto term;
 			}
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
 		return res;
@@ -504,25 +504,25 @@ private:
 
 	pxtnERR _io_Read_Delay(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (!_delays) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (_delay_num >= _delay_max) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		pxtnDelay* delay = allocate!pxtnDelay();
 
 		res = delay.Read(p_doc);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
-		if (res == pxtnERR.pxtnOK) {
+		if (res == pxtnERR.OK) {
 			_delays[_delay_num] = delay;
 			_delay_num++;
 		} else {
@@ -533,24 +533,24 @@ private:
 
 	pxtnERR _io_Read_OverDrive(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (!_ovdrvs) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (_ovdrv_num >= _ovdrv_max) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		pxtnOverDrive* ovdrv = allocate!pxtnOverDrive();
 		res = ovdrv.Read(p_doc);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
-		if (res == pxtnERR.pxtnOK) {
+		if (res == pxtnERR.OK) {
 			_ovdrvs[_ovdrv_num] = ovdrv;
 			_ovdrv_num++;
 		} else {
@@ -561,16 +561,16 @@ private:
 	}
 
 	pxtnERR _io_Read_Woice(ref pxtnDescriptor p_doc, pxtnWOICETYPE type) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (!_woices) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (_woice_num >= _woice_max) {
-			return pxtnERR.pxtnERR_woice_full;
+			return pxtnERR.woice_full;
 		}
 
 		pxtnWoice* woice = allocate!pxtnWoice();
@@ -578,43 +578,43 @@ private:
 		switch (type) {
 		case pxtnWOICETYPE.pxtnWOICE_PCM:
 			res = woice.io_matePCM_r(p_doc);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			break;
 		case pxtnWOICETYPE.pxtnWOICE_PTV:
 			res = woice.io_matePTV_r(p_doc);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			break;
 		case pxtnWOICETYPE.pxtnWOICE_PTN:
 			res = woice.io_matePTN_r(p_doc);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			break;
 		case pxtnWOICETYPE.pxtnWOICE_OGGV:
 			version (pxINCLUDE_OGGVORBIS) {
 				res = woice.io_mateOGGV_r(p_doc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 			} else {
-				res = pxtnERR.pxtnERR_ogg_no_supported;
+				res = pxtnERR.ogg_no_supported;
 				goto term;
 			}
 
 		default:
-			res = pxtnERR.pxtnERR_fmt_unknown;
+			res = pxtnERR.fmt_unknown;
 			goto term;
 		}
 		_woices[_woice_num] = woice;
 		_woice_num++;
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			deallocate(woice);
 		}
 		return res;
@@ -622,16 +622,16 @@ private:
 
 	pxtnERR _io_Read_OldUnit(ref pxtnDescriptor p_doc, int ver) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (!_units) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (_unit_num >= _unit_max) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		pxtnUnit* unit = allocate!pxtnUnit();
 		int group = 0;
 
@@ -643,12 +643,12 @@ private:
 			break;
 		case 3:
 			res = unit.Read_v3x(p_doc, &group);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			break;
 		default:
-			res = pxtnERR.pxtnERR_fmt_unknown;
+			res = pxtnERR.fmt_unknown;
 			goto term;
 		}
 
@@ -661,9 +661,9 @@ private:
 		evels.x4x_Read_Add(0, cast(ubyte) _unit_num, EVENTKIND_VOICENO, cast(int) _unit_num);
 		evels.x4x_Read_NewKind();
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
-		if (res == pxtnERR.pxtnOK) {
+		if (res == pxtnERR.OK) {
 			_units[_unit_num] = unit;
 			_unit_num++;
 		} else {
@@ -707,33 +707,33 @@ private:
 
 	pxtnERR _io_assiWOIC_r(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
 		_ASSIST_WOICE assi = {0};
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (size != assi.sizeof) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (!p_doc.r(assi)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (assi.rrr) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (assi.woice_index >= _woice_num) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		if (!_woices[assi.woice_index].set_name_buf(assi.name.ptr, pxtnMAX_TUNEWOICENAME)) {
-			return pxtnERR.pxtnERR_FATAL;
+			return pxtnERR.FATAL;
 		}
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 	// -----
 	// assi unit.
@@ -765,33 +765,33 @@ private:
 
 	pxtnERR _io_assiUNIT_r(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
 		_ASSIST_UNIT assi = {0};
 		int size;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (size != assi.sizeof) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (!p_doc.r(assi)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (assi.rrr) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (assi.unit_index >= _unit_num) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		if (!_units[assi.unit_index].set_name_buf(assi.name.ptr, pxtnMAX_TUNEUNITNAME)) {
-			return pxtnERR.pxtnERR_FATAL;
+			return pxtnERR.FATAL;
 		}
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 	// -----
 	// unit num
@@ -820,33 +820,33 @@ private:
 
 	pxtnERR _io_UNIT_num_r(ref pxtnDescriptor p_doc, int* p_num) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
 		_NUM_UNIT data = {0};
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (size != _NUM_UNIT.sizeof) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (!p_doc.r(data)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (data.rrr) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (data.num > _unit_max) {
-			return pxtnERR.pxtnERR_fmt_new;
+			return pxtnERR.fmt_new;
 		}
 		if (data.num < 0) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		*p_num = data.num;
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	// fix old key event
@@ -951,10 +951,10 @@ private:
 
 	pxtnERR _init(int fix_evels_num, bool b_edit) nothrow @system {
 		if (_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		int byte_size = 0;
 
 		version (pxINCLUDE_OGGVORBIS) {
@@ -964,40 +964,40 @@ private:
 				DerelictVorbis.load();
 				DerelictVorbisFile.load();
 			} catch (Exception e) {
-				res = pxtnERR.pxtnERR_ogg;
+				res = pxtnERR.ogg;
 				goto End;
 			}
 		}
 
 		text = allocate!pxtnText();
 		if (!(text)) {
-			res = pxtnERR.pxtnERR_INIT;
+			res = pxtnERR.INIT;
 			goto End;
 		}
 		master = allocate!pxtnMaster();
 		if (!(master)) {
-			res = pxtnERR.pxtnERR_INIT;
+			res = pxtnERR.INIT;
 			goto End;
 		}
 		evels = allocate!pxtnEvelist();
 		if (!(evels)) {
-			res = pxtnERR.pxtnERR_INIT;
+			res = pxtnERR.INIT;
 			goto End;
 		}
 		_ptn_bldr = allocate!pxtnPulse_NoiseBuilder();
 		if (!(_ptn_bldr)) {
-			res = pxtnERR.pxtnERR_INIT;
+			res = pxtnERR.INIT;
 			goto End;
 		}
 		if (!_ptn_bldr.Init()) {
-			res = pxtnERR.pxtnERR_ptn_init;
+			res = pxtnERR.ptn_init;
 			goto End;
 		}
 
 		if (fix_evels_num) {
 			_b_fix_evels_num = true;
 			if (!evels.Allocate(fix_evels_num)) {
-				res = pxtnERR.pxtnERR_memory;
+				res = pxtnERR.memory;
 				goto End;
 			}
 		} else {
@@ -1007,7 +1007,7 @@ private:
 		// delay
 		_delays = allocate!(pxtnDelay*)(pxtnMAX_TUNEDELAYSTRUCT);
 		if (!(_delays)) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto End;
 		}
 		_delay_max = pxtnMAX_TUNEDELAYSTRUCT;
@@ -1015,7 +1015,7 @@ private:
 		// over-drive
 		_ovdrvs = allocate!(pxtnOverDrive*)(pxtnMAX_TUNEOVERDRIVESTRUCT);
 		if (!(_ovdrvs)) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto End;
 		}
 		_ovdrv_max = pxtnMAX_TUNEOVERDRIVESTRUCT;
@@ -1023,7 +1023,7 @@ private:
 		// woice
 		_woices = allocate!(pxtnWoice*)(pxtnMAX_TUNEWOICESTRUCT);
 		if (!(_woices)) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto End;
 		}
 		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
@@ -1031,7 +1031,7 @@ private:
 		// unit
 		_units = allocate!(pxtnUnit*)(pxtnMAX_TUNEUNITSTRUCT);
 		if (!(_units)) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto End;
 		}
 		_unit_max = pxtnMAX_TUNEUNITSTRUCT;
@@ -1039,7 +1039,7 @@ private:
 		_group_num = pxtnMAX_TUNEGROUPNUM;
 
 		if (!_moo_init()) {
-			res = pxtnERR.pxtnERR_moo_init;
+			res = pxtnERR.moo_init;
 			goto End;
 		}
 
@@ -1048,7 +1048,7 @@ private:
 		}
 
 		_b_edit = b_edit;
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 		_b_init = true;
 	End:
 		if (!_b_init) {
@@ -1102,13 +1102,13 @@ private:
 
 	pxtnERR _pre_count_event(ref pxtnDescriptor p_doc, int* p_count) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (!p_count) {
-			return pxtnERR.pxtnERR_param;
+			return pxtnERR.param;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		bool b_end = false;
 
 		int count = 0;
@@ -1120,19 +1120,19 @@ private:
 		_enum_FMTVER fmt_ver = _enum_FMTVER._enum_FMTVER_unknown;
 
 		res = _ReadVersion(p_doc, &fmt_ver, &exe_ver);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
 
 		if (fmt_ver == _enum_FMTVER._enum_FMTVER_x1x) {
 			count = _MAX_FMTVER_x1x_EVENTNUM;
-			res = pxtnERR.pxtnOK;
+			res = pxtnERR.OK;
 			goto term;
 		}
 
 		while (!b_end) {
 			if (!p_doc.r(code[0 .. _CODESIZE])) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 
@@ -1148,7 +1148,7 @@ private:
 				break;
 			case _enum_Tag._TAG_x4x_evenUNIT:
 				res = evels.io_Read_x4x_EventNum(p_doc, &c);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				count += c;
@@ -1173,11 +1173,11 @@ private:
 			case _enum_Tag._TAG_assiWOIC:
 
 				if (!p_doc.r(size)) {
-					res = pxtnERR.pxtnERR_desc_r;
+					res = pxtnERR.desc_r;
 					goto term;
 				}
 				if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, size)) {
-					res = pxtnERR.pxtnERR_desc_r;
+					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
@@ -1188,10 +1188,10 @@ private:
 			case _enum_Tag._TAG_x1x_PCM:
 			case _enum_Tag._TAG_x1x_EVEN:
 			case _enum_Tag._TAG_x1x_END:
-				res = pxtnERR.pxtnERR_x1x_ignore;
+				res = pxtnERR.x1x_ignore;
 				goto term;
 			default:
-				res = pxtnERR.pxtnERR_FATAL;
+				res = pxtnERR.FATAL;
 				goto term;
 			}
 		}
@@ -1200,10 +1200,10 @@ private:
 			count += pxtnMAX_TUNEUNITSTRUCT * 4; // voice_no, group_no, key tuning, key event x3x
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			*p_count = 0;
 		} else {
 			*p_count = count;
@@ -1580,65 +1580,65 @@ public:
 
 	pxtnERR write(ref pxtnDescriptor p_doc, bool b_tune, ushort exe_ver) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
 		bool b_ret = false;
 		int rough = b_tune ? 10 : 1;
 		ushort rrr = 0;
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 
 		// format version
 		if (b_tune) {
 			if (!p_doc.w_asfile(_code_tune_v5.ptr, 1, _VERSIONSIZE)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 		} else {
 			if (!p_doc.w_asfile(_code_proj_v5.ptr, 1, _VERSIONSIZE)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 		}
 
 		// exe version
 		if (!p_doc.w_asfile(&exe_ver, ushort.sizeof, 1)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 		if (!p_doc.w_asfile(&rrr, ushort.sizeof, 1)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 
 		// master
 		if (!p_doc.w_asfile(_code_MasterV5.ptr, 1, _CODESIZE)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 		if (!master.io_w_v5(p_doc, rough)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 
 		// event
 		if (!p_doc.w_asfile(_code_Event_V5.ptr, 1, _CODESIZE)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 		if (!evels.io_Write(p_doc, rough)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 
 		// name
 		if (text.is_name_buf()) {
 			if (!p_doc.w_asfile(_code_textNAME.ptr, 1, _CODESIZE)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 			if (!text.Name_w(p_doc)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 		}
@@ -1646,11 +1646,11 @@ public:
 		// comment
 		if (text.is_comment_buf()) {
 			if (!p_doc.w_asfile(_code_textCOMM.ptr, 1, _CODESIZE)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 			if (!text.Comment_w(p_doc)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 		}
@@ -1658,11 +1658,11 @@ public:
 		// delay
 		for (int d = 0; d < _delay_num; d++) {
 			if (!p_doc.w_asfile(_code_effeDELA.ptr, 1, _CODESIZE)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 			if (!_delays[d].Write(p_doc)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 		}
@@ -1670,11 +1670,11 @@ public:
 		// overdrive
 		for (int o = 0; o < _ovdrv_num; o++) {
 			if (!p_doc.w_asfile(_code_effeOVER.ptr, 1, _CODESIZE)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 			if (!_ovdrvs[o].Write(p_doc)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 		}
@@ -1686,31 +1686,31 @@ public:
 			switch (p_w.get_type()) {
 			case pxtnWOICETYPE.pxtnWOICE_PCM:
 				if (!p_doc.w_asfile(_code_matePCM.ptr, 1, _CODESIZE)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				if (!p_w.io_matePCM_w(p_doc)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				break;
 			case pxtnWOICETYPE.pxtnWOICE_PTV:
 				if (!p_doc.w_asfile(_code_matePTV.ptr, 1, _CODESIZE)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				if (!p_w.io_matePTV_w(p_doc)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				break;
 			case pxtnWOICETYPE.pxtnWOICE_PTN:
 				if (!p_doc.w_asfile(_code_matePTN.ptr, 1, _CODESIZE)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				if (!p_w.io_matePTN_w(p_doc)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				break;
@@ -1718,30 +1718,30 @@ public:
 
 				version (pxINCLUDE_OGGVORBIS) {
 					if (!p_doc.w_asfile(_code_mateOGGV.ptr, 1, _CODESIZE)) {
-						res = pxtnERR.pxtnERR_desc_w;
+						res = pxtnERR.desc_w;
 						goto End;
 					}
 					if (!p_w.io_mateOGGV_w(p_doc)) {
-						res = pxtnERR.pxtnERR_desc_w;
+						res = pxtnERR.desc_w;
 						goto End;
 					}
 					break;
 				} else {
-					res = pxtnERR.pxtnERR_ogg_no_supported;
+					res = pxtnERR.ogg_no_supported;
 					goto End;
 				}
 			default:
-				res = pxtnERR.pxtnERR_inv_data;
+				res = pxtnERR.inv_data;
 				goto End;
 			}
 
 			if (!b_tune && p_w.is_name_buf()) {
 				if (!p_doc.w_asfile(_code_assiWOIC.ptr, 1, _CODESIZE)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				if (!_io_assiWOIC_w(p_doc, w)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 			}
@@ -1749,22 +1749,22 @@ public:
 
 		// unit
 		if (!p_doc.w_asfile(_code_num_UNIT.ptr, 1, _CODESIZE)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 		if (!_io_UNIT_num_w(p_doc)) {
-			res = pxtnERR.pxtnERR_desc_w;
+			res = pxtnERR.desc_w;
 			goto End;
 		}
 
 		for (int u = 0; u < _unit_num; u++) {
 			if (!b_tune && _units[u].is_name_buf()) {
 				if (!p_doc.w_asfile(_code_assiUNIT.ptr, 1, _CODESIZE)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 				if (!_io_assiUNIT_w(p_doc, u)) {
-					res = pxtnERR.pxtnERR_desc_w;
+					res = pxtnERR.desc_w;
 					goto End;
 				}
 			}
@@ -1773,16 +1773,16 @@ public:
 		{
 			int end_size = 0;
 			if (!p_doc.w_asfile(_code_pxtoneND.ptr, 1, _CODESIZE)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 			if (!p_doc.w_asfile(&end_size, 4, 1)) {
-				res = pxtnERR.pxtnERR_desc_w;
+				res = pxtnERR.desc_w;
 				goto End;
 			}
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	End:
 
 		return res;
@@ -1790,10 +1790,10 @@ public:
 
 	pxtnERR read(ref pxtnDescriptor p_doc) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		ushort exe_ver = 0;
 		_enum_FMTVER fmt_ver = _enum_FMTVER._enum_FMTVER_unknown;
 		int event_num = 0;
@@ -1801,25 +1801,25 @@ public:
 		clear();
 
 		res = _pre_count_event(p_doc, &event_num);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
 		p_doc.seek(pxtnSEEK.pxtnSEEK_set, 0);
 
 		if (_b_fix_evels_num) {
 			if (event_num > evels.get_Num_Max()) {
-				res = pxtnERR.pxtnERR_too_much_event;
+				res = pxtnERR.too_much_event;
 				goto term;
 			}
 		} else {
 			if (!evels.Allocate(event_num)) {
-				res = pxtnERR.pxtnERR_memory;
+				res = pxtnERR.memory;
 				goto term;
 			}
 		}
 
 		res = _ReadVersion(p_doc, &fmt_ver, &exe_ver);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
 
@@ -1830,7 +1830,7 @@ public:
 		}
 
 		res = _ReadTuneItems(p_doc);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
 
@@ -1840,18 +1840,18 @@ public:
 
 		if (fmt_ver <= _enum_FMTVER._enum_FMTVER_x3x) {
 			if (!_x3x_TuningKeyEvent()) {
-				res = pxtnERR.pxtnERR_x3x_key;
+				res = pxtnERR.x3x_key;
 				goto term;
 			}
 			if (!_x3x_AddTuningEvent()) {
-				res = pxtnERR.pxtnERR_x3x_add_tuning;
+				res = pxtnERR.x3x_add_tuning;
 				goto term;
 			}
 			_x3x_SetVoiceNames();
 		}
 
 		if (_b_edit && master.get_beat_clock() != EVENTDEFAULT_BEATCLOCK) {
-			res = pxtnERR.pxtnERR_deny_beatclock;
+			res = pxtnERR.deny_beatclock;
 			goto term;
 		}
 
@@ -1867,10 +1867,10 @@ public:
 		}
 
 		_moo_b_valid_data = true;
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			clear();
 		}
 
@@ -1887,16 +1887,16 @@ public:
 
 	pxtnERR tones_ready() nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		int beat_num = master.get_beat_num();
 		float beat_tempo = master.get_beat_tempo();
 
 		for (int i = 0; i < _delay_num; i++) {
 			res = _delays[i].Tone_Ready(beat_num, beat_tempo, _dst_sps);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				return res;
 			}
 		}
@@ -1905,11 +1905,11 @@ public:
 		}
 		for (int i = 0; i < _woice_num; i++) {
 			res = _woices[i].Tone_Ready(_ptn_bldr, _dst_sps);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				return res;
 			}
 		}
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	bool tones_clear() nothrow @system {
@@ -1984,10 +1984,10 @@ public:
 
 	pxtnERR Delay_ReadyTone(int idx) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (idx < 0 || idx >= _delay_num) {
-			return pxtnERR.pxtnERR_param;
+			return pxtnERR.param;
 		}
 		return _delays[idx].Tone_Ready(master.get_beat_num(), master.get_beat_tempo(), _dst_sps);
 	}
@@ -2110,22 +2110,22 @@ public:
 
 	pxtnERR Woice_read(int idx, ref pxtnDescriptor desc, pxtnWOICETYPE type) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (idx < 0 || idx >= _woice_max) {
-			return pxtnERR.pxtnERR_param;
+			return pxtnERR.param;
 		}
 		if (idx > _woice_num) {
-			return pxtnERR.pxtnERR_param;
+			return pxtnERR.param;
 		}
 		if (idx == _woice_num) {
 			_woices[idx] = allocate!pxtnWoice();
 			_woice_num++;
 		}
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		res = _woices[idx].read(desc, type);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			Woice_Remove(idx);
 			return res;
 		}
@@ -2134,10 +2134,10 @@ public:
 
 	pxtnERR Woice_ReadyTone(int idx) nothrow @system {
 		if (!_b_init) {
-			return pxtnERR.pxtnERR_INIT;
+			return pxtnERR.INIT;
 		}
 		if (idx < 0 || idx >= _woice_num) {
-			return pxtnERR.pxtnERR_param;
+			return pxtnERR.param;
 		}
 		return _woices[idx].Tone_Ready(_ptn_bldr, _dst_sps);
 	}

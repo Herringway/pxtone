@@ -2,55 +2,55 @@
 // '16/12/16 pxtnError.
 
 enum pxtnERR {
-	pxtnOK = 0,
-	pxtnERR_VOID,
-	pxtnERR_INIT,
-	pxtnERR_FATAL,
+	OK = 0,
+	VOID,
+	INIT,
+	FATAL,
 
-	pxtnERR_anti_opreation,
+	anti_opreation,
 
-	pxtnERR_deny_beatclock,
+	deny_beatclock,
 
-	pxtnERR_desc_w,
-	pxtnERR_desc_r,
-	pxtnERR_desc_broken,
+	desc_w,
+	desc_r,
+	desc_broken,
 
-	pxtnERR_fmt_new,
-	pxtnERR_fmt_unknown,
+	fmt_new,
+	fmt_unknown,
 
-	pxtnERR_inv_code,
-	pxtnERR_inv_data,
+	inv_code,
+	inv_data,
 
-	pxtnERR_memory,
+	memory,
 
-	pxtnERR_moo_init,
+	moo_init,
 
-	pxtnERR_ogg,
-	pxtnERR_ogg_no_supported,
+	ogg,
+	ogg_no_supported,
 
-	pxtnERR_param,
+	param,
 
-	pxtnERR_pcm_convert,
-	pxtnERR_pcm_unknown,
+	pcm_convert,
+	pcm_unknown,
 
-	pxtnERR_ptn_build,
-	pxtnERR_ptn_init,
+	ptn_build,
+	ptn_init,
 
-	pxtnERR_ptv_no_supported,
+	ptv_no_supported,
 
-	pxtnERR_too_much_event,
+	too_much_event,
 
-	pxtnERR_woice_full,
+	woice_full,
 
-	pxtnERR_x1x_ignore,
+	x1x_ignore,
 
-	pxtnERR_x3x_add_tuning,
-	pxtnERR_x3x_key,
+	x3x_add_tuning,
+	x3x_key,
 
-	pxtnERR_num,
-};
+	num,
+}
 
-__gshared const(char)*[pxtnERR.pxtnERR_num + 1] _err_msg_tbl = [
+__gshared const(char)*[pxtnERR.num + 1] _err_msg_tbl = [
 	"OK",
 	"VOID",
 	"INIT",
@@ -82,8 +82,8 @@ __gshared const(char)*[pxtnERR.pxtnERR_num + 1] _err_msg_tbl = [
 ];
 
 const(char)* pxtnError_get_string(pxtnERR err_code) @system {
-	if (err_code < 0 || err_code >= pxtnERR.pxtnERR_num) {
-		return _err_msg_tbl[pxtnERR.pxtnERR_num];
+	if (err_code < 0 || err_code >= pxtnERR.num) {
+		return _err_msg_tbl[pxtnERR.num];
 	}
 	return _err_msg_tbl[err_code];
 }

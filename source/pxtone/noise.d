@@ -82,7 +82,7 @@ struct pxtoneNoise {
 		pxtnPulse_Noise* noise = allocate!pxtnPulse_Noise();
 		pxtnPulse_PCM* pcm = null;
 
-		if (noise.read(p_doc) != pxtnERR.pxtnOK) {
+		if (noise.read(p_doc) != pxtnERR.OK) {
 			goto End;
 		}
 		pcm = bldr.BuildNoise(noise, _ch_num, _sps, _bps);

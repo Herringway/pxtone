@@ -164,7 +164,7 @@ public:
 	}
 
 	pxtnERR Decode(pxtnPulse_PCM* p_pcm) const nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 
 		OggVorbis_File vf;
 		vorbis_info* vi;
@@ -186,19 +186,19 @@ public:
 
 		switch (ov_open_callbacks(&ovmem, &vf, null, 0, oc)) {
 		case OV_EREAD:
-			res = pxtnERR.pxtnERR_ogg;
+			res = pxtnERR.ogg;
 			goto term; //{printf("A read from media returned an error.\n");exit(1);}
 		case OV_ENOTVORBIS:
-			res = pxtnERR.pxtnERR_ogg;
+			res = pxtnERR.ogg;
 			goto term; //{printf("Bitstream is not Vorbis data. \n");exit(1);}
 		case OV_EVERSION:
-			res = pxtnERR.pxtnERR_ogg;
+			res = pxtnERR.ogg;
 			goto term; //{printf("Vorbis version mismatch. \n");exit(1);}
 		case OV_EBADHEADER:
-			res = pxtnERR.pxtnERR_ogg;
+			res = pxtnERR.ogg;
 			goto term; //{printf("Invalid Vorbis bitstream header. \n");exit(1);}
 		case OV_EFAULT:
-			res = pxtnERR.pxtnERR_ogg;
+			res = pxtnERR.ogg;
 			goto term; //{printf("Internal logic fault; indicates a bug or heap/stack corruption. \n");exit(1);}
 		default:
 			break;
@@ -213,7 +213,7 @@ public:
 			bytes = vi.channels * 2 * smp_num;
 
 			res = p_pcm.Create(vi.channels, vi.rate, 16, smp_num);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				goto term;
 			}
 		}
@@ -234,7 +234,7 @@ public:
 		// end.
 		ov_clear(&vf);
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 
 	term:
 		return res;
@@ -289,30 +289,30 @@ public:
 	}
 
 	pxtnERR ogg_read(ref pxtnDescriptor desc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 
 		_size = desc.get_size_bytes();
 		if (!(_size)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto End;
 		}
 		_p_data = allocate!ubyte(_size);
 		if (!(_p_data)) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto End;
 		}
 		if (!desc.r(_p_data)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto End;
 		}
 		if (!_SetInformation()) {
 			goto End;
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	End:
 
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			if (_p_data) {
 				deallocate(_p_data);
 			}

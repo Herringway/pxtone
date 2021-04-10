@@ -94,30 +94,30 @@ struct pxtnOverDrive {
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(over)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		if (over.xxx) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (over.yyy) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (over.cut > TUNEOVERDRIVE_CUT_MAX || over.cut < TUNEOVERDRIVE_CUT_MIN) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (over.amp > TUNEOVERDRIVE_AMP_MAX || over.amp < TUNEOVERDRIVE_AMP_MIN) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		_cut_f = over.cut;
 		_amp_f = over.amp;
 		_group = over.group;
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 }
 

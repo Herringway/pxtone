@@ -435,7 +435,7 @@ public:
 			}
 			p_vc2.wave.points[0 .. size] = p_vc1.wave.points[0 .. size];
 
-			if (p_vc1.p_pcm.Copy(p_vc2.p_pcm) != pxtnERR.pxtnOK) {
+			if (p_vc1.p_pcm.Copy(p_vc2.p_pcm) != pxtnERR.OK) {
 				goto End;
 			}
 			if (!p_vc1.p_ptn.Copy(p_vc2.p_ptn)) {
@@ -481,7 +481,7 @@ public:
 	}
 
 	pxtnERR read(ref pxtnDescriptor desc, pxtnWOICETYPE type) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 
 		switch (type) {
 			// PCM
@@ -493,7 +493,7 @@ public:
 				p_vc = &_voices[0];
 				p_vc.type = pxtnVOICETYPE.pxtnVOICE_Sampling;
 				res = p_vc.p_pcm.read(desc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				// if under 0.005 sec, set LOOP.
@@ -509,7 +509,7 @@ public:
 			// PTV
 		case pxtnWOICETYPE.pxtnWOICE_PTV: {
 				res = PTV_Read(desc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 			}
@@ -518,14 +518,14 @@ public:
 			// PTN
 		case pxtnWOICETYPE.pxtnWOICE_PTN:
 			if (!Voice_Allocate(1)) {
-				res = pxtnERR.pxtnERR_memory;
+				res = pxtnERR.memory;
 				goto term;
 			}
 			{
 				pxtnVOICEUNIT* p_vc = &_voices[0];
 				p_vc.type = pxtnVOICETYPE.pxtnVOICE_Noise;
 				res = p_vc.p_ptn.read(desc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				_type = pxtnWOICETYPE.pxtnWOICE_PTN;
@@ -536,7 +536,7 @@ public:
 		case pxtnWOICETYPE.pxtnWOICE_OGGV:
 			version (pxINCLUDE_OGGVORBIS) {
 				if (!Voice_Allocate(1)) {
-					res = pxtnERR.pxtnERR_memory;
+					res = pxtnERR.memory;
 					goto term;
 				}
 				{
@@ -544,14 +544,14 @@ public:
 					p_vc = &_voices[0];
 					p_vc.type = pxtnVOICETYPE.pxtnVOICE_OggVorbis;
 					res = p_vc.p_oggv.ogg_read(desc);
-					if (res != pxtnERR.pxtnOK) {
+					if (res != pxtnERR.OK) {
 						goto term;
 					}
 					_type = pxtnWOICETYPE.pxtnWOICE_OGGV;
 				}
 				break;
 			} else {
-				res = pxtnERR.pxtnERR_ogg_no_supported;
+				res = pxtnERR.ogg_no_supported;
 				goto term;
 			}
 
@@ -559,7 +559,7 @@ public:
 			goto term;
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
 		return res;
@@ -654,7 +654,7 @@ public:
 	}
 
 	pxtnERR PTV_Read(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		pxtnVOICEUNIT* p_vc = null;
 		ubyte[8] code = 0;
 		int version_ = 0;
@@ -664,49 +664,49 @@ public:
 		int num = 0;
 
 		if (!p_doc.r(code[])) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (!p_doc.r(version_)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (code[0 .. 8] != _code) {
-			res = pxtnERR.pxtnERR_inv_code;
+			res = pxtnERR.inv_code;
 			goto term;
 		}
 		if (!p_doc.r(total)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (version_ > _version) {
-			res = pxtnERR.pxtnERR_fmt_new;
+			res = pxtnERR.fmt_new;
 			goto term;
 		}
 
 		// p_ptv. (5)
 		if (!p_doc.v_r(&_x3x_basic_key)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (!p_doc.v_r(&work1)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (!p_doc.v_r(&work2)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (work1 || work2) {
-			res = pxtnERR.pxtnERR_fmt_unknown;
+			res = pxtnERR.fmt_unknown;
 			goto term;
 		}
 		if (!p_doc.v_r(&num)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (!Voice_Allocate(num)) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto term;
 		}
 
@@ -714,60 +714,60 @@ public:
 			// p_ptvv. (8)
 			p_vc = &_voices[v];
 			if (!p_vc) {
-				res = pxtnERR.pxtnERR_FATAL;
+				res = pxtnERR.FATAL;
 				goto term;
 			}
 			if (!p_doc.v_r(&p_vc.basic_key)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			if (!p_doc.v_r(&p_vc.volume)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			if (!p_doc.v_r(&p_vc.pan)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			if (!p_doc.v_r(&work1)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			p_vc.tuning = *(cast(float*)&work1);
 			if (!p_doc.v_r(cast(int*)&p_vc.voice_flags)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			if (!p_doc.v_r(cast(int*)&p_vc.data_flags)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 
 			// no support.
 			if (p_vc.voice_flags & PTV_VOICEFLAG_UNCOVERED) {
-				res = pxtnERR.pxtnERR_fmt_unknown;
+				res = pxtnERR.fmt_unknown;
 				goto term;
 			}
 			if (p_vc.data_flags & PTV_DATAFLAG_UNCOVERED) {
-				res = pxtnERR.pxtnERR_fmt_unknown;
+				res = pxtnERR.fmt_unknown;
 				goto term;
 			}
 			if (p_vc.data_flags & PTV_DATAFLAG_WAVE) {
 				res = _Read_Wave(p_doc, p_vc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 			}
 			if (p_vc.data_flags & PTV_DATAFLAG_ENVELOPE) {
 				res = _Read_Envelope(p_doc, p_vc);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 			}
 		}
 		_type = pxtnWOICETYPE.pxtnWOICE_PTV;
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
 		return res;
@@ -802,23 +802,23 @@ public:
 	}
 
 	pxtnERR io_matePCM_r(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		_MATERIALSTRUCT_PCM pcm = {0};
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(pcm)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		if ((cast(int) pcm.voice_flags) & PTV_VOICEFLAG_UNCOVERED) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		if (!Voice_Allocate(1)) {
-			res = pxtnERR.pxtnERR_memory;
+			res = pxtnERR.memory;
 			goto term;
 		}
 
@@ -828,11 +828,11 @@ public:
 			p_vc.type = pxtnVOICETYPE.pxtnVOICE_Sampling;
 
 			res = p_vc.p_pcm.Create(pcm.ch, pcm.sps, pcm.bps, pcm.data_size / (pcm.bps / 8 * pcm.ch));
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			if (!p_doc.r(p_vc.p_pcm.get_p_buf_variable()[0 .. pcm.data_size])) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			_type = pxtnWOICETYPE.pxtnWOICE_PCM;
@@ -843,10 +843,10 @@ public:
 			_x3x_basic_key = pcm.basic_key;
 			_x3x_tuning = 0;
 		}
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			Voice_Release();
 		}
 		return res;
@@ -891,25 +891,25 @@ public:
 	}
 
 	pxtnERR io_matePTN_r(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		_MATERIALSTRUCT_PTN ptn = {0};
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(ptn)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		if (ptn.rrr > 1) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		} else if (ptn.rrr < 0) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		if (!Voice_Allocate(1)) {
-			return pxtnERR.pxtnERR_memory;
+			return pxtnERR.memory;
 		}
 
 		{
@@ -917,7 +917,7 @@ public:
 
 			p_vc.type = pxtnVOICETYPE.pxtnVOICE_Noise;
 			res = p_vc.p_ptn.read(p_doc);
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				goto term;
 			}
 			_type = pxtnWOICETYPE.pxtnWOICE_PTN;
@@ -929,9 +929,9 @@ public:
 		_x3x_basic_key = ptn.basic_key;
 		_x3x_tuning = 0;
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			Voice_Release();
 		}
 		return res;
@@ -978,21 +978,21 @@ public:
 	}
 
 	pxtnERR io_matePTV_r(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		_MATERIALSTRUCT_PTV ptv = {0};
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(ptv)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (ptv.rrr) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		res = PTV_Read(p_doc);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
 
@@ -1002,7 +1002,7 @@ public:
 			_x3x_tuning = 0;
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
 		return res;
@@ -1042,19 +1042,19 @@ public:
 		}
 
 		pxtnERR io_mateOGGV_r(ref pxtnDescriptor p_doc) nothrow @system {
-			pxtnERR res = pxtnERR.pxtnERR_VOID;
+			pxtnERR res = pxtnERR.VOID;
 			_MATERIALSTRUCT_OGGV mate = {0};
 			int size = 0;
 
 			if (!p_doc.r(size)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			if (!p_doc.r(mate)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 
 			if ((cast(int) mate.voice_flags) & PTV_VOICEFLAG_UNCOVERED) {
-				return pxtnERR.pxtnERR_fmt_unknown;
+				return pxtnERR.fmt_unknown;
 			}
 
 			if (!Voice_Allocate(1)) {
@@ -1078,9 +1078,9 @@ public:
 			_x3x_tuning = 0;
 			_type = pxtnWOICETYPE.pxtnWOICE_OGGV;
 
-			res = pxtnERR.pxtnOK;
+			res = pxtnERR.OK;
 		End:
-			if (res != pxtnERR.pxtnOK) {
+			if (res != pxtnERR.OK) {
 				Voice_Release();
 			}
 			return res;
@@ -1088,7 +1088,7 @@ public:
 	}
 
 	pxtnERR Tone_Ready_sample(const pxtnPulse_NoiseBuilder* ptn_bldr) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		pxtnVOICEINSTANCE* p_vi = null;
 		pxtnVOICEUNIT* p_vc = null;
 		pxtnPulse_PCM pcm_work;
@@ -1114,7 +1114,7 @@ public:
 
 				version (pxINCLUDE_OGGVORBIS) {
 					res = p_vc.p_oggv.Decode(&pcm_work);
-					if (res != pxtnERR.pxtnOK) {
+					if (res != pxtnERR.OK) {
 						goto term;
 					}
 					if (!pcm_work.Convert(ch, sps, bps)) {
@@ -1126,18 +1126,18 @@ public:
 					p_vi.p_smp_w = cast(ubyte[]) pcm_work.Devolve_SamplingBuffer();
 					break;
 				} else {
-					res = pxtnERR.pxtnERR_ogg_no_supported;
+					res = pxtnERR.ogg_no_supported;
 					goto term;
 				}
 
 			case pxtnVOICETYPE.pxtnVOICE_Sampling:
 
 				res = p_vc.p_pcm.Copy(&pcm_work);
-				if (res != pxtnERR.pxtnOK) {
+				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				if (!pcm_work.Convert(ch, sps, bps)) {
-					res = pxtnERR.pxtnERR_pcm_convert;
+					res = pxtnERR.pcm_convert;
 					goto term;
 				}
 				p_vi.smp_head_w = pcm_work.get_smp_head();
@@ -1152,7 +1152,7 @@ public:
 					int size = p_vi.smp_body_w * ch * bps / 8;
 					p_vi.p_smp_w = allocate!ubyte(size);
 					if (!(p_vi.p_smp_w)) {
-						res = pxtnERR.pxtnERR_memory;
+						res = pxtnERR.memory;
 						goto term;
 					}
 					p_vi.p_smp_w[0 .. size] = 0x00;
@@ -1163,12 +1163,12 @@ public:
 			case pxtnVOICETYPE.pxtnVOICE_Noise: {
 					pxtnPulse_PCM* p_pcm = null;
 					if (!ptn_bldr) {
-						res = pxtnERR.pxtnERR_ptn_init;
+						res = pxtnERR.ptn_init;
 						goto term;
 					}
 					p_pcm = ptn_bldr.BuildNoise(p_vc.p_ptn, ch, sps, bps);
 					if (!(p_pcm)) {
-						res = pxtnERR.pxtnERR_ptn_build;
+						res = pxtnERR.ptn_build;
 						goto term;
 					}
 					p_vi.p_smp_w = cast(ubyte[]) p_pcm.Devolve_SamplingBuffer();
@@ -1180,9 +1180,9 @@ public:
 			}
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			for (int v = 0; v < _voice_num; v++) {
 				p_vi = &_voinsts[v];
 				deallocate(p_vi.p_smp_w);
@@ -1196,7 +1196,7 @@ public:
 	}
 
 	pxtnERR Tone_Ready_envelope(int sps) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		int e = 0;
 		pxtnPOINT[] p_point = null;
 
@@ -1219,12 +1219,12 @@ public:
 
 				p_vi.p_env = allocate!ubyte(p_vi.env_size);
 				if (!p_vi.p_env) {
-					res = pxtnERR.pxtnERR_memory;
+					res = pxtnERR.memory;
 					goto term;
 				}
 				p_point = allocate!pxtnPOINT(p_enve.head_num);
 				if (!p_point) {
-					res = pxtnERR.pxtnERR_memory;
+					res = pxtnERR.memory;
 					goto term;
 				}
 
@@ -1266,12 +1266,12 @@ public:
 			}
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
 		deallocate(p_point);
 
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			for (int v = 0; v < _voice_num; v++) {
 				deallocate(_voinsts[v].p_env);
 			}
@@ -1281,15 +1281,15 @@ public:
 	}
 
 	pxtnERR Tone_Ready(const pxtnPulse_NoiseBuilder* ptn_bldr, int sps) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		res = Tone_Ready_sample(ptn_bldr);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			return res;
 		}
 		res = Tone_Ready_envelope(sps);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			return res;
 		}
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 };

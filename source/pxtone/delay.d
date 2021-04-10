@@ -87,7 +87,7 @@ public:
 	pxtnERR Tone_Ready(int beat_num, float beat_tempo, int sps) nothrow @system {
 		Tone_Release();
 
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 
 		if (_freq && _rate) {
 			_offset = 0;
@@ -110,16 +110,16 @@ public:
 			for (int c = 0; c < pxtnMAX_CHANNEL; c++) {
 				_bufs[c] = allocate!int(_smp_num);
 				if (!_bufs[c]) {
-					res = pxtnERR.pxtnERR_memory;
+					res = pxtnERR.memory;
 					goto term;
 				}
 			}
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			Tone_Release();
 		}
 
@@ -182,13 +182,13 @@ public:
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(dela)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (dela.unit >= DELAYUNIT.DELAYUNIT_num) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		_unit = cast(DELAYUNIT) dela.unit;
@@ -200,6 +200,6 @@ public:
 			_group = 0;
 		}
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 }

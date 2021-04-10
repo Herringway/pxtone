@@ -910,10 +910,10 @@ public:
 		int eve_num = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(eve_num)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		int clock = 0;
@@ -924,23 +924,23 @@ public:
 
 		for (int e = 0; e < eve_num; e++) {
 			if (!p_doc.v_r(&clock)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			if (!p_doc.r(unit_no)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			if (!p_doc.r(kind)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			if (!p_doc.v_r(&value)) {
-				return pxtnERR.pxtnERR_desc_r;
+				return pxtnERR.desc_r;
 			}
 			absolute += clock;
 			clock = absolute;
 			Linear_Add_i(clock, unit_no, kind, value);
 		}
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	int io_Read_EventNum(ref pxtnDescriptor p_doc) const nothrow @system {
@@ -1069,20 +1069,20 @@ public:
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(evnt)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		if (evnt.data_num != 2) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (evnt.event_kind >= EVENTKIND_NUM) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 		if (bCheckRRR && evnt.rrr) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		absolute = 0;
@@ -1101,17 +1101,17 @@ public:
 			}
 		}
 		if (e != evnt.event_num) {
-			return pxtnERR.pxtnERR_desc_broken;
+			return pxtnERR.desc_broken;
 		}
 
 		x4x_Read_NewKind();
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	pxtnERR io_Read_x4x_EventNum(ref pxtnDescriptor p_doc, int* p_num) const nothrow @system {
 		if (!p_num) {
-			return pxtnERR.pxtnERR_param;
+			return pxtnERR.param;
 		}
 
 		_x4x_EVENTSTRUCT evnt = {0};
@@ -1120,15 +1120,15 @@ public:
 		int size = 0;
 
 		if (!p_doc.r(size)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(evnt)) {
-			return pxtnERR.pxtnERR_desc_r;
+			return pxtnERR.desc_r;
 		}
 
 		// support only 2
 		if (evnt.data_num != 2) {
-			return pxtnERR.pxtnERR_fmt_unknown;
+			return pxtnERR.fmt_unknown;
 		}
 
 		for (e = 0; e < cast(int) evnt.event_num; e++) {
@@ -1140,11 +1140,11 @@ public:
 			}
 		}
 		if (e != evnt.event_num) {
-			return pxtnERR.pxtnERR_desc_broken;
+			return pxtnERR.desc_broken;
 		}
 
 		*p_num = evnt.event_num;
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 }

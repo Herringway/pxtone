@@ -325,7 +325,7 @@ public:
 		Release();
 
 		if (bps != 8 && bps != 16) {
-			return pxtnERR.pxtnERR_pcm_unknown;
+			return pxtnERR.pcm_unknown;
 		}
 
 		int size = 0;
@@ -343,7 +343,7 @@ public:
 
 		_p_smp = allocate!ubyte(size);
 		if (!(_p_smp)) {
-			return pxtnERR.pxtnERR_memory;
+			return pxtnERR.memory;
 		}
 
 		if (_bps == 8) {
@@ -352,7 +352,7 @@ public:
 			_p_smp[0 .. size] = 0;
 		}
 
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	void Release() nothrow @system {
@@ -369,7 +369,7 @@ public:
 	}
 
 	pxtnERR read(ref pxtnDescriptor doc) nothrow @system {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		char[16] buf = 0;
 		uint size = 0;
 		WAVEFORMATCHUNK format = {0};
@@ -378,76 +378,76 @@ public:
 
 		// 'RIFFxxxxWAVEfmt '
 		if (!doc.r(buf[])) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 
 		if (buf[0] != 'R' || buf[1] != 'I' || buf[2] != 'F' || buf[3] != 'F' || buf[8] != 'W' || buf[9] != 'A' || buf[10] != 'V' || buf[11] != 'E' || buf[12] != 'f' || buf[13] != 'm' || buf[14] != 't' || buf[15] != ' ') {
-			res = pxtnERR.pxtnERR_pcm_unknown;
+			res = pxtnERR.pcm_unknown;
 			goto term;
 		}
 
 		// read format.
 		if (!doc.r(size)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 		if (!doc.r(format)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 
 		if (format.formatID != 0x0001) {
-			res = pxtnERR.pxtnERR_pcm_unknown;
+			res = pxtnERR.pcm_unknown;
 			goto term;
 		}
 		if (format.ch != 1 && format.ch != 2) {
-			res = pxtnERR.pxtnERR_pcm_unknown;
+			res = pxtnERR.pcm_unknown;
 			goto term;
 		}
 		if (format.bps != 8 && format.bps != 16) {
-			res = pxtnERR.pxtnERR_pcm_unknown;
+			res = pxtnERR.pcm_unknown;
 			goto term;
 		}
 
 		// find 'data'
 		if (!doc.seek(pxtnSEEK.pxtnSEEK_set, 12)) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		} // skip 'RIFFxxxxWAVE'
 
 		while (1) {
 			if (!doc.r(buf[0 .. 4])) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			if (!doc.r(size)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 			if (buf[0] == 'd' && buf[1] == 'a' && buf[2] == 't' && buf[3] == 'a') {
 				break;
 			}
 			if (!doc.seek(pxtnSEEK.pxtnSEEK_cur, size)) {
-				res = pxtnERR.pxtnERR_desc_r;
+				res = pxtnERR.desc_r;
 				goto term;
 			}
 		}
 
 		res = Create(format.ch, format.sps, format.bps, size * 8 / format.bps / format.ch);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			goto term;
 		}
 
 		if (!doc.r(_p_smp[0 .. size])) {
-			res = pxtnERR.pxtnERR_desc_r;
+			res = pxtnERR.desc_r;
 			goto term;
 		}
 
-		res = pxtnERR.pxtnOK;
+		res = pxtnERR.OK;
 	term:
 
-		if (res != pxtnERR.pxtnOK && _p_smp) {
+		if (res != pxtnERR.OK && _p_smp) {
 			deallocate(_p_smp);
 			_p_smp = null;
 		}
@@ -614,18 +614,18 @@ public:
 	}
 
 	pxtnERR Copy(pxtnPulse_PCM* p_dst) const nothrow {
-		pxtnERR res = pxtnERR.pxtnERR_VOID;
+		pxtnERR res = pxtnERR.VOID;
 		if (!_p_smp) {
 			p_dst.Release();
-			return pxtnERR.pxtnOK;
+			return pxtnERR.OK;
 		}
 		res = p_dst.Create(_ch, _sps, _bps, _smp_body);
-		if (res != pxtnERR.pxtnOK) {
+		if (res != pxtnERR.OK) {
 			return res;
 		}
 		const size = (_smp_head + _smp_body + _smp_tail) * _ch * _bps / 8;
 		p_dst._p_smp[0 .. size] =_p_smp[0 .. size];
-		return pxtnERR.pxtnOK;
+		return pxtnERR.OK;
 	}
 
 	bool Copy_(pxtnPulse_PCM* p_dst, int start, int end) const nothrow {
@@ -642,7 +642,7 @@ public:
 		size = (end - start) * _ch * _bps / 8;
 		offset = start * _ch * _bps / 8;
 
-		if (p_dst.Create(_ch, _sps, _bps, end - start) != pxtnERR.pxtnOK) {
+		if (p_dst.Create(_ch, _sps, _bps, end - start) != pxtnERR.OK) {
 			return false;
 		}
 

@@ -30,12 +30,12 @@ bool _load_ptcop(ref pxtnService pxtn, void[] data, out pxtnERR p_pxtn_err) noth
 	}
 
 	p_pxtn_err = pxtn.read(*desc);
-	if (p_pxtn_err != pxtnERR.pxtnOK) {
+	if (p_pxtn_err != pxtnERR.OK) {
 		return false;
 	}
 
 	p_pxtn_err = pxtn.tones_ready();
-	if (p_pxtn_err != pxtnERR.pxtnOK) {
+	if (p_pxtn_err != pxtnERR.OK) {
 		return false;
 	}
 
@@ -78,7 +78,7 @@ int main(string[] args) {
 	}
 
 	bool okay = false;
-	pxtnERR pxtn_err = pxtnERR.pxtnERR_VOID;
+	pxtnERR pxtn_err = pxtnERR.VOID;
 
 	auto filePath = args[1];
 	auto file = read(args[1]);
@@ -92,7 +92,7 @@ int main(string[] args) {
 		deallocate(pxtn);
 	}
 	pxtn_err = pxtn.init_();
-	if (pxtn_err != pxtnERR.pxtnOK) {
+	if (pxtn_err != pxtnERR.OK) {
 		return -1;
 	}
 	if (!pxtn.set_destination_quality(_CHANNEL_NUM, _SAMPLE_PER_SECOND)) {

@@ -587,7 +587,7 @@ public:
 		smp_num = cast(int)(cast(double) p_noise.get_smp_num_44k() / (44100.0 / sps));
 
 		p_pcm = allocate!pxtnPulse_PCM();
-		if (p_pcm.Create(ch, sps, bps, smp_num) != pxtnERR.pxtnOK) {
+		if (p_pcm.Create(ch, sps, bps, smp_num) != pxtnERR.OK) {
 			goto End;
 		}
 		p = cast(ubyte*) p_pcm.get_p_buf_variable();
