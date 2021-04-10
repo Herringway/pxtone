@@ -6,8 +6,6 @@ import pxtone.error;
 import pxtone.descriptor;
 import pxtone.mem;
 
-import core.stdc.string;
-
 struct WAVEFORMATCHUNK {
 	ushort formatID; // PCM:0x0001
 	ushort ch; //
@@ -456,7 +454,7 @@ public:
 		return res;
 	}
 
-	bool write(ref pxtnDescriptor doc, const char* pstrLIST) const nothrow @system {
+	bool write(ref pxtnDescriptor doc, const char[] pstrLIST) const nothrow @system {
 		if (!_p_smp) {
 			return false;
 		}
@@ -479,7 +477,7 @@ public:
 		char[4] tag_LIST = ['L', 'I', 'S', 'T'];
 		char[8] tag_INFO = ['I', 'N', 'F', 'O', 'I', 'S', 'F', 'T'];
 
-		if (pstrLIST && strlen(pstrLIST)) {
+		if (pstrLIST && pstrLIST.length) {
 			bText = true;
 		} else {
 			bText = false;
@@ -503,7 +501,7 @@ public:
 		riff_size += 8; // 'data'
 
 		if (bText) {
-			isft_size = cast(uint) strlen(pstrLIST);
+			isft_size = cast(uint) pstrLIST.length;
 			list_size = 4 + 4 + 4 + isft_size; // "INFO" + "ISFT" + size + ver_Text;
 			riff_size += 8 + list_size; // 'LIST'
 		} else {
@@ -542,7 +540,7 @@ public:
 			if (!doc.w_asfile(&isft_size, uint.sizeof, 1)) {
 				goto End;
 			}
-			if (!doc.w_asfile(pstrLIST, char.sizeof, isft_size)) {
+			if (!doc.w_asfile(pstrLIST.ptr, char.sizeof, isft_size)) {
 				goto End;
 			}
 		}
