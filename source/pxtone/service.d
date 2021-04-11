@@ -1290,7 +1290,7 @@ private:
 			return false;
 		}
 		for (int u = 0; u < _unit_num; u++) {
-			pxtnUnit* p_u = Unit_Get_variable(u);
+			pxtnUnit* p_u = Unit_Get(u);
 			p_u.Tone_Init();
 			_moo_ResetVoiceOn(p_u, EVENTDEFAULT_VOICENO);
 		}
@@ -2087,17 +2087,7 @@ public:
 		return _b_init ? _woice_max : 0;
 	}
 
-	const(pxtnWoice)* Woice_Get(int idx) const nothrow @system {
-		if (!_b_init) {
-			return null;
-		}
-		if (idx < 0 || idx >= _woice_num) {
-			return null;
-		}
-		return _woices[idx];
-	}
-
-	pxtnWoice* Woice_Get_variable(int idx) nothrow @system {
+	inout(pxtnWoice)* Woice_Get(int idx) inout nothrow @system {
 		if (!_b_init) {
 			return null;
 		}
@@ -2202,17 +2192,7 @@ public:
 		return _b_init ? _unit_max : 0;
 	}
 
-	const(pxtnUnit)* Unit_Get(int idx) const nothrow @system {
-		if (!_b_init) {
-			return null;
-		}
-		if (idx < 0 || idx >= _unit_num) {
-			return null;
-		}
-		return _units[idx];
-	}
-
-	pxtnUnit* Unit_Get_variable(int idx) nothrow @system {
+	inout(pxtnUnit)* Unit_Get(int idx) inout nothrow @system {
 		if (!_b_init) {
 			return null;
 		}

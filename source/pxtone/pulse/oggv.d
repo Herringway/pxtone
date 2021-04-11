@@ -220,7 +220,7 @@ public:
 		// decode..
 		{
 			int ret = 0;
-			ubyte* p = cast(ubyte*) p_pcm.get_p_buf_variable();
+			ubyte* p = p_pcm.get_p_buf().ptr;
 			do {
 				ret = ov_read(&vf, cast(byte*) pcmout.ptr, 4096, 0, 2, 1, &current_section);
 				if (ret > 0) {

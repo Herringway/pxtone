@@ -287,14 +287,7 @@ public:
 		return _type;
 	}
 
-	const(pxtnVOICEUNIT)* get_voice(int idx) const nothrow @system {
-		if (idx < 0 || idx >= _voice_num) {
-			return null;
-		}
-		return &_voices[idx];
-	}
-
-	pxtnVOICEUNIT* get_voice_variable(int idx) nothrow @system {
+	inout(pxtnVOICEUNIT)* get_voice(int idx) inout nothrow @system {
 		if (idx < 0 || idx >= _voice_num) {
 			return null;
 		}
@@ -827,7 +820,7 @@ public:
 			if (res != pxtnERR.OK) {
 				goto term;
 			}
-			if (!p_doc.r(p_vc.p_pcm.get_p_buf_variable()[0 .. pcm.data_size])) {
+			if (!p_doc.r(p_vc.p_pcm.get_p_buf()[0 .. pcm.data_size])) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}

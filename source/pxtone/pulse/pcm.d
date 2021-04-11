@@ -689,12 +689,7 @@ public:
 		return (_smp_head + _smp_body + _smp_tail) * _ch * _bps / 8;
 	}
 
-	const(void)[] get_p_buf() const nothrow @safe {
+	inout(ubyte)[] get_p_buf() inout nothrow @safe {
 		return _p_smp;
 	}
-
-	ubyte[] get_p_buf_variable() nothrow @system {
-		return _p_smp;
-	}
-
 }

@@ -590,7 +590,7 @@ public:
 		if (p_pcm.Create(ch, sps, bps, smp_num) != pxtnERR.OK) {
 			goto End;
 		}
-		p = cast(ubyte*) p_pcm.get_p_buf_variable();
+		p = p_pcm.get_p_buf().ptr;
 
 		for (int s = 0; s < smp_num; s++) {
 			for (int c = 0; c < ch; c++) {
