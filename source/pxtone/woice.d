@@ -287,21 +287,21 @@ public:
 		return _type;
 	}
 
-	inout(pxtnVOICEUNIT)* get_voice(int idx) inout nothrow @system {
+	inout(pxtnVOICEUNIT)* get_voice(int idx) inout nothrow @safe {
 		if (idx < 0 || idx >= _voice_num) {
 			return null;
 		}
 		return &_voices[idx];
 	}
 
-	const(pxtnVOICEINSTANCE)* get_instance(int idx) const nothrow @system {
+	const(pxtnVOICEINSTANCE)* get_instance(int idx) const nothrow @safe {
 		if (idx < 0 || idx >= _voice_num) {
 			return null;
 		}
 		return &_voinsts[idx];
 	}
 
-	bool set_name_buf(const(char)[] name) nothrow @system {
+	bool set_name_buf(const(char)[] name) nothrow @safe {
 		if (!name || name.length < 0 || name.length > pxtnMAX_TUNEWOICENAME) {
 			return false;
 		}
@@ -313,7 +313,7 @@ public:
 		return true;
 	}
 
-	const(char)[] get_name_buf() const return nothrow @system {
+	const(char)[] get_name_buf() const return nothrow @safe {
 		return _name_buf[0 .. _name_size];
 	}
 

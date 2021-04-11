@@ -1255,7 +1255,7 @@ private:
 	// Units   ////////////////////////////////////
 	////////////////////////////////////////////////
 
-	bool _moo_ResetVoiceOn(pxtnUnit* p_u, int w) const nothrow @system {
+	bool _moo_ResetVoiceOn(pxtnUnit* p_u, int w) const nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -1285,7 +1285,7 @@ private:
 		return true;
 	}
 
-	bool _moo_InitUnitTone() nothrow @system {
+	bool _moo_InitUnitTone() nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -2087,7 +2087,7 @@ public:
 		return _b_init ? _woice_max : 0;
 	}
 
-	inout(pxtnWoice)* Woice_Get(int idx) inout nothrow @system {
+	inout(pxtnWoice)* Woice_Get(int idx) inout nothrow @safe {
 		if (!_b_init) {
 			return null;
 		}
@@ -2192,7 +2192,7 @@ public:
 		return _b_init ? _unit_max : 0;
 	}
 
-	inout(pxtnUnit)* Unit_Get(int idx) inout nothrow @system {
+	inout(pxtnUnit)* Unit_Get(int idx) inout nothrow @safe {
 		if (!_b_init) {
 			return null;
 		}

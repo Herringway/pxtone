@@ -508,7 +508,7 @@ public:
 		return b_ret;
 	}
 
-	int Compare(const(pxtnPulse_Noise)* p_src) const nothrow @system {
+	int Compare(const(pxtnPulse_Noise)* p_src) const nothrow @safe {
 		if (!p_src) {
 			return -1;
 		}
@@ -552,7 +552,7 @@ public:
 		return 0;
 	}
 
-	void Fix() nothrow @system {
+	void Fix() nothrow @safe {
 		pxNOISEDESIGN_UNIT* p_unit;
 		int i, e;
 
@@ -606,7 +606,7 @@ public:
 		return cast(float) _smp_num_44k / 44100;
 	}
 
-	pxNOISEDESIGN_UNIT* get_unit(int u) nothrow @system {
+	pxNOISEDESIGN_UNIT* get_unit(int u) nothrow @safe {
 		if (!_units || u < 0 || u >= _unit_num) {
 			return null;
 		}

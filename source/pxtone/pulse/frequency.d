@@ -102,7 +102,7 @@ struct pxtnPulse_Frequency {
 		return b_ret;
 	}
 
-	float Get(int key) const nothrow @system {
+	float Get(int key) const nothrow @safe {
 		int i;
 
 		i = (key + 0x6000) * _FREQUENCY_PER_KEY / 0x100;
@@ -114,7 +114,7 @@ struct pxtnPulse_Frequency {
 		return _freq_table[i];
 	}
 
-	float Get2(int key) nothrow @system {
+	float Get2(int key) nothrow @safe {
 		int i = key >> 4;
 		if (i < 0) {
 			i = 0;
