@@ -256,7 +256,7 @@ private:
 	int _voice_num;
 
 	char[pxtnMAX_TUNEWOICENAME + 1] _name_buf;
-	int _name_size;
+	uint _name_size;
 
 	pxtnWOICETYPE _type = pxtnWOICETYPE.None;
 	pxtnVOICEUNIT[] _voices;
@@ -308,23 +308,20 @@ public:
 		return &_voinsts[idx];
 	}
 
-	bool set_name_buf(const(char)* name, int buf_size) nothrow @system {
-		if (!name || buf_size < 0 || buf_size > pxtnMAX_TUNEWOICENAME) {
+	bool set_name_buf(const(char)[] name) nothrow @system {
+		if (!name || name.length < 0 || name.length > pxtnMAX_TUNEWOICENAME) {
 			return false;
 		}
-		_name_buf[0 .. $] = 0;
-		if (buf_size) {
-			_name_buf[0 ..buf_size] = name[0 .. buf_size];
+		_name_buf[] = 0;
+		_name_size = cast(uint)name.length;
+		if (name.length) {
+			_name_buf[0 .. name.length] = name;
 		}
-		_name_size = buf_size;
 		return true;
 	}
 
-	const(char)[] get_name_buf(int* p_buf_size) const return nothrow @system {
-		if (p_buf_size) {
-			*p_buf_size = _name_size;
-		}
-		return _name_buf;
+	const(char)[] get_name_buf() const return nothrow @system {
+		return _name_buf[0 .. _name_size];
 	}
 
 	bool is_name_buf() const nothrow @safe {
@@ -397,8 +394,7 @@ public:
 
 		p_dst._type = _type;
 
-		p_dst._name_buf[0 .. _name_buf.sizeof] = _name_buf[0 .. $];
-		p_dst._name_size = _name_size;
+		p_dst._name_buf = _name_buf;
 
 		for (v = 0; v < _voice_num; v++) {
 			p_vc1 = &_voices[v];

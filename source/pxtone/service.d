@@ -96,7 +96,7 @@ enum _enum_Tag {
 
 };
 
-private _enum_Tag _CheckTagCode(const char* p_code) nothrow @system {
+private _enum_Tag _CheckTagCode(const char[] p_code) nothrow @system {
 	if (p_code[0 .. _CODESIZE] == _code_antiOPER) {
 		return _enum_Tag._TAG_antiOPER;
 	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PROJ) {
@@ -150,13 +150,13 @@ private _enum_Tag _CheckTagCode(const char* p_code) nothrow @system {
 struct _ASSIST_WOICE {
 	ushort woice_index;
 	ushort rrr;
-	char[pxtnMAX_TUNEWOICENAME] name;
+	char[pxtnMAX_TUNEWOICENAME] name = 0;
 }
 
 struct _ASSIST_UNIT {
 	ushort unit_index;
 	ushort rrr;
-	char[pxtnMAX_TUNEUNITNAME] name;
+	char[pxtnMAX_TUNEUNITNAME] name = 0;
 }
 
 struct _NUM_UNIT {
@@ -172,7 +172,7 @@ enum _MAX_PROJECTNAME_x1x = 16;
 
 // project (36byte) ================
 struct _x1x_PROJECT {
-	char[_MAX_PROJECTNAME_x1x] x1x_name;
+	char[_MAX_PROJECTNAME_x1x] x1x_name = 0;
 
 	float x1x_beat_tempo;
 	ushort x1x_beat_clock;
@@ -304,7 +304,7 @@ private:
 				goto term;
 			}
 
-			_enum_Tag tag = _CheckTagCode(code.ptr);
+			_enum_Tag tag = _CheckTagCode(code);
 			switch (tag) {
 			case _enum_Tag._TAG_antiOPER:
 				res = pxtnERR.anti_opreation;
@@ -684,14 +684,13 @@ private:
 
 		_ASSIST_WOICE assi = {0};
 		int size;
-		int name_size = 0;
-		const char[] p_name = _woices[idx].get_name_buf(&name_size);
+		const char[] p_name = _woices[idx].get_name_buf();
 
-		if (name_size > pxtnMAX_TUNEWOICENAME) {
+		if (p_name.length > pxtnMAX_TUNEWOICENAME) {
 			return false;
 		}
 
-		assi.name[0 .. name_size] = p_name[0 .. name_size];
+		assi.name[0 .. p_name.length] = p_name;
 		assi.woice_index = cast(ushort) idx;
 
 		size = _ASSIST_WOICE.sizeof;
@@ -729,7 +728,7 @@ private:
 			return pxtnERR.fmt_unknown;
 		}
 
-		if (!_woices[assi.woice_index].set_name_buf(assi.name.ptr, pxtnMAX_TUNEWOICENAME)) {
+		if (!_woices[assi.woice_index].set_name_buf(assi.name)) {
 			return pxtnERR.FATAL;
 		}
 
@@ -906,7 +905,7 @@ private:
 			} catch (Exception) { //This will never actually happen...
 				return false;
 			}
-			_woices[i].set_name_buf(name.ptr, 8);
+			_woices[i].set_name_buf(name);
 		}
 		return true;
 	}
@@ -1136,7 +1135,7 @@ private:
 				goto term;
 			}
 
-			switch (_CheckTagCode(code.ptr)) {
+			switch (_CheckTagCode(code)) {
 			case _enum_Tag._TAG_Event_V5:
 				count += evels.io_Read_EventNum(p_doc);
 				break;
