@@ -583,7 +583,7 @@ public:
 		return true;
 	}
 
-	bool Convert_Volume(float v) nothrow {
+	bool Convert_Volume(float v) nothrow @safe {
 		if (!_p_smp) {
 			return false;
 		}
@@ -592,18 +592,18 @@ public:
 
 		switch (_bps) {
 		case 8: {
-				ubyte* p8 = cast(ubyte*) _p_smp;
+				ubyte[] p8 = _p_smp;
 				for (int i = 0; i < sample_num; i++) {
-					*p8 = cast(ubyte)(((cast(float)(*p8) - 128) * v) + 128);
-					p8++;
+					p8[0] = cast(ubyte)(((cast(float)(p8[0]) - 128) * v) + 128);
+					p8 = p8[1 .. $];
 				}
 				break;
 			}
 		case 16: {
-				short* p16 = cast(short*) _p_smp;
+				short[] p16 = cast(short[]) _p_smp;
 				for (int i = 0; i < sample_num; i++) {
-					*p16 = cast(short)(cast(float)*p16 * v);
-					p16++;
+					p16[0] = cast(short)(cast(float)p16[0] * v);
+					p16 = p16[1 .. $];
 				}
 				break;
 			}
