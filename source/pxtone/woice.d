@@ -320,11 +320,11 @@ public:
 		return true;
 	}
 
-	const(char)* get_name_buf(int* p_buf_size) const return nothrow @system {
+	const(char)[] get_name_buf(int* p_buf_size) const return nothrow @system {
 		if (p_buf_size) {
 			*p_buf_size = _name_size;
 		}
-		return _name_buf.ptr;
+		return _name_buf;
 	}
 
 	bool is_name_buf() const nothrow @safe {

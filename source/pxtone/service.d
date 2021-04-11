@@ -685,7 +685,7 @@ private:
 		_ASSIST_WOICE assi = {0};
 		int size;
 		int name_size = 0;
-		const char* p_name = _woices[idx].get_name_buf(&name_size);
+		const char[] p_name = _woices[idx].get_name_buf(&name_size);
 
 		if (name_size > pxtnMAX_TUNEWOICENAME) {
 			return false;

@@ -128,7 +128,7 @@ int main(string[] args) {
 		import std.algorithm : map;
 		import std.range : iota;
 		auto woice = pxtn.Woice_Get(voice);
-		writefln!"Voice %d \"%s\": %s - %s"(voice, woice.get_name_buf(null).fromStringz, woice.get_type(), iota(woice.get_voice_num()).map!(x => woice.get_voice(x).type));
+		writefln!"Voice %d \"%s\": %s - %s"(voice, woice.get_name_buf(null), woice.get_type(), iota(woice.get_voice_num()).map!(x => woice.get_voice(x).type));
 	}
 
 	writeln("Press enter to exit");
