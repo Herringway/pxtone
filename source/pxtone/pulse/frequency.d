@@ -60,7 +60,7 @@ struct pxtnPulse_Frequency {
 
 	bool Init() nothrow @system {
 		bool b_ret = false;
-		double[_OCTAVE_NUM] oct_table = [0.00390625, //0  -8
+		static immutable double[_OCTAVE_NUM] oct_table = [0.00390625, //0  -8
 			0.0078125, //1  -7
 			0.015625, //2  -6
 			0.03125, //3  -5

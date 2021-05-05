@@ -102,7 +102,7 @@ int _DefaultKindValue(ubyte kind) nothrow @system {
 }
 
 int _ComparePriority(ubyte kind1, ubyte kind2) nothrow @safe {
-	static const int[EVENTKIND.NUM] priority_table = [0, // EVENTKIND.NULL  = 0
+	static immutable int[EVENTKIND.NUM] priority_table = [0, // EVENTKIND.NULL  = 0
 		50, // EVENTKIND.ON
 		40, // EVENTKIND.KEY
 		60, // EVENTKIND.PAN_VOLUME
