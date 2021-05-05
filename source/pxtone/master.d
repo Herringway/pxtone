@@ -286,31 +286,31 @@ public:
 			clock = absolute;
 
 			switch (status) {
-			case EVENTKIND_BEATCLOCK:
+			case EVENTKIND.BEATCLOCK:
 				beat_clock = volume;
 				if (clock) {
 					return pxtnERR.desc_broken;
 				}
 				break;
-			case EVENTKIND_BEATTEMPO:
+			case EVENTKIND.BEATTEMPO:
 				beat_tempo = *(cast(float*)&volume);
 				if (clock) {
 					return pxtnERR.desc_broken;
 				}
 				break;
-			case EVENTKIND_BEATNUM:
+			case EVENTKIND.BEATNUM:
 				beat_num = volume;
 				if (clock) {
 					return pxtnERR.desc_broken;
 				}
 				break;
-			case EVENTKIND_REPEAT:
+			case EVENTKIND.REPEAT:
 				repeat_clock = clock;
 				if (volume) {
 					return pxtnERR.desc_broken;
 				}
 				break;
-			case EVENTKIND_LAST:
+			case EVENTKIND.LAST:
 				last_clock = clock;
 				if (volume) {
 					return pxtnERR.desc_broken;

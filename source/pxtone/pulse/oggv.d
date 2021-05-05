@@ -407,4 +407,4 @@ public:
 
 		return true;
 	}
-};
+}

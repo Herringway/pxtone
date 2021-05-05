@@ -18,10 +18,10 @@ enum _smp_num_rand = 44100;
 enum _smp_num = cast(int)(_BASIC_SPS / _BASIC_FREQUENCY);
 
 enum _RANDOMTYPE {
-	_RANDOM_None = 0,
-	_RANDOM_Saw,
-	_RANDOM_Rect,
-};
+	None = 0,
+	Saw,
+	Rect,
+}
 
 struct _OSCILLATOR {
 	double incriment;
@@ -59,21 +59,21 @@ void _set_ocsillator(_OSCILLATOR* p_to, pxNOISEDESIGN_OSCILLATOR* p_from, int sp
 	const(short)[] p;
 
 	switch (p_from.type) {
-	case pxWAVETYPE.pxWAVETYPE_Random:
-		p_to.ran_type = _RANDOMTYPE._RANDOM_Saw;
+	case pxWAVETYPE.Random:
+		p_to.ran_type = _RANDOMTYPE.Saw;
 		break;
-	case pxWAVETYPE.pxWAVETYPE_Random2:
-		p_to.ran_type = _RANDOMTYPE._RANDOM_Rect;
+	case pxWAVETYPE.Random2:
+		p_to.ran_type = _RANDOMTYPE.Rect;
 		break;
 	default:
-		p_to.ran_type = _RANDOMTYPE._RANDOM_None;
+		p_to.ran_type = _RANDOMTYPE.None;
 		break;
 	}
 
 	p_to.incriment = (_BASIC_SPS / sps) * (p_from.freq / _BASIC_FREQUENCY);
 
 	// offset
-	if (p_to.ran_type != _RANDOMTYPE._RANDOM_None) {
+	if (p_to.ran_type != _RANDOMTYPE.None) {
 		p_to.offset = 0;
 	} else {
 		p_to.offset = cast(double) _smp_num * (p_from.offset / 100);
@@ -98,7 +98,7 @@ void _incriment(_OSCILLATOR* p_osc, double incriment, const(short)[] p_tbl_rand)
 			p_osc.offset = 0;
 		}
 
-		if (p_osc.ran_type != _RANDOMTYPE._RANDOM_None) {
+		if (p_osc.ran_type != _RANDOMTYPE.None) {
 			const(short)[] p = p_tbl_rand;
 			p_osc.rdm_start = p[p_osc.rdm_index];
 			p_osc.rdm_index++;
@@ -113,7 +113,7 @@ void _incriment(_OSCILLATOR* p_osc, double incriment, const(short)[] p_tbl_rand)
 struct pxtnPulse_NoiseBuilder {
 private:
 	bool _b_init;
-	short[][pxWAVETYPE.pxWAVETYPE_num] _p_tables;
+	short[][pxWAVETYPE.num] _p_tables;
 	int[2] _rand_buf;
 
 	void _random_reset() nothrow @safe {
@@ -143,7 +143,7 @@ public:
 	 ~this() nothrow @system {
 		_b_init = false;
 		deallocate(_freq);
-		for (int i = 0; i < pxWAVETYPE.pxWAVETYPE_num; i++) {
+		for (int i = 0; i < pxWAVETYPE.num; i++) {
 			deallocate(_p_tables[i]);
 		}
 	}
@@ -174,77 +174,77 @@ public:
 			goto End;
 		}
 
-		for (s = 0; s < pxWAVETYPE.pxWAVETYPE_num; s++) {
+		for (s = 0; s < pxWAVETYPE.num; s++) {
 			_p_tables[s] = null;
 		}
 
-		_p_tables[pxWAVETYPE.pxWAVETYPE_None] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_None]) {
+		_p_tables[pxWAVETYPE.None] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.None]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Sine] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Sine]) {
+		_p_tables[pxWAVETYPE.Sine] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Sine]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw]) {
+		_p_tables[pxWAVETYPE.Saw] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Saw]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect]) {
+		_p_tables[pxWAVETYPE.Rect] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Rect]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Random] = allocate!short(_smp_num_rand);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Random]) {
+		_p_tables[pxWAVETYPE.Random] = allocate!short(_smp_num_rand);
+		if (!_p_tables[pxWAVETYPE.Random]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw2] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw2]) {
+		_p_tables[pxWAVETYPE.Saw2] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Saw2]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect2] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect2]) {
+		_p_tables[pxWAVETYPE.Rect2] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Rect2]) {
 			goto End;
 		}
 
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Tri] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Tri]) {
+		_p_tables[pxWAVETYPE.Tri] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Tri]) {
 			goto End;
 		}
-		//_p_tables[pxWAVETYPE.pxWAVETYPE_Random2] = allocate!short(_smp_num_rand);
-		//if(!_p_tables[pxWAVETYPE.pxWAVETYPE_Random2]) {
+		//_p_tables[pxWAVETYPE.Random2] = allocate!short(_smp_num_rand);
+		//if(!_p_tables[pxWAVETYPE.Random2]) {
 		//	goto End;
 		//}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect3] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect3]) {
+		_p_tables[pxWAVETYPE.Rect3] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Rect3]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect4] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect4]) {
+		_p_tables[pxWAVETYPE.Rect4] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Rect4]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect8] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect8]) {
+		_p_tables[pxWAVETYPE.Rect8] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Rect8]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Rect16] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Rect16]) {
+		_p_tables[pxWAVETYPE.Rect16] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Rect16]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw3] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw3]) {
+		_p_tables[pxWAVETYPE.Saw3] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Saw3]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw4] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw4]) {
+		_p_tables[pxWAVETYPE.Saw4] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Saw4]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw6] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw6]) {
+		_p_tables[pxWAVETYPE.Saw6] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Saw6]) {
 			goto End;
 		}
-		_p_tables[pxWAVETYPE.pxWAVETYPE_Saw8] = allocate!short(_smp_num);
-		if (!_p_tables[pxWAVETYPE.pxWAVETYPE_Saw8]) {
+		_p_tables[pxWAVETYPE.Saw8] = allocate!short(_smp_num);
+		if (!_p_tables[pxWAVETYPE.Saw8]) {
 			goto End;
 		}
 
@@ -252,7 +252,7 @@ public:
 
 		// sine --
 		osci.ReadyGetSample(overtones_sine[], 1, 128, _smp_num, 0);
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Sine];
+		p = _p_tables[pxWAVETYPE.Sine];
 		for (s = 0; s < _smp_num; s++) {
 			work = osci.GetOneSample_Overtone(s);
 			if (work > 1.0) {
@@ -266,7 +266,7 @@ public:
 		}
 
 		// saw down --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Saw];
+		p = _p_tables[pxWAVETYPE.Saw];
 		work = _SAMPLING_TOP + _SAMPLING_TOP;
 		for (s = 0; s < _smp_num; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP - work * s / _smp_num);
@@ -274,7 +274,7 @@ public:
 		}
 
 		// rect --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Rect];
+		p = _p_tables[pxWAVETYPE.Rect];
 		for (s = 0; s < _smp_num / 2; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP);
 			p = p[1 ..$];
@@ -285,7 +285,7 @@ public:
 		}
 
 		// random --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Random];
+		p = _p_tables[pxWAVETYPE.Random];
 		_random_reset();
 		for (s = 0; s < _smp_num_rand; s++) {
 			p[0] = _random_get();
@@ -294,7 +294,7 @@ public:
 
 		// saw2 --
 		osci.ReadyGetSample(overtones_saw2[], 16, 128, _smp_num, 0);
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Saw2];
+		p = _p_tables[pxWAVETYPE.Saw2];
 		for (s = 0; s < _smp_num; s++) {
 			work = osci.GetOneSample_Overtone(s);
 			if (work > 1.0) {
@@ -309,7 +309,7 @@ public:
 
 		// rect2 --
 		osci.ReadyGetSample(overtones_rect2[], 8, 128, _smp_num, 0);
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Rect2];
+		p = _p_tables[pxWAVETYPE.Rect2];
 		for (s = 0; s < _smp_num; s++) {
 			work = osci.GetOneSample_Overtone(s);
 			if (work > 1.0) {
@@ -324,7 +324,7 @@ public:
 
 		// Triangle --
 		osci.ReadyGetSample(coodi_tri[], 4, 128, _smp_num, _smp_num);
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Tri];
+		p = _p_tables[pxWAVETYPE.Tri];
 		for (s = 0; s < _smp_num; s++) {
 			work = osci.GetOneSample_Coodinate(s);
 			if (work > 1.0) {
@@ -340,7 +340,7 @@ public:
 		// Random2  -- x
 
 		// Rect-3  --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Rect3];
+		p = _p_tables[pxWAVETYPE.Rect3];
 		for (s = 0; s < _smp_num / 3; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP);
 			p = p[1 .. $];
@@ -350,7 +350,7 @@ public:
 			p = p[1 .. $];
 		}
 		// Rect-4   --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Rect4];
+		p = _p_tables[pxWAVETYPE.Rect4];
 		for (s = 0; s < _smp_num / 4; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP);
 			p = p[1 .. $];
@@ -360,7 +360,7 @@ public:
 			p = p[1 .. $];
 		}
 		// Rect-8   --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Rect8];
+		p = _p_tables[pxWAVETYPE.Rect8];
 		for (s = 0; s < _smp_num / 8; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP);
 			p = p[1 .. $];
@@ -370,7 +370,7 @@ public:
 			p = p[1 .. $];
 		}
 		// Rect-16  --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Rect16];
+		p = _p_tables[pxWAVETYPE.Rect16];
 		for (s = 0; s < _smp_num / 16; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP);
 			p = p[1 .. $];
@@ -381,7 +381,7 @@ public:
 		}
 
 		// Saw-3    --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Saw3];
+		p = _p_tables[pxWAVETYPE.Saw3];
 		for (s = 0; s < _smp_num / 3; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP);
 			p = p[1 .. $];
@@ -396,7 +396,7 @@ public:
 		}
 
 		// Saw-4    --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Saw4];
+		p = _p_tables[pxWAVETYPE.Saw4];
 		for (s = 0; s < _smp_num / 4; s++) {
 			p[0] = cast(short)(_SAMPLING_TOP);
 			p = p[1 .. $];
@@ -415,7 +415,7 @@ public:
 		}
 
 		// Saw-6    --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Saw6];
+		p = _p_tables[pxWAVETYPE.Saw6];
 		a = _smp_num * 1 / 6;
 		v = _SAMPLING_TOP;
 		for (s = 0; s < a; s++) {
@@ -454,7 +454,7 @@ public:
 		}
 
 		// Saw-8    --
-		p = _p_tables[pxWAVETYPE.pxWAVETYPE_Saw8];
+		p = _p_tables[pxWAVETYPE.Saw8];
 		a = _smp_num * 1 / 8;
 		v = _SAMPLING_TOP;
 		for (s = 0; s < a; s++) {
@@ -579,9 +579,9 @@ public:
 				pU.enve_index++;
 			}
 
-			_set_ocsillator(&pU.main, &p_du.main, sps, _p_tables[p_du.main.type], _p_tables[pxWAVETYPE.pxWAVETYPE_Random]);
-			_set_ocsillator(&pU.freq, &p_du.freq, sps, _p_tables[p_du.freq.type], _p_tables[pxWAVETYPE.pxWAVETYPE_Random]);
-			_set_ocsillator(&pU.volu, &p_du.volu, sps, _p_tables[p_du.volu.type], _p_tables[pxWAVETYPE.pxWAVETYPE_Random]);
+			_set_ocsillator(&pU.main, &p_du.main, sps, _p_tables[p_du.main.type], _p_tables[pxWAVETYPE.Random]);
+			_set_ocsillator(&pU.freq, &p_du.freq, sps, _p_tables[p_du.freq.type], _p_tables[pxWAVETYPE.Random]);
+			_set_ocsillator(&pU.volu, &p_du.volu, sps, _p_tables[p_du.volu.type], _p_tables[pxWAVETYPE.Random]);
 		}
 
 		smp_num = cast(int)(cast(double) p_noise.get_smp_num_44k() / (44100.0 / sps));
@@ -604,7 +604,7 @@ public:
 						// main
 						po = &pU.main;
 						switch (po.ran_type) {
-						case _RANDOMTYPE._RANDOM_None:
+						case _RANDOMTYPE.None:
 							offset = cast(int) po.offset;
 							if (offset >= 0) {
 								work = po.p_smp[offset];
@@ -612,14 +612,14 @@ public:
 								work = 0;
 							}
 							break;
-						case _RANDOMTYPE._RANDOM_Saw:
+						case _RANDOMTYPE.Saw:
 							if (po.offset >= 0) {
 								work = po.rdm_start + po.rdm_margin * cast(int) po.offset / _smp_num;
 							} else {
 								work = 0;
 							}
 							break;
-						case _RANDOMTYPE._RANDOM_Rect:
+						case _RANDOMTYPE.Rect:
 							if (po.offset >= 0) {
 								work = po.rdm_start;
 							} else {
@@ -637,14 +637,14 @@ public:
 						// volu
 						po = &pU.volu;
 						switch (po.ran_type) {
-						case _RANDOMTYPE._RANDOM_None:
+						case _RANDOMTYPE.None:
 							offset = cast(int) po.offset;
 							vol = cast(double) po.p_smp[offset];
 							break;
-						case _RANDOMTYPE._RANDOM_Saw:
+						case _RANDOMTYPE.Saw:
 							vol = po.rdm_start + po.rdm_margin * cast(int) po.offset / _smp_num;
 							break;
-						case _RANDOMTYPE._RANDOM_Rect:
+						case _RANDOMTYPE.Rect:
 							vol = po.rdm_start;
 							break;
 						default:
@@ -693,14 +693,14 @@ public:
 					_OSCILLATOR* po = &pU.freq;
 
 					switch (po.ran_type) {
-					case _RANDOMTYPE._RANDOM_None:
+					case _RANDOMTYPE.None:
 						offset = cast(int) po.offset;
 						fre = _KEY_TOP * po.p_smp[offset] / _SAMPLING_TOP;
 						break;
-					case _RANDOMTYPE._RANDOM_Saw:
+					case _RANDOMTYPE.Saw:
 						fre = po.rdm_start + po.rdm_margin * cast(int) po.offset / _smp_num;
 						break;
-					case _RANDOMTYPE._RANDOM_Rect:
+					case _RANDOMTYPE.Rect:
 						fre = po.rdm_start;
 						break;
 					default:
@@ -712,9 +712,9 @@ public:
 					}
 					fre *= po.volume;
 
-					_incriment(&pU.main, pU.main.incriment * _freq.Get(cast(int) fre), _p_tables[pxWAVETYPE.pxWAVETYPE_Random]);
-					_incriment(&pU.freq, pU.freq.incriment, _p_tables[pxWAVETYPE.pxWAVETYPE_Random]);
-					_incriment(&pU.volu, pU.volu.incriment, _p_tables[pxWAVETYPE.pxWAVETYPE_Random]);
+					_incriment(&pU.main, pU.main.incriment * _freq.Get(cast(int) fre), _p_tables[pxWAVETYPE.Random]);
+					_incriment(&pU.freq, pU.freq.incriment, _p_tables[pxWAVETYPE.Random]);
+					_incriment(&pU.volu, pU.volu.incriment, _p_tables[pxWAVETYPE.Random]);
 
 					// envelope
 					if (pU.enve_index < pU.enve_num) {
@@ -753,4 +753,4 @@ public:
 
 		return p_pcm;
 	}
-};
+}

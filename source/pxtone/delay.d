@@ -8,11 +8,11 @@ import pxtone.max;
 import pxtone.mem;
 
 enum DELAYUNIT {
-	DELAYUNIT_Beat = 0,
-	DELAYUNIT_Meas,
-	DELAYUNIT_Second,
-	DELAYUNIT_num,
-};
+	Beat = 0,
+	Meas,
+	Second,
+	num,
+}
 
 // (12byte) =================
 struct _DELAYSTRUCT {
@@ -25,7 +25,7 @@ struct _DELAYSTRUCT {
 struct pxtnDelay {
 private:
 	bool _b_played = true;
-	DELAYUNIT _unit = DELAYUNIT.DELAYUNIT_Beat;
+	DELAYUNIT _unit = DELAYUNIT.Beat;
 	int _group = 0;
 	float _rate = 33.0;
 	float _freq = 3.0f;
@@ -94,13 +94,13 @@ public:
 			_rate_s32 = cast(int) _rate; // /100;
 
 			switch (_unit) {
-			case DELAYUNIT.DELAYUNIT_Beat:
+			case DELAYUNIT.Beat:
 				_smp_num = cast(int)(sps * 60 / beat_tempo / _freq);
 				break;
-			case DELAYUNIT.DELAYUNIT_Meas:
+			case DELAYUNIT.Meas:
 				_smp_num = cast(int)(sps * 60 * beat_num / beat_tempo / _freq);
 				break;
-			case DELAYUNIT.DELAYUNIT_Second:
+			case DELAYUNIT.Second:
 				_smp_num = cast(int)(sps / _freq);
 				break;
 			default:
@@ -187,7 +187,7 @@ public:
 		if (!p_doc.r(dela)) {
 			return pxtnERR.desc_r;
 		}
-		if (dela.unit >= DELAYUNIT.DELAYUNIT_num) {
+		if (dela.unit >= DELAYUNIT.num) {
 			return pxtnERR.fmt_unknown;
 		}
 

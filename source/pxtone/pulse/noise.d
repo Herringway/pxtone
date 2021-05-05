@@ -10,27 +10,27 @@ import pxtone.pulse.oscillator;
 import pxtone.pulse.pcm;
 
 enum pxWAVETYPE {
-	pxWAVETYPE_None = 0,
-	pxWAVETYPE_Sine,
-	pxWAVETYPE_Saw,
-	pxWAVETYPE_Rect,
-	pxWAVETYPE_Random,
-	pxWAVETYPE_Saw2,
-	pxWAVETYPE_Rect2,
+	None = 0,
+	Sine,
+	Saw,
+	Rect,
+	Random,
+	Saw2,
+	Rect2,
 
-	pxWAVETYPE_Tri,
-	pxWAVETYPE_Random2,
-	pxWAVETYPE_Rect3,
-	pxWAVETYPE_Rect4,
-	pxWAVETYPE_Rect8,
-	pxWAVETYPE_Rect16,
-	pxWAVETYPE_Saw3,
-	pxWAVETYPE_Saw4,
-	pxWAVETYPE_Saw6,
-	pxWAVETYPE_Saw8,
+	Tri,
+	Random2,
+	Rect3,
+	Rect4,
+	Rect8,
+	Rect16,
+	Saw3,
+	Saw4,
+	Saw6,
+	Saw8,
 
-	pxWAVETYPE_num,
-};
+	num,
+}
 
 struct pxNOISEDESIGN_OSCILLATOR {
 	pxWAVETYPE type;
@@ -58,8 +58,8 @@ enum NOISEDESIGNLIMIT_OSC_VOLUME = 200.0f;
 enum NOISEDESIGNLIMIT_OSC_OFFSET = 100.0f;
 
 static void _FixUnit(pxNOISEDESIGN_OSCILLATOR* p_osc) nothrow @safe {
-	if (p_osc.type >= pxWAVETYPE.pxWAVETYPE_num) {
-		p_osc.type = pxWAVETYPE.pxWAVETYPE_None;
+	if (p_osc.type >= pxWAVETYPE.num) {
+		p_osc.type = pxWAVETYPE.None;
 	}
 	if (p_osc.freq > NOISEDESIGNLIMIT_OSC_FREQUENCY) {
 		p_osc.freq = NOISEDESIGNLIMIT_OSC_FREQUENCY;
@@ -130,7 +130,7 @@ static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescript
 		return pxtnERR.desc_r;
 	}
 	p_osc.type = cast(pxWAVETYPE) work;
-	if (p_osc.type >= pxWAVETYPE.pxWAVETYPE_num) {
+	if (p_osc.type >= pxWAVETYPE.num) {
 		return pxtnERR.fmt_unknown;
 	}
 	if (!p_doc.v_r(&work)) {
@@ -159,13 +159,13 @@ static uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow @safe {
 	if (pU.pan) {
 		flags |= NOISEEDITFLAG_PAN;
 	}
-	if (pU.main.type != pxWAVETYPE.pxWAVETYPE_None) {
+	if (pU.main.type != pxWAVETYPE.None) {
 		flags |= NOISEEDITFLAG_OSC_MAIN;
 	}
-	if (pU.freq.type != pxWAVETYPE.pxWAVETYPE_None) {
+	if (pU.freq.type != pxWAVETYPE.None) {
 		flags |= NOISEEDITFLAG_OSC_FREQ;
 	}
-	if (pU.volu.type != pxWAVETYPE.pxWAVETYPE_None) {
+	if (pU.volu.type != pxWAVETYPE.None) {
 		flags |= NOISEEDITFLAG_OSC_VOLU;
 	}
 	return flags;
@@ -281,11 +281,11 @@ public:
 		}
 
 		// update unit_num.
-		p_doc.seek(pxtnSEEK.pxtnSEEK_cur, num_seek - seek);
+		p_doc.seek(pxtnSEEK.cur, num_seek - seek);
 		if (!p_doc.w_asfile(&unit_num, 1, 1)) {
 			goto End;
 		}
-		p_doc.seek(pxtnSEEK.pxtnSEEK_cur, seek - num_seek - 1);
+		p_doc.seek(pxtnSEEK.cur, seek - num_seek - 1);
 		if (p_add) {
 			*p_add = seek;
 		}

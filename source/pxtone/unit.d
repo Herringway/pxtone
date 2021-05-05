@@ -385,4 +385,4 @@ public:
 		*p_group = unit.group;
 		return true;
 	}
-};
+}

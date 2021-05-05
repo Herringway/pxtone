@@ -14,10 +14,10 @@ alias FILE = _iobuf;
 enum pxSCE = false;
 
 enum pxtnSEEK {
-	pxtnSEEK_set = 0,
-	pxtnSEEK_cur,
-	pxtnSEEK_end,
-	pxtnSEEK_num
+	set = 0,
+	cur,
+	end,
+	num
 }
 
 struct pxtnDescriptor {
@@ -25,7 +25,7 @@ private:
 	enum {
 		_BUFSIZE_HEEP = 1024,
 		_TAGLINE_NUM = 128,
-	};
+	}
 
 	ubyte[] _p_desc;
 	File file;
@@ -99,7 +99,7 @@ public:
 
 	bool seek(pxtnSEEK mode, int val) nothrow @safe {
 		if (_b_file) {
-			int[pxtnSEEK.pxtnSEEK_num] seek_tbl = [SEEK_SET, SEEK_CUR, SEEK_END];
+			int[pxtnSEEK.num] seek_tbl = [SEEK_SET, SEEK_CUR, SEEK_END];
 			try {
 				file.seek(val, seek_tbl[mode]);
 			} catch (Exception) {
@@ -107,7 +107,7 @@ public:
 			}
 		} else {
 			switch (mode) {
-			case pxtnSEEK.pxtnSEEK_set:
+			case pxtnSEEK.set:
 				if (val >= _p_desc.length) {
 					return false;
 				}
@@ -116,7 +116,7 @@ public:
 				}
 				_cur = val;
 				break;
-			case pxtnSEEK.pxtnSEEK_cur:
+			case pxtnSEEK.cur:
 				if (_cur + val >= _p_desc.length) {
 					return false;
 				}
@@ -125,7 +125,7 @@ public:
 				}
 				_cur += val;
 				break;
-			case pxtnSEEK.pxtnSEEK_end:
+			case pxtnSEEK.end:
 				if (_p_desc.length + val >= _p_desc.length) {
 					return false;
 				}
@@ -349,7 +349,7 @@ public:
 	int get_size_bytes() const nothrow @safe {
 		return _b_file ? _size : cast(int)_p_desc.length;
 	}
-};
+}
 
 int pxtnDescriptor_v_chk(int val) nothrow @safe {
 	uint us;

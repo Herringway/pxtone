@@ -38,7 +38,7 @@ enum pxtnWOICETYPE {
 	PTV,
 	PTN,
 	OGGV,
-};
+}
 
 enum pxtnVOICETYPE {
 	Coodinate = 0,
@@ -46,7 +46,7 @@ enum pxtnVOICETYPE {
 	Noise,
 	Sampling,
 	OggVorbis,
-};
+}
 
 struct pxtnVOICEINSTANCE {
 	int smp_head_w;
@@ -623,13 +623,13 @@ public:
 		}
 
 		// total size
-		if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, -(total + 4))) {
+		if (!p_doc.seek(pxtnSEEK.cur, -(total + 4))) {
 			goto End;
 		}
 		if (!p_doc.w_asfile(&total, int.sizeof, 1)) {
 			goto End;
 		}
-		if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, (total))) {
+		if (!p_doc.seek(pxtnSEEK.cur, (total))) {
 			goto End;
 		}
 
@@ -866,13 +866,13 @@ public:
 		if (!p_vc.p_ptn.write(p_doc, &size)) {
 			return false;
 		}
-		if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, cast(int)(-size - int.sizeof))) {
+		if (!p_doc.seek(pxtnSEEK.cur, cast(int)(-size - int.sizeof))) {
 			return false;
 		}
 		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
 			return false;
 		}
-		if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, size)) {
+		if (!p_doc.seek(pxtnSEEK.cur, size)) {
 			return false;
 		}
 
@@ -947,7 +947,7 @@ public:
 			return false;
 		}
 
-		if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, -(ptv.size + head_size))) {
+		if (!p_doc.seek(pxtnSEEK.cur, -(ptv.size + head_size))) {
 			return false;
 		}
 
@@ -959,7 +959,7 @@ public:
 			return false;
 		}
 
-		if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, ptv.size)) {
+		if (!p_doc.seek(pxtnSEEK.cur, ptv.size)) {
 			return false;
 		}
 
@@ -1281,4 +1281,4 @@ public:
 		}
 		return pxtnERR.OK;
 	}
-};
+}

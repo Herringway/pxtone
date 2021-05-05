@@ -67,84 +67,84 @@ immutable _code_assiWOIC = "assiWOIC";
 immutable _code_pxtoneND = "pxtoneND";
 
 enum _enum_Tag {
-	_TAG_Unknown = 0,
-	_TAG_antiOPER,
+	Unknown = 0,
+	antiOPER,
 
-	_TAG_x1x_PROJ,
-	_TAG_x1x_UNIT,
-	_TAG_x1x_PCM,
-	_TAG_x1x_EVEN,
-	_TAG_x1x_END,
-	_TAG_x3x_pxtnUNIT,
-	_TAG_x4x_evenMAST,
-	_TAG_x4x_evenUNIT,
+	x1x_PROJ,
+	x1x_UNIT,
+	x1x_PCM,
+	x1x_EVEN,
+	x1x_END,
+	x3x_pxtnUNIT,
+	x4x_evenMAST,
+	x4x_evenUNIT,
 
-	_TAG_num_UNIT,
-	_TAG_MasterV5,
-	_TAG_Event_V5,
-	_TAG_matePCM,
-	_TAG_matePTV,
-	_TAG_matePTN,
-	_TAG_mateOGGV,
-	_TAG_effeDELA,
-	_TAG_effeOVER,
-	_TAG_textNAME,
-	_TAG_textCOMM,
-	_TAG_assiUNIT,
-	_TAG_assiWOIC,
-	_TAG_pxtoneND
+	num_UNIT,
+	MasterV5,
+	Event_V5,
+	matePCM,
+	matePTV,
+	matePTN,
+	mateOGGV,
+	effeDELA,
+	effeOVER,
+	textNAME,
+	textCOMM,
+	assiUNIT,
+	assiWOIC,
+	pxtoneND
 
-};
+}
 
 private _enum_Tag _CheckTagCode(const char[] p_code) nothrow @system {
 	if (p_code[0 .. _CODESIZE] == _code_antiOPER) {
-		return _enum_Tag._TAG_antiOPER;
+		return _enum_Tag.antiOPER;
 	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PROJ) {
-		return _enum_Tag._TAG_x1x_PROJ;
+		return _enum_Tag.x1x_PROJ;
 	} else if (p_code[0 .. _CODESIZE] == _code_x1x_UNIT) {
-		return _enum_Tag._TAG_x1x_UNIT;
+		return _enum_Tag.x1x_UNIT;
 	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PCM) {
-		return _enum_Tag._TAG_x1x_PCM;
+		return _enum_Tag.x1x_PCM;
 	} else if (p_code[0 .. _CODESIZE] == _code_x1x_EVEN) {
-		return _enum_Tag._TAG_x1x_EVEN;
+		return _enum_Tag.x1x_EVEN;
 	} else if (p_code[0 .. _CODESIZE] == _code_x1x_END) {
-		return _enum_Tag._TAG_x1x_END;
+		return _enum_Tag.x1x_END;
 	} else if (p_code[0 .. _CODESIZE] == _code_x3x_pxtnUNIT) {
-		return _enum_Tag._TAG_x3x_pxtnUNIT;
+		return _enum_Tag.x3x_pxtnUNIT;
 	} else if (p_code[0 .. _CODESIZE] == _code_x4x_evenMAST) {
-		return _enum_Tag._TAG_x4x_evenMAST;
+		return _enum_Tag.x4x_evenMAST;
 	} else if (p_code[0 .. _CODESIZE] == _code_x4x_evenUNIT) {
-		return _enum_Tag._TAG_x4x_evenUNIT;
+		return _enum_Tag.x4x_evenUNIT;
 	} else if (p_code[0 .. _CODESIZE] == _code_num_UNIT) {
-		return _enum_Tag._TAG_num_UNIT;
+		return _enum_Tag.num_UNIT;
 	} else if (p_code[0 .. _CODESIZE] == _code_Event_V5) {
-		return _enum_Tag._TAG_Event_V5;
+		return _enum_Tag.Event_V5;
 	} else if (p_code[0 .. _CODESIZE] == _code_MasterV5) {
-		return _enum_Tag._TAG_MasterV5;
+		return _enum_Tag.MasterV5;
 	} else if (p_code[0 .. _CODESIZE] == _code_matePCM) {
-		return _enum_Tag._TAG_matePCM;
+		return _enum_Tag.matePCM;
 	} else if (p_code[0 .. _CODESIZE] == _code_matePTV) {
-		return _enum_Tag._TAG_matePTV;
+		return _enum_Tag.matePTV;
 	} else if (p_code[0 .. _CODESIZE] == _code_matePTN) {
-		return _enum_Tag._TAG_matePTN;
+		return _enum_Tag.matePTN;
 	} else if (p_code[0 .. _CODESIZE] == _code_mateOGGV) {
-		return _enum_Tag._TAG_mateOGGV;
+		return _enum_Tag.mateOGGV;
 	} else if (p_code[0 .. _CODESIZE] == _code_effeDELA) {
-		return _enum_Tag._TAG_effeDELA;
+		return _enum_Tag.effeDELA;
 	} else if (p_code[0 .. _CODESIZE] == _code_effeOVER) {
-		return _enum_Tag._TAG_effeOVER;
+		return _enum_Tag.effeOVER;
 	} else if (p_code[0 .. _CODESIZE] == _code_textNAME) {
-		return _enum_Tag._TAG_textNAME;
+		return _enum_Tag.textNAME;
 	} else if (p_code[0 .. _CODESIZE] == _code_textCOMM) {
-		return _enum_Tag._TAG_textCOMM;
+		return _enum_Tag.textCOMM;
 	} else if (p_code[0 .. _CODESIZE] == _code_assiUNIT) {
-		return _enum_Tag._TAG_assiUNIT;
+		return _enum_Tag.assiUNIT;
 	} else if (p_code[0 .. _CODESIZE] == _code_assiWOIC) {
-		return _enum_Tag._TAG_assiWOIC;
+		return _enum_Tag.assiWOIC;
 	} else if (p_code[0 .. _CODESIZE] == _code_pxtoneND) {
-		return _enum_Tag._TAG_pxtoneND;
+		return _enum_Tag.pxtoneND;
 	}
-	return _enum_Tag._TAG_Unknown;
+	return _enum_Tag.Unknown;
 }
 
 struct _ASSIST_WOICE {
@@ -208,7 +208,7 @@ private:
 		_enum_FMTVER_x3x, // unit has voice / basic-key for only view
 		_enum_FMTVER_x4x, // unit has event
 		_enum_FMTVER_v5,
-	};
+	}
 
 	bool _b_init;
 	bool _b_edit;
@@ -306,12 +306,12 @@ private:
 
 			_enum_Tag tag = _CheckTagCode(code);
 			switch (tag) {
-			case _enum_Tag._TAG_antiOPER:
+			case _enum_Tag.antiOPER:
 				res = pxtnERR.anti_opreation;
 				goto term;
 
 				// new -------
-			case _enum_Tag._TAG_num_UNIT: {
+			case _enum_Tag.num_UNIT: {
 					int num = 0;
 					res = _io_UNIT_num_r(p_doc, &num);
 					if (res != pxtnERR.OK) {
@@ -323,39 +323,39 @@ private:
 					_unit_num = num;
 					break;
 				}
-			case _enum_Tag._TAG_MasterV5:
+			case _enum_Tag.MasterV5:
 				res = master.io_r_v5(p_doc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_Event_V5:
+			case _enum_Tag.Event_V5:
 				res = evels.io_Read(p_doc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 
-			case _enum_Tag._TAG_matePCM:
+			case _enum_Tag.matePCM:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_matePTV:
+			case _enum_Tag.matePTV:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PTV);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_matePTN:
+			case _enum_Tag.matePTN:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PTN);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
 
-			case _enum_Tag._TAG_mateOGGV:
+			case _enum_Tag.mateOGGV:
 
 				version (pxINCLUDE_OGGVORBIS) {
 					res = _io_Read_Woice(p_doc, pxtnWOICETYPE.OGGV);
@@ -368,90 +368,90 @@ private:
 					goto term;
 				}
 
-			case _enum_Tag._TAG_effeDELA:
+			case _enum_Tag.effeDELA:
 				res = _io_Read_Delay(p_doc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_effeOVER:
+			case _enum_Tag.effeOVER:
 				res = _io_Read_OverDrive(p_doc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_textNAME:
+			case _enum_Tag.textNAME:
 				if (!text.Name_r(p_doc)) {
 					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_textCOMM:
+			case _enum_Tag.textCOMM:
 				if (!text.Comment_r(p_doc)) {
 					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_assiWOIC:
+			case _enum_Tag.assiWOIC:
 				res = _io_assiWOIC_r(p_doc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_assiUNIT:
+			case _enum_Tag.assiUNIT:
 				res = _io_assiUNIT_r(p_doc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_pxtoneND:
+			case _enum_Tag.pxtoneND:
 				b_end = true;
 				break;
 
 				// old -------
-			case _enum_Tag._TAG_x4x_evenMAST:
+			case _enum_Tag.x4x_evenMAST:
 				res = master.io_r_x4x(p_doc);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_x4x_evenUNIT:
+			case _enum_Tag.x4x_evenUNIT:
 				res = evels.io_Unit_Read_x4x_EVENT(p_doc, false, true);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_x3x_pxtnUNIT:
+			case _enum_Tag.x3x_pxtnUNIT:
 				res = _io_Read_OldUnit(p_doc, 3);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_x1x_PROJ:
+			case _enum_Tag.x1x_PROJ:
 				if (!_x1x_Project_Read(p_doc)) {
 					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_x1x_UNIT:
+			case _enum_Tag.x1x_UNIT:
 				res = _io_Read_OldUnit(p_doc, 1);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_x1x_PCM:
+			case _enum_Tag.x1x_PCM:
 				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_x1x_EVEN:
+			case _enum_Tag.x1x_EVEN:
 				res = evels.io_Unit_Read_x4x_EVENT(p_doc, true, false);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				break;
-			case _enum_Tag._TAG_x1x_END:
+			case _enum_Tag.x1x_END:
 				b_end = true;
 				break;
 
@@ -656,9 +656,9 @@ private:
 			group = _group_num - 1;
 		}
 
-		evels.x4x_Read_Add(0, cast(ubyte) _unit_num, EVENTKIND_GROUPNO, cast(int) group);
+		evels.x4x_Read_Add(0, cast(ubyte) _unit_num, EVENTKIND.GROUPNO, cast(int) group);
 		evels.x4x_Read_NewKind();
-		evels.x4x_Read_Add(0, cast(ubyte) _unit_num, EVENTKIND_VOICENO, cast(int) _unit_num);
+		evels.x4x_Read_Add(0, cast(ubyte) _unit_num, EVENTKIND.VOICENO, cast(int) _unit_num);
 		evels.x4x_Read_NewKind();
 
 		res = pxtnERR.OK;
@@ -865,10 +865,10 @@ private:
 
 			int change_value = _woices[u].get_x3x_basic_key() - EVENTDEFAULT_BASICKEY;
 
-			if (!evels.get_Count(cast(ubyte) u, cast(ubyte) EVENTKIND_KEY)) {
-				evels.Record_Add_i(0, cast(ubyte) u, EVENTKIND_KEY, cast(int) 0x6000);
+			if (!evels.get_Count(cast(ubyte) u, cast(ubyte) EVENTKIND.KEY)) {
+				evels.Record_Add_i(0, cast(ubyte) u, EVENTKIND.KEY, cast(int) 0x6000);
 			}
-			evels.Record_Value_Change(0, -1, cast(ubyte) u, EVENTKIND_KEY, change_value);
+			evels.Record_Value_Change(0, -1, cast(ubyte) u, EVENTKIND.KEY, change_value);
 		}
 		return true;
 	}
@@ -886,7 +886,7 @@ private:
 		for (int u = 0; u < _unit_num; u++) {
 			float tuning = _woices[u].get_x3x_tuning();
 			if (tuning) {
-				evels.Record_Add_f(0, cast(ubyte) u, EVENTKIND_TUNING, tuning);
+				evels.Record_Add_f(0, cast(ubyte) u, EVENTKIND.TUNING, tuning);
 			}
 		}
 
@@ -1136,57 +1136,57 @@ private:
 			}
 
 			switch (_CheckTagCode(code)) {
-			case _enum_Tag._TAG_Event_V5:
+			case _enum_Tag.Event_V5:
 				count += evels.io_Read_EventNum(p_doc);
 				break;
-			case _enum_Tag._TAG_MasterV5:
+			case _enum_Tag.MasterV5:
 				count += master.io_r_v5_EventNum(p_doc);
 				break;
-			case _enum_Tag._TAG_x4x_evenMAST:
+			case _enum_Tag.x4x_evenMAST:
 				count += master.io_r_x4x_EventNum(p_doc);
 				break;
-			case _enum_Tag._TAG_x4x_evenUNIT:
+			case _enum_Tag.x4x_evenUNIT:
 				res = evels.io_Read_x4x_EventNum(p_doc, &c);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}
 				count += c;
 				break;
-			case _enum_Tag._TAG_pxtoneND:
+			case _enum_Tag.pxtoneND:
 				b_end = true;
 				break;
 
 				// skip
-			case _enum_Tag._TAG_antiOPER:
-			case _enum_Tag._TAG_num_UNIT:
-			case _enum_Tag._TAG_x3x_pxtnUNIT:
-			case _enum_Tag._TAG_matePCM:
-			case _enum_Tag._TAG_matePTV:
-			case _enum_Tag._TAG_matePTN:
-			case _enum_Tag._TAG_mateOGGV:
-			case _enum_Tag._TAG_effeDELA:
-			case _enum_Tag._TAG_effeOVER:
-			case _enum_Tag._TAG_textNAME:
-			case _enum_Tag._TAG_textCOMM:
-			case _enum_Tag._TAG_assiUNIT:
-			case _enum_Tag._TAG_assiWOIC:
+			case _enum_Tag.antiOPER:
+			case _enum_Tag.num_UNIT:
+			case _enum_Tag.x3x_pxtnUNIT:
+			case _enum_Tag.matePCM:
+			case _enum_Tag.matePTV:
+			case _enum_Tag.matePTN:
+			case _enum_Tag.mateOGGV:
+			case _enum_Tag.effeDELA:
+			case _enum_Tag.effeOVER:
+			case _enum_Tag.textNAME:
+			case _enum_Tag.textCOMM:
+			case _enum_Tag.assiUNIT:
+			case _enum_Tag.assiWOIC:
 
 				if (!p_doc.r(size)) {
 					res = pxtnERR.desc_r;
 					goto term;
 				}
-				if (!p_doc.seek(pxtnSEEK.pxtnSEEK_cur, size)) {
+				if (!p_doc.seek(pxtnSEEK.cur, size)) {
 					res = pxtnERR.desc_r;
 					goto term;
 				}
 				break;
 
 				// ignore
-			case _enum_Tag._TAG_x1x_PROJ:
-			case _enum_Tag._TAG_x1x_UNIT:
-			case _enum_Tag._TAG_x1x_PCM:
-			case _enum_Tag._TAG_x1x_EVEN:
-			case _enum_Tag._TAG_x1x_END:
+			case _enum_Tag.x1x_PROJ:
+			case _enum_Tag.x1x_UNIT:
+			case _enum_Tag.x1x_PCM:
+			case _enum_Tag.x1x_EVEN:
+			case _enum_Tag.x1x_END:
 				res = pxtnERR.x1x_ignore;
 				goto term;
 			default:
@@ -1318,7 +1318,7 @@ private:
 			const(pxtnVOICEINSTANCE)* p_vi;
 
 			switch (_moo_p_eve.kind) {
-			case EVENTKIND_ON: {
+			case EVENTKIND.ON: {
 					int on_count = cast(int)((_moo_p_eve.clock + _moo_p_eve.value - clock) * _moo_clock_rate);
 					if (on_count <= 0) {
 						p_u.Tone_ZeroLives();
@@ -1345,7 +1345,7 @@ private:
 								if (p.clock > c) {
 									break;
 								}
-								if (p.unit_no == u && p.kind == EVENTKIND_ON) {
+								if (p.unit_no == u && p.kind == EVENTKIND.ON) {
 									next = p;
 									break;
 								}
@@ -1379,41 +1379,41 @@ private:
 					break;
 				}
 
-			case EVENTKIND_KEY:
+			case EVENTKIND.KEY:
 				p_u.Tone_Key(_moo_p_eve.value);
 				break;
-			case EVENTKIND_PAN_VOLUME:
+			case EVENTKIND.PAN_VOLUME:
 				p_u.Tone_Pan_Volume(_dst_ch_num, _moo_p_eve.value);
 				break;
-			case EVENTKIND_PAN_TIME:
+			case EVENTKIND.PAN_TIME:
 				p_u.Tone_Pan_Time(_dst_ch_num, _moo_p_eve.value, _dst_sps);
 				break;
-			case EVENTKIND_VELOCITY:
+			case EVENTKIND.VELOCITY:
 				p_u.Tone_Velocity(_moo_p_eve.value);
 				break;
-			case EVENTKIND_VOLUME:
+			case EVENTKIND.VOLUME:
 				p_u.Tone_Volume(_moo_p_eve.value);
 				break;
-			case EVENTKIND_PORTAMENT:
+			case EVENTKIND.PORTAMENT:
 				p_u.Tone_Portament(cast(int)(_moo_p_eve.value * _moo_clock_rate));
 				break;
-			case EVENTKIND_BEATCLOCK:
+			case EVENTKIND.BEATCLOCK:
 				break;
-			case EVENTKIND_BEATTEMPO:
+			case EVENTKIND.BEATTEMPO:
 				break;
-			case EVENTKIND_BEATNUM:
+			case EVENTKIND.BEATNUM:
 				break;
-			case EVENTKIND_REPEAT:
+			case EVENTKIND.REPEAT:
 				break;
-			case EVENTKIND_LAST:
+			case EVENTKIND.LAST:
 				break;
-			case EVENTKIND_VOICENO:
+			case EVENTKIND.VOICENO:
 				_moo_ResetVoiceOn(p_u, _moo_p_eve.value);
 				break;
-			case EVENTKIND_GROUPNO:
+			case EVENTKIND.GROUPNO:
 				p_u.Tone_GroupNo(_moo_p_eve.value);
 				break;
-			case EVENTKIND_TUNING:
+			case EVENTKIND.TUNING:
 				p_u.Tone_Tuning(*(cast(float*)(&_moo_p_eve.value)));
 				break;
 			default:
@@ -1803,7 +1803,7 @@ public:
 		if (res != pxtnERR.OK) {
 			goto term;
 		}
-		p_doc.seek(pxtnSEEK.pxtnSEEK_set, 0);
+		p_doc.seek(pxtnSEEK.set, 0);
 
 		if (_b_fix_evels_num) {
 			if (event_num > evels.get_Num_Max()) {
@@ -2605,7 +2605,7 @@ public:
 	term:
 		return b_ret;
 	}
-};
+}
 
 int pxtnService_moo_CalcSampleNum(int meas_num, int beat_num, int sps, float beat_tempo) nothrow @safe {
 	uint total_beat_num;

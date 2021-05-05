@@ -9,33 +9,33 @@ import pxtone.mem;
 ///////////////////////
 
 bool Evelist_Kind_IsTail(int kind) nothrow @safe {
-	if (kind == EVENTKIND_ON || kind == EVENTKIND_PORTAMENT) {
+	if (kind == EVENTKIND.ON || kind == EVENTKIND.PORTAMENT) {
 		return true;
 	}
 	return false;
 }
 
-enum {
-	EVENTKIND_null = 0, //  0
+enum EVENTKIND {
+	NULL = 0, //  0
 
-	EVENTKIND_ON, //  1
-	EVENTKIND_KEY, //  2
-	EVENTKIND_PAN_VOLUME, //  3
-	EVENTKIND_VELOCITY, //  4
-	EVENTKIND_VOLUME, //  5
-	EVENTKIND_PORTAMENT, //  6
-	EVENTKIND_BEATCLOCK, //  7
-	EVENTKIND_BEATTEMPO, //  8
-	EVENTKIND_BEATNUM, //  9
-	EVENTKIND_REPEAT, // 10
-	EVENTKIND_LAST, // 11
-	EVENTKIND_VOICENO, // 12
-	EVENTKIND_GROUPNO, // 13
-	EVENTKIND_TUNING, // 14
-	EVENTKIND_PAN_TIME, // 15
+	ON, //  1
+	KEY, //  2
+	PAN_VOLUME, //  3
+	VELOCITY, //  4
+	VOLUME, //  5
+	PORTAMENT, //  6
+	BEATCLOCK, //  7
+	BEATTEMPO, //  8
+	BEATNUM, //  9
+	REPEAT, // 10
+	LAST, // 11
+	VOICENO, // 12
+	GROUPNO, // 13
+	TUNING, // 14
+	PAN_TIME, // 15
 
-	EVENTKIND_NUM, // 16
-};
+	NUM, // 16
+}
 
 enum EVENTDEFAULT_VOLUME = 104;
 enum EVENTDEFAULT_VELOCITY = 104;
@@ -65,35 +65,35 @@ struct EVERECORD {
 
 static int _DefaultKindValue(ubyte kind) nothrow @system {
 	switch (kind) {
-		//	case EVENTKIND_ON        : return ;
-	case EVENTKIND_KEY:
+		//	case EVENTKIND.ON        : return ;
+	case EVENTKIND.KEY:
 		return EVENTDEFAULT_KEY;
-	case EVENTKIND_PAN_VOLUME:
+	case EVENTKIND.PAN_VOLUME:
 		return EVENTDEFAULT_PAN_VOLUME;
-	case EVENTKIND_VELOCITY:
+	case EVENTKIND.VELOCITY:
 		return EVENTDEFAULT_VELOCITY;
-	case EVENTKIND_VOLUME:
+	case EVENTKIND.VOLUME:
 		return EVENTDEFAULT_VOLUME;
-	case EVENTKIND_PORTAMENT:
+	case EVENTKIND.PORTAMENT:
 		return EVENTDEFAULT_PORTAMENT;
-	case EVENTKIND_BEATCLOCK:
+	case EVENTKIND.BEATCLOCK:
 		return EVENTDEFAULT_BEATCLOCK;
-	case EVENTKIND_BEATTEMPO:
+	case EVENTKIND.BEATTEMPO:
 		return EVENTDEFAULT_BEATTEMPO;
-	case EVENTKIND_BEATNUM:
+	case EVENTKIND.BEATNUM:
 		return EVENTDEFAULT_BEATNUM;
-		//	case EVENTKIND_REPEAT    : return ;
-		//	case EVENTKIND_LAST      : return ;
-	case EVENTKIND_VOICENO:
+		//	case EVENTKIND.REPEAT    : return ;
+		//	case EVENTKIND.LAST      : return ;
+	case EVENTKIND.VOICENO:
 		return EVENTDEFAULT_VOICENO;
-	case EVENTKIND_GROUPNO:
+	case EVENTKIND.GROUPNO:
 		return EVENTDEFAULT_GROUPNO;
-	case EVENTKIND_TUNING: {
+	case EVENTKIND.TUNING: {
 			float tuning;
 			tuning = EVENTDEFAULT_TUNING;
 			return *(cast(int*)&tuning);
 		}
-	case EVENTKIND_PAN_TIME:
+	case EVENTKIND.PAN_TIME:
 		return EVENTDEFAULT_PAN_TIME;
 	default:
 		break;
@@ -102,22 +102,22 @@ static int _DefaultKindValue(ubyte kind) nothrow @system {
 }
 
 static int _ComparePriority(ubyte kind1, ubyte kind2) nothrow @safe {
-	static const int[EVENTKIND_NUM] priority_table = [0, // EVENTKIND_null  = 0
-		50, // EVENTKIND_ON
-		40, // EVENTKIND_KEY
-		60, // EVENTKIND_PAN_VOLUME
-		70, // EVENTKIND_VELOCITY
-		80, // EVENTKIND_VOLUME
-		30, // EVENTKIND_PORTAMENT
-		0, // EVENTKIND_BEATCLOCK
-		0, // EVENTKIND_BEATTEMPO
-		0, // EVENTKIND_BEATNUM
-		0, // EVENTKIND_REPEAT
-		255, // EVENTKIND_LAST
-		10, // EVENTKIND_VOICENO
-		20, // EVENTKIND_GROUPNO
-		90, // EVENTKIND_TUNING
-		100, // EVENTKIND_PAN_TIME
+	static const int[EVENTKIND.NUM] priority_table = [0, // EVENTKIND.NULL  = 0
+		50, // EVENTKIND.ON
+		40, // EVENTKIND.KEY
+		60, // EVENTKIND.PAN_VOLUME
+		70, // EVENTKIND.VELOCITY
+		80, // EVENTKIND.VOLUME
+		30, // EVENTKIND.PORTAMENT
+		0, // EVENTKIND.BEATCLOCK
+		0, // EVENTKIND.BEATTEMPO
+		0, // EVENTKIND.BEATNUM
+		0, // EVENTKIND.REPEAT
+		255, // EVENTKIND.LAST
+		10, // EVENTKIND.VOICENO
+		20, // EVENTKIND.GROUPNO
+		90, // EVENTKIND.TUNING
+		100, // EVENTKIND.PAN_TIME
 		];
 
 	return priority_table[kind1] - priority_table[kind2];
@@ -172,7 +172,7 @@ private:
 		if (p_rec.next) {
 			p_rec.next.prev = p_rec.prev;
 		}
-		p_rec.kind = EVENTKIND_null;
+		p_rec.kind = EVENTKIND.NULL;
 	}
 
 public:
@@ -355,7 +355,7 @@ public:
 
 		// 空き検索
 		for (int r = 0; r < _eve_allocated_num; r++) {
-			if (_eves[r].kind == EVENTKIND_null) {
+			if (_eves[r].kind == EVENTKIND.NULL) {
 				p_new = &_eves[r];
 				break;
 			}
@@ -383,7 +383,7 @@ public:
 						if (unit_no == p.unit_no && kind == p.kind) {
 							p_prev = p.prev;
 							p_next = p.next;
-							p.kind = EVENTKIND_null;
+							p.kind = EVENTKIND.NULL;
 							break;
 						} // 置き換え
 						if (_ComparePriority(kind, p.kind) < 0) {
@@ -470,13 +470,13 @@ public:
 	}
 
 	void Linear_End(bool b_connect) nothrow @system {
-		if (_eves[0].kind != EVENTKIND_null) {
+		if (_eves[0].kind != EVENTKIND.NULL) {
 			_start = &_eves[0];
 		}
 
 		if (b_connect) {
 			for (int r = 1; r < _eve_allocated_num; r++) {
-				if (_eves[r].kind == EVENTKIND_null) {
+				if (_eves[r].kind == EVENTKIND.NULL) {
 					break;
 				}
 				_eves[r].prev = &_eves[r - 1];
@@ -584,31 +584,31 @@ public:
 		int max, min;
 
 		switch (kind) {
-		case EVENTKIND_null:
+		case EVENTKIND.NULL:
 			max = 0;
 			min = 0;
 			break;
-		case EVENTKIND_ON:
+		case EVENTKIND.ON:
 			max = 120;
 			min = 120;
 			break;
-		case EVENTKIND_KEY:
+		case EVENTKIND.KEY:
 			max = 0xbfff;
 			min = 0;
 			break;
-		case EVENTKIND_PAN_VOLUME:
+		case EVENTKIND.PAN_VOLUME:
 			max = 0x80;
 			min = 0;
 			break;
-		case EVENTKIND_PAN_TIME:
+		case EVENTKIND.PAN_TIME:
 			max = 0x80;
 			min = 0;
 			break;
-		case EVENTKIND_VELOCITY:
+		case EVENTKIND.VELOCITY:
 			max = 0x80;
 			min = 0;
 			break;
-		case EVENTKIND_VOLUME:
+		case EVENTKIND.VOLUME:
 			max = 0x80;
 			min = 0;
 			break;
@@ -1029,7 +1029,7 @@ public:
 						if (unit_no == p.unit_no && kind == p.kind) {
 							p_prev = p.prev;
 							p_next = p.next;
-							p.kind = EVENTKIND_null;
+							p.kind = EVENTKIND.NULL;
 							break;
 						} // 置き換え
 						if (_ComparePriority(kind, p.kind) < 0) {
@@ -1078,7 +1078,7 @@ public:
 		if (evnt.data_num != 2) {
 			return pxtnERR.fmt_unknown;
 		}
-		if (evnt.event_kind >= EVENTKIND_NUM) {
+		if (evnt.event_kind >= EVENTKIND.NUM) {
 			return pxtnERR.fmt_unknown;
 		}
 		if (bCheckRRR && evnt.rrr) {

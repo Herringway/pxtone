@@ -411,7 +411,7 @@ public:
 		}
 
 		// find 'data'
-		if (!doc.seek(pxtnSEEK.pxtnSEEK_set, 12)) {
+		if (!doc.seek(pxtnSEEK.set, 12)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		} // skip 'RIFFxxxxWAVE'
@@ -428,7 +428,7 @@ public:
 			if (buf[0] == 'd' && buf[1] == 'a' && buf[2] == 't' && buf[3] == 'a') {
 				break;
 			}
-			if (!doc.seek(pxtnSEEK.pxtnSEEK_cur, size)) {
+			if (!doc.seek(pxtnSEEK.cur, size)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}
