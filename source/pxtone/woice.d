@@ -205,7 +205,7 @@ struct _MATERIALSTRUCT_PCM {
 	ushort ch;
 	ushort bps;
 	uint sps;
-	float tuning;
+	float tuning = 0.0;
 	uint data_size;
 }
 
@@ -218,7 +218,7 @@ struct _MATERIALSTRUCT_PTN {
 	ushort x3x_unit_no;
 	ushort basic_key;
 	uint voice_flags;
-	float tuning;
+	float tuning = 0.0;
 	int rrr; // 0: -v.0.9.2.3
 	// 1:  v.0.9.2.4-
 }
@@ -231,7 +231,7 @@ struct _MATERIALSTRUCT_PTN {
 struct _MATERIALSTRUCT_PTV {
 	ushort x3x_unit_no;
 	ushort rrr;
-	float x3x_tuning;
+	float x3x_tuning = 0.0;
 	int size;
 }
 
@@ -244,7 +244,7 @@ struct _MATERIALSTRUCT_OGGV {
 	ushort xxx; //ch;
 	ushort basic_key;
 	uint voice_flags;
-	float tuning;
+	float tuning = 0.0;
 }
 
 ////////////////////////
@@ -792,7 +792,7 @@ public:
 
 	pxtnERR io_matePCM_r(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.VOID;
-		_MATERIALSTRUCT_PCM pcm = {0};
+		_MATERIALSTRUCT_PCM pcm;
 		int size = 0;
 
 		if (!p_doc.r(size)) {
@@ -881,7 +881,7 @@ public:
 
 	pxtnERR io_matePTN_r(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.VOID;
-		_MATERIALSTRUCT_PTN ptn = {0};
+		_MATERIALSTRUCT_PTN ptn;
 		int size = 0;
 
 		if (!p_doc.r(size)) {
@@ -968,7 +968,7 @@ public:
 
 	pxtnERR io_matePTV_r(ref pxtnDescriptor p_doc) nothrow @system {
 		pxtnERR res = pxtnERR.VOID;
-		_MATERIALSTRUCT_PTV ptv = {0};
+		_MATERIALSTRUCT_PTV ptv;
 		int size = 0;
 
 		if (!p_doc.r(size)) {
@@ -1003,7 +1003,7 @@ public:
 				return false;
 			}
 
-			_MATERIALSTRUCT_OGGV mate = {0};
+			_MATERIALSTRUCT_OGGV mate;
 			const(pxtnVOICEUNIT)* p_vc = &_voices[0];
 
 			if (!p_vc.p_oggv) {
@@ -1032,7 +1032,7 @@ public:
 
 		pxtnERR io_mateOGGV_r(ref pxtnDescriptor p_doc) nothrow @system {
 			pxtnERR res = pxtnERR.VOID;
-			_MATERIALSTRUCT_OGGV mate = {0};
+			_MATERIALSTRUCT_OGGV mate;
 			int size = 0;
 
 			if (!p_doc.r(size)) {

@@ -90,7 +90,7 @@ struct pxtnOverDrive {
 	}
 
 	pxtnERR Read(ref pxtnDescriptor p_doc) nothrow @system {
-		_OVERDRIVESTRUCT over = {0};
+		_OVERDRIVESTRUCT over;
 		int size = 0;
 
 		if (!p_doc.r(size)) {
@@ -125,7 +125,7 @@ struct pxtnOverDrive {
 struct _OVERDRIVESTRUCT {
 	ushort xxx;
 	ushort group;
-	float cut;
-	float amp;
-	float yyy;
+	float cut = 0.0;
+	float amp = 0.0;
+	float yyy = 0.0;
 }

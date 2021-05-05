@@ -174,7 +174,7 @@ enum _MAX_PROJECTNAME_x1x = 16;
 struct _x1x_PROJECT {
 	char[_MAX_PROJECTNAME_x1x] x1x_name = 0;
 
-	float x1x_beat_tempo;
+	float x1x_beat_tempo = 0.0;
 	ushort x1x_beat_clock;
 	ushort x1x_beat_num;
 	ushort x1x_beat_note;
@@ -187,14 +187,14 @@ struct _x1x_PROJECT {
 struct pxtnVOMITPREPARATION {
 	int start_pos_meas;
 	int start_pos_sample;
-	float start_pos_float;
+	float start_pos_float = 0.0;
 
 	int meas_end;
 	int meas_repeat;
-	float fadein_sec;
+	float fadein_sec = 0.0;
 
 	uint flags;
-	float master_volume;
+	float master_volume = 0.0;
 }
 
 alias pxtnSampledCallback = bool function(void* user, const(pxtnService)* pxtn) nothrow;
@@ -473,7 +473,7 @@ private:
 			return false;
 		}
 
-		_x1x_PROJECT prjc = {0};
+		_x1x_PROJECT prjc;
 		int beat_num, beat_clock;
 		int size;
 		float beat_tempo;
@@ -682,7 +682,7 @@ private:
 			return false;
 		}
 
-		_ASSIST_WOICE assi = {0};
+		_ASSIST_WOICE assi;
 		int size;
 		const char[] p_name = _woices[idx].get_name_buf();
 
@@ -709,7 +709,7 @@ private:
 			return pxtnERR.INIT;
 		}
 
-		_ASSIST_WOICE assi = {0};
+		_ASSIST_WOICE assi;
 		int size = 0;
 
 		if (!p_doc.r(size)) {
@@ -743,7 +743,7 @@ private:
 			return false;
 		}
 
-		_ASSIST_UNIT assi = {0};
+		_ASSIST_UNIT assi;
 		int size;
 		int name_size;
 		const char* p_name = _units[idx].get_name_buf(&name_size);
@@ -767,7 +767,7 @@ private:
 			return pxtnERR.INIT;
 		}
 
-		_ASSIST_UNIT assi = {0};
+		_ASSIST_UNIT assi;
 		int size;
 
 		if (!p_doc.r(size)) {
@@ -822,7 +822,7 @@ private:
 			return pxtnERR.INIT;
 		}
 
-		_NUM_UNIT data = {0};
+		_NUM_UNIT data;
 		int size = 0;
 
 		if (!p_doc.r(size)) {

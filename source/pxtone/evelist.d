@@ -1061,7 +1061,7 @@ public:
 
 	// write event.
 	pxtnERR io_Unit_Read_x4x_EVENT(ref pxtnDescriptor p_doc, bool bTailAbsolute, bool bCheckRRR) nothrow @system {
-		_x4x_EVENTSTRUCT evnt = {0};
+		_x4x_EVENTSTRUCT evnt;
 		int clock = 0;
 		int value = 0;
 		int absolute = 0;
@@ -1114,7 +1114,7 @@ public:
 			return pxtnERR.param;
 		}
 
-		_x4x_EVENTSTRUCT evnt = {0};
+		_x4x_EVENTSTRUCT evnt;
 		int work = 0;
 		int e = 0;
 		int size = 0;

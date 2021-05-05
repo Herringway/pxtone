@@ -178,7 +178,7 @@ public:
 	}
 
 	pxtnERR Read(ref pxtnDescriptor p_doc) nothrow @system {
-		_DELAYSTRUCT dela = {0};
+		_DELAYSTRUCT dela;
 		int size = 0;
 
 		if (!p_doc.r(size)) {

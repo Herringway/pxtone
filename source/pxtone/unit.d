@@ -349,7 +349,7 @@ public:
 	}
 
 	pxtnERR Read_v3x(ref pxtnDescriptor p_doc, int* p_group) nothrow @system {
-		_x3x_UNIT unit = {0};
+		_x3x_UNIT unit;
 		int size = 0;
 
 		if (!p_doc.r(size)) {

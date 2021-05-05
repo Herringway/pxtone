@@ -238,7 +238,7 @@ public:
 	}
 
 	pxtnERR io_r_x4x(ref pxtnDescriptor p_doc) nothrow @system {
-		_x4x_MASTER mast = {0};
+		_x4x_MASTER mast;
 		int size = 0;
 		int e = 0;
 		int status = 0;

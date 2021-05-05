@@ -372,7 +372,7 @@ public:
 		pxtnERR res = pxtnERR.VOID;
 		char[16] buf = 0;
 		uint size = 0;
-		WAVEFORMATCHUNK format = {0};
+		WAVEFORMATCHUNK format;
 
 		_p_smp = null;
 
