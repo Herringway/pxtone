@@ -57,7 +57,7 @@ enum NOISEDESIGNLIMIT_OSC_FREQUENCY = 44100.0f;
 enum NOISEDESIGNLIMIT_OSC_VOLUME = 200.0f;
 enum NOISEDESIGNLIMIT_OSC_OFFSET = 100.0f;
 
-static void _FixUnit(pxNOISEDESIGN_OSCILLATOR* p_osc) nothrow @safe {
+void _FixUnit(pxNOISEDESIGN_OSCILLATOR* p_osc) nothrow @safe {
 	if (p_osc.type >= pxWAVETYPE.num) {
 		p_osc.type = pxWAVETYPE.None;
 	}
@@ -99,7 +99,7 @@ __gshared const(char)* _code = "PTNOISE-";
 //_ver =  20051028 ; -v.0.9.2.3
 __gshared const uint _ver = 20120418; // 16 wave types.
 
-static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor p_doc, int* p_add) nothrow @system {
+bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor p_doc, int* p_add) nothrow @system {
 	int work;
 	work = cast(int) p_osc.type;
 	if (!p_doc.v_w_asfile(work, p_add)) {
@@ -124,7 +124,7 @@ static bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDes
 	return true;
 }
 
-static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescriptor p_doc) nothrow @system {
+pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescriptor p_doc) nothrow @system {
 	int work;
 	if (!p_doc.v_r(&work)) {
 		return pxtnERR.desc_r;
@@ -153,7 +153,7 @@ static pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescript
 	return pxtnERR.OK;
 }
 
-static uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow @safe {
+uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow @safe {
 	uint flags = 0;
 	flags |= NOISEEDITFLAG_ENVELOPE;
 	if (pU.pan) {

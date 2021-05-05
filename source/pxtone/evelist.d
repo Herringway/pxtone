@@ -63,7 +63,7 @@ struct EVERECORD {
 	EVERECORD* next;
 }
 
-static int _DefaultKindValue(ubyte kind) nothrow @system {
+int _DefaultKindValue(ubyte kind) nothrow @system {
 	switch (kind) {
 		//	case EVENTKIND.ON        : return ;
 	case EVENTKIND.KEY:
@@ -101,7 +101,7 @@ static int _DefaultKindValue(ubyte kind) nothrow @system {
 	return 0;
 }
 
-static int _ComparePriority(ubyte kind1, ubyte kind2) nothrow @safe {
+int _ComparePriority(ubyte kind1, ubyte kind2) nothrow @safe {
 	static const int[EVENTKIND.NUM] priority_table = [0, // EVENTKIND.NULL  = 0
 		50, // EVENTKIND.ON
 		40, // EVENTKIND.KEY
