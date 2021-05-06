@@ -95,7 +95,7 @@ enum NOISEEDITFLAG_OSC_PAN = 0x0080;
 
 enum NOISEEDITFLAG_UNCOVERED = 0xffffff83;
 
-__gshared const(char)* _code = "PTNOISE-";
+immutable _code = "PTNOISE-";
 //_ver =  20051028 ; -v.0.9.2.3
 __gshared const uint _ver = 20120418; // 16 wave types.
 
@@ -216,10 +216,10 @@ public:
 			seek = 0;
 		}
 
-		if (!p_doc.w_asfile(_code, 1, 8)) {
+		if (!p_doc.w_asfile(_code)) {
 			goto End;
 		}
-		if (!p_doc.w_asfile(&_ver, 4, 1)) {
+		if (!p_doc.w_asfile(_ver)) {
 			goto End;
 		}
 		seek += 12;
@@ -227,7 +227,7 @@ public:
 			goto End;
 		}
 
-		if (!p_doc.w_asfile(&unit_num, 1, 1)) {
+		if (!p_doc.w_asfile(unit_num)) {
 			goto End;
 		}
 		num_seek = seek;
@@ -256,7 +256,7 @@ public:
 				}
 				if (flags & NOISEEDITFLAG_PAN) {
 					_byte = cast(char) pU.pan;
-					if (!p_doc.w_asfile(&_byte, 1, 1)) {
+					if (!p_doc.w_asfile(_byte)) {
 						goto End;
 					}
 					seek++;
@@ -282,7 +282,7 @@ public:
 
 		// update unit_num.
 		p_doc.seek(pxtnSEEK.cur, num_seek - seek);
-		if (!p_doc.w_asfile(&unit_num, 1, 1)) {
+		if (!p_doc.w_asfile(unit_num)) {
 			goto End;
 		}
 		p_doc.seek(pxtnSEEK.cur, seek - num_seek - 1);

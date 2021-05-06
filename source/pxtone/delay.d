@@ -167,10 +167,10 @@ public:
 
 		// dela ----------
 		size = _DELAYSTRUCT.sizeof;
-		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&dela, size, 1)) {
+		if (!p_doc.w_asfile(dela)) {
 			return false;
 		}
 

@@ -157,22 +157,22 @@ public:
 		int clock_last = bclock * _beat_num * get_last_meas();
 		byte bnum = cast(byte) _beat_num;
 		float btempo = _beat_tempo;
-		if (!p_doc.w_asfile(&size, uint.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&bclock, short.sizeof, 1)) {
+		if (!p_doc.w_asfile(bclock)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&bnum, byte.sizeof, 1)) {
+		if (!p_doc.w_asfile(bnum)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&btempo, float.sizeof, 1)) {
+		if (!p_doc.w_asfile(btempo)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&clock_repeat, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(clock_repeat)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&clock_last, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(clock_last)) {
 			return false;
 		}
 

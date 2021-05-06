@@ -136,17 +136,20 @@ public:
 		return true;
 	}
 
-	bool w_asfile(const(void)* p, int size, int num) nothrow @system {
+	bool w_asfile(T)(const T p) nothrow @system if (!is(T : U[], U)) {
+		return w_asfile((&p)[0 .. 1]);
+	}
+	bool w_asfile(T)(scope const(T)[] p) nothrow @system {
 		if (!isOpen || !_b_file || _b_read) {
 			return false;
 		}
 
 		try {
-			file.rawWrite(p[0 .. size*num]);
+			file.rawWrite(p);
 		} catch (Exception) {
 			return false;
 		}
-		_size += size * num;
+		_size += p.length * T.sizeof;
 		return true;
 	}
 

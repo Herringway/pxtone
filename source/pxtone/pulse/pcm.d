@@ -511,53 +511,53 @@ public:
 
 		// open file..
 
-		if (!doc.w_asfile(tag_RIFF.ptr, char.sizeof, 4)) {
+		if (!doc.w_asfile(tag_RIFF)) {
 			goto End;
 		}
-		if (!doc.w_asfile(&riff_size, uint.sizeof, 1)) {
+		if (!doc.w_asfile(riff_size)) {
 			goto End;
 		}
-		if (!doc.w_asfile(tag_WAVE.ptr, char.sizeof, 4)) {
+		if (!doc.w_asfile(tag_WAVE)) {
 			goto End;
 		}
-		if (!doc.w_asfile(tag_fmt_.ptr, char.sizeof, 8)) {
+		if (!doc.w_asfile(tag_fmt_)) {
 			goto End;
 		}
-		if (!doc.w_asfile(&format, 18, 1)) {
+		if (!doc.w_asfile(format)) {
 			goto End;
 		}
 
 		if (bText) {
-			if (!doc.w_asfile(tag_LIST.ptr, char.sizeof, 4)) {
+			if (!doc.w_asfile(tag_LIST)) {
 				goto End;
 			}
-			if (!doc.w_asfile(&list_size, uint.sizeof, 1)) {
+			if (!doc.w_asfile(list_size)) {
 				goto End;
 			}
-			if (!doc.w_asfile(tag_INFO.ptr, char.sizeof, 8)) {
+			if (!doc.w_asfile(tag_INFO)) {
 				goto End;
 			}
-			if (!doc.w_asfile(&isft_size, uint.sizeof, 1)) {
+			if (!doc.w_asfile(isft_size)) {
 				goto End;
 			}
-			if (!doc.w_asfile(pstrLIST.ptr, char.sizeof, isft_size)) {
+			if (!doc.w_asfile(pstrLIST)) {
 				goto End;
 			}
 		}
 
-		if (!doc.w_asfile(tag_fact.ptr, char.sizeof, 8)) {
+		if (!doc.w_asfile(tag_fact)) {
 			goto End;
 		}
-		if (!doc.w_asfile(&fact_size, uint.sizeof, 1)) {
+		if (!doc.w_asfile(fact_size)) {
 			goto End;
 		}
-		if (!doc.w_asfile(tag_data.ptr, char.sizeof, 4)) {
+		if (!doc.w_asfile(tag_data)) {
 			goto End;
 		}
-		if (!doc.w_asfile(&sample_size, int.sizeof, 1)) {
+		if (!doc.w_asfile(sample_size)) {
 			goto End;
 		}
-		if (!doc.w_asfile(_p_smp.ptr, char.sizeof, sample_size)) {
+		if (!doc.w_asfile(_p_smp)) {
 			goto End;
 		}
 

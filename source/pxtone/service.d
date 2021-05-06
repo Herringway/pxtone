@@ -700,10 +700,10 @@ private:
 		assi.woice_index = cast(ushort) idx;
 
 		size = _ASSIST_WOICE.sizeof;
-		if (!p_doc.w_asfile(&size, uint.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&assi, size, 1)) {
+		if (!p_doc.w_asfile(assi)) {
 			return false;
 		}
 
@@ -758,10 +758,10 @@ private:
 		assi.unit_index = cast(ushort) idx;
 
 		size = assi.sizeof;
-		if (!p_doc.w_asfile(&size, uint.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&assi, size, 1)) {
+		if (!p_doc.w_asfile(assi)) {
 			return false;
 		}
 
@@ -813,10 +813,10 @@ private:
 		data.num = cast(short) _unit_num;
 
 		size = _NUM_UNIT.sizeof;
-		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&data, size, 1)) {
+		if (!p_doc.w_asfile(data)) {
 			return false;
 		}
 
@@ -1592,29 +1592,29 @@ public:
 
 		// format version
 		if (b_tune) {
-			if (!p_doc.w_asfile(_code_tune_v5.ptr, 1, _VERSIONSIZE)) {
+			if (!p_doc.w_asfile(_code_tune_v5)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}
 		} else {
-			if (!p_doc.w_asfile(_code_proj_v5.ptr, 1, _VERSIONSIZE)) {
+			if (!p_doc.w_asfile(_code_proj_v5)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}
 		}
 
 		// exe version
-		if (!p_doc.w_asfile(&exe_ver, ushort.sizeof, 1)) {
+		if (!p_doc.w_asfile(exe_ver)) {
 			res = pxtnERR.desc_w;
 			goto End;
 		}
-		if (!p_doc.w_asfile(&rrr, ushort.sizeof, 1)) {
+		if (!p_doc.w_asfile(rrr)) {
 			res = pxtnERR.desc_w;
 			goto End;
 		}
 
 		// master
-		if (!p_doc.w_asfile(_code_MasterV5.ptr, 1, _CODESIZE)) {
+		if (!p_doc.w_asfile(_code_MasterV5)) {
 			res = pxtnERR.desc_w;
 			goto End;
 		}
@@ -1624,7 +1624,7 @@ public:
 		}
 
 		// event
-		if (!p_doc.w_asfile(_code_Event_V5.ptr, 1, _CODESIZE)) {
+		if (!p_doc.w_asfile(_code_Event_V5)) {
 			res = pxtnERR.desc_w;
 			goto End;
 		}
@@ -1635,7 +1635,7 @@ public:
 
 		// name
 		if (text.is_name_buf()) {
-			if (!p_doc.w_asfile(_code_textNAME.ptr, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_textNAME)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}
@@ -1647,7 +1647,7 @@ public:
 
 		// comment
 		if (text.is_comment_buf()) {
-			if (!p_doc.w_asfile(_code_textCOMM.ptr, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_textCOMM)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}
@@ -1659,7 +1659,7 @@ public:
 
 		// delay
 		for (int d = 0; d < _delay_num; d++) {
-			if (!p_doc.w_asfile(_code_effeDELA.ptr, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_effeDELA)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}
@@ -1671,7 +1671,7 @@ public:
 
 		// overdrive
 		for (int o = 0; o < _ovdrv_num; o++) {
-			if (!p_doc.w_asfile(_code_effeOVER.ptr, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_effeOVER)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}
@@ -1687,7 +1687,7 @@ public:
 
 			switch (p_w.get_type()) {
 			case pxtnWOICETYPE.PCM:
-				if (!p_doc.w_asfile(_code_matePCM.ptr, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_matePCM)) {
 					res = pxtnERR.desc_w;
 					goto End;
 				}
@@ -1697,7 +1697,7 @@ public:
 				}
 				break;
 			case pxtnWOICETYPE.PTV:
-				if (!p_doc.w_asfile(_code_matePTV.ptr, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_matePTV)) {
 					res = pxtnERR.desc_w;
 					goto End;
 				}
@@ -1707,7 +1707,7 @@ public:
 				}
 				break;
 			case pxtnWOICETYPE.PTN:
-				if (!p_doc.w_asfile(_code_matePTN.ptr, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_matePTN)) {
 					res = pxtnERR.desc_w;
 					goto End;
 				}
@@ -1719,7 +1719,7 @@ public:
 			case pxtnWOICETYPE.OGGV:
 
 				version (pxINCLUDE_OGGVORBIS) {
-					if (!p_doc.w_asfile(_code_mateOGGV.ptr, 1, _CODESIZE)) {
+					if (!p_doc.w_asfile(_code_mateOGGV)) {
 						res = pxtnERR.desc_w;
 						goto End;
 					}
@@ -1738,7 +1738,7 @@ public:
 			}
 
 			if (!b_tune && p_w.is_name_buf()) {
-				if (!p_doc.w_asfile(_code_assiWOIC.ptr, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_assiWOIC)) {
 					res = pxtnERR.desc_w;
 					goto End;
 				}
@@ -1750,7 +1750,7 @@ public:
 		}
 
 		// unit
-		if (!p_doc.w_asfile(_code_num_UNIT.ptr, 1, _CODESIZE)) {
+		if (!p_doc.w_asfile(_code_num_UNIT)) {
 			res = pxtnERR.desc_w;
 			goto End;
 		}
@@ -1761,7 +1761,7 @@ public:
 
 		for (int u = 0; u < _unit_num; u++) {
 			if (!b_tune && _units[u].is_name_buf()) {
-				if (!p_doc.w_asfile(_code_assiUNIT.ptr, 1, _CODESIZE)) {
+				if (!p_doc.w_asfile(_code_assiUNIT)) {
 					res = pxtnERR.desc_w;
 					goto End;
 				}
@@ -1774,11 +1774,11 @@ public:
 
 		{
 			int end_size = 0;
-			if (!p_doc.w_asfile(_code_pxtoneND.ptr, 1, _CODESIZE)) {
+			if (!p_doc.w_asfile(_code_pxtoneND)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}
-			if (!p_doc.w_asfile(&end_size, 4, 1)) {
+			if (!p_doc.w_asfile(end_size)) {
 				res = pxtnERR.desc_w;
 				goto End;
 			}

@@ -867,11 +867,11 @@ public:
 			absolute = p.clock;
 		}
 
-		size_t size = int.sizeof + ralatived_size;
-		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
+		int size = cast(int)(int.sizeof + ralatived_size);
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&eve_num, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(eve_num)) {
 			return false;
 		}
 
@@ -889,10 +889,10 @@ public:
 			if (!p_doc.v_w_asfile(clock / rough)) {
 				return false;
 			}
-			if (!p_doc.w_asfile(&p.unit_no, ubyte.sizeof, 1)) {
+			if (!p_doc.w_asfile(p.unit_no)) {
 				return false;
 			}
-			if (!p_doc.w_asfile(&p.kind, ubyte.sizeof, 1)) {
+			if (!p_doc.w_asfile(p.kind)) {
 				return false;
 			}
 			if (!p_doc.v_w_asfile(value)) {

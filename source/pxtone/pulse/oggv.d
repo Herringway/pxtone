@@ -279,7 +279,7 @@ public:
 	bool ogg_write(ref pxtnDescriptor desc) const nothrow @system {
 		bool b_ret = false;
 
-		if (!desc.w_asfile(_p_data.ptr, 1, _size)) {
+		if (!desc.w_asfile(_p_data)) {
 			goto End;
 		}
 
@@ -327,19 +327,19 @@ public:
 			return false;
 		}
 
-		if (!p_doc.w_asfile(&_ch, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(_ch)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&_sps2, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(_sps2)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&_smp_num, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(_smp_num)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&_size, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(_size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(_p_data.ptr, ubyte.sizeof, _size)) {
+		if (!p_doc.w_asfile(_p_data)) {
 			return false;
 		}
 

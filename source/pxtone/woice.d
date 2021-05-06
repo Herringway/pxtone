@@ -561,13 +561,13 @@ public:
 		int v = 0;
 		int total = 0;
 
-		if (!p_doc.w_asfile(_code.ptr, 1, 8)) {
+		if (!p_doc.w_asfile(_code)) {
 			goto End;
 		}
-		if (!p_doc.w_asfile(&_version, uint.sizeof, 1)) {
+		if (!p_doc.w_asfile(_version)) {
 			goto End;
 		}
-		if (!p_doc.w_asfile(&total, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(total)) {
 			goto End;
 		}
 
@@ -626,7 +626,7 @@ public:
 		if (!p_doc.seek(pxtnSEEK.cur, -(total + 4))) {
 			goto End;
 		}
-		if (!p_doc.w_asfile(&total, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(total)) {
 			goto End;
 		}
 		if (!p_doc.seek(pxtnSEEK.cur, (total))) {
@@ -777,13 +777,13 @@ public:
 		pcm.basic_key = cast(ushort) p_vc.basic_key;
 
 		uint size = cast(uint)(_MATERIALSTRUCT_PCM.sizeof + pcm.data_size);
-		if (!p_doc.w_asfile(&size, uint.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&pcm, _MATERIALSTRUCT_PCM.sizeof, 1)) {
+		if (!p_doc.w_asfile(pcm)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(p_pcm.get_p_buf().ptr, 1, pcm.data_size)) {
+		if (!p_doc.w_asfile(p_pcm.get_p_buf())) {
 			return false;
 		}
 
@@ -856,10 +856,10 @@ public:
 		ptn.rrr = 1;
 
 		// pre
-		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&ptn, _MATERIALSTRUCT_PTN.sizeof, 1)) {
+		if (!p_doc.w_asfile(ptn)) {
 			return false;
 		}
 		size += _MATERIALSTRUCT_PTN.sizeof;
@@ -869,7 +869,7 @@ public:
 		if (!p_doc.seek(pxtnSEEK.cur, cast(int)(-size - int.sizeof))) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
 		if (!p_doc.seek(pxtnSEEK.cur, size)) {
@@ -937,10 +937,10 @@ public:
 		ptv.size = 0;
 
 		// pre write
-		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&ptv, _MATERIALSTRUCT_PTV.sizeof, 1)) {
+		if (!p_doc.w_asfile(ptv)) {
 			return false;
 		}
 		if (!PTV_Write(p_doc, &ptv.size)) {
@@ -952,10 +952,10 @@ public:
 		}
 
 		size = cast(int)(ptv.size + _MATERIALSTRUCT_PTV.sizeof);
-		if (!p_doc.w_asfile(&size, int.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&ptv, _MATERIALSTRUCT_PTV.sizeof, 1)) {
+		if (!p_doc.w_asfile(ptv)) {
 			return false;
 		}
 
@@ -1017,10 +1017,10 @@ public:
 			mate.basic_key = cast(ushort) p_vc.basic_key;
 
 			uint size = cast(uint)(_MATERIALSTRUCT_OGGV.sizeof + oggv_size);
-			if (!p_doc.w_asfile(&size, uint.sizeof, 1)) {
+			if (!p_doc.w_asfile(size)) {
 				return false;
 			}
-			if (!p_doc.w_asfile(&mate, _MATERIALSTRUCT_OGGV.sizeof, 1)) {
+			if (!p_doc.w_asfile(mate)) {
 				return false;
 			}
 			if (!p_vc.p_oggv.pxtn_write(p_doc)) {

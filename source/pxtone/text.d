@@ -41,10 +41,10 @@ term:
 }
 
 bool _write4(const char* p, int buf_size, ref pxtnDescriptor p_doc) nothrow @system {
-	if (!p_doc.w_asfile(&buf_size, 4, 1)) {
+	if (!p_doc.w_asfile(buf_size)) {
 		return false;
 	}
-	if (!p_doc.w_asfile(p, 1, buf_size)) {
+	if (!p_doc.w_asfile(p[0 .. buf_size])) {
 		return false;
 	}
 	return true;

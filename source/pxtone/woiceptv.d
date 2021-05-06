@@ -33,12 +33,12 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, ref int p
 		num = p_vc.wave.num;
 		for (i = 0; i < num; i++) {
 			uc = cast(byte) p_vc.wave.points[i].x;
-			if (!p_doc.w_asfile(&uc, 1, 1)) {
+			if (!p_doc.w_asfile(uc)) {
 				goto End;
 			}
 			p_total++;
 			sc = cast(byte) p_vc.wave.points[i].y;
-			if (!p_doc.w_asfile(&sc, 1, 1)) {
+			if (!p_doc.w_asfile(sc)) {
 				goto End;
 			}
 			p_total++;
@@ -85,7 +85,7 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, ref int p
 
 		size = p_vc.p_pcm.get_buf_size();
 
-		if (!p_doc.w_asfile(p_vc.p_pcm.get_p_buf().ptr, 1, size)) {
+		if (!p_doc.w_asfile(p_vc.p_pcm.get_p_buf())) {
 			goto End;
 		}
 		p_total += size;

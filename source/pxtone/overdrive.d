@@ -79,10 +79,10 @@ struct pxtnOverDrive {
 
 		// dela ----------
 		size = _OVERDRIVESTRUCT.sizeof;
-		if (!p_doc.w_asfile(&size, uint.sizeof, 1)) {
+		if (!p_doc.w_asfile(size)) {
 			return false;
 		}
-		if (!p_doc.w_asfile(&over, size, 1)) {
+		if (!p_doc.w_asfile(over)) {
 			return false;
 		}
 
