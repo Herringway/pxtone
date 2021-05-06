@@ -8,9 +8,6 @@ import pxtone.pxtn;
 
 import std.stdio;
 
-struct _iobuf;
-alias FILE = _iobuf;
-
 enum pxSCE = false;
 
 enum pxtnSEEK {
@@ -22,11 +19,6 @@ enum pxtnSEEK {
 
 struct pxtnDescriptor {
 private:
-	enum {
-		_BUFSIZE_HEEP = 1024,
-		_TAGLINE_NUM = 128,
-	}
-
 	ubyte[] _p_desc;
 	File file;
 	bool _b_file;
