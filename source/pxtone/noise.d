@@ -64,15 +64,15 @@ struct pxtoneNoise {
 		return false;
 	}
 
-	void quality_get(int* p_ch_num, int* p_sps, int* p_bps) const nothrow @safe {
+	void quality_get(out int p_ch_num, out int p_sps, out int p_bps) const nothrow @safe {
 		if (p_ch_num) {
-			*p_ch_num = _ch_num;
+			p_ch_num = _ch_num;
 		}
 		if (p_sps) {
-			*p_sps = _sps;
+			p_sps = _sps;
 		}
 		if (p_bps) {
-			*p_bps = _bps;
+			p_bps = _bps;
 		}
 	}
 

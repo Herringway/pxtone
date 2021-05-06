@@ -34,6 +34,9 @@ private:
 	int _size;
 	int _cur;
 
+	bool isOpen() nothrow @safe {
+		return (_p_desc != null) || file.isOpen;
+	}
 public:
 
 	bool set_file_r(ref File fd) nothrow @system {
@@ -142,26 +145,21 @@ public:
 	}
 
 	bool w_asfile(const(void)* p, int size, int num) nothrow @system {
-		bool b_ret = false;
-
-		if (!_p_desc || !_b_file || _b_read) {
-			goto End;
+		if (!isOpen || !_b_file || _b_read) {
+			return false;
 		}
 
 		try {
 			file.rawWrite(p[0 .. size*num]);
 		} catch (Exception) {
-			goto End;
+			return false;
 		}
 		_size += size * num;
-
-		b_ret = true;
-	End:
-		return b_ret;
+		return true;
 	}
 
 	bool r(T)(T[] p) nothrow @system {
-		if (!_p_desc) {
+		if (!isOpen) {
 			return false;
 		}
 		if (!_b_read) {
@@ -191,7 +189,7 @@ public:
 		return b_ret;
 	}
 	bool r(T)(ref T p) nothrow @system if (!is(T : U[], U)) {
-		if (!_p_desc) {
+		if (!isOpen) {
 			return false;
 		}
 		if (!_b_read) {
@@ -223,7 +221,7 @@ public:
 
 	// ..uint
 	int v_w_asfile(int val, int* p_add) nothrow @system {
-		if (!_p_desc) {
+		if (!isOpen) {
 			return 0;
 		}
 		if (!_b_file) {
@@ -290,7 +288,7 @@ public:
 	}
 	// 可変長読み込み（int  までを保証）
 	bool v_r(int* p) nothrow @system {
-		if (!_p_desc) {
+		if (!isOpen) {
 			return false;
 		}
 		if (!_b_read) {
