@@ -1,4 +1,4 @@
-﻿module pxtone.woiceptv;
+module pxtone.woiceptv;
 // '12/03/03
 
 import pxtone.pxtn;
