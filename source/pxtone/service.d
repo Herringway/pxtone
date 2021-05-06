@@ -185,16 +185,22 @@ struct _x1x_PROJECT {
 }
 
 struct pxtnVOMITPREPARATION {
-	int start_pos_meas;
-	int start_pos_sample;
+	int start_pos_meas = 0;
+	int start_pos_sample = 0;
 	float start_pos_float = 0.0;
 
-	int meas_end;
-	int meas_repeat;
+	int meas_end = 0;
+	int meas_repeat = 0;
 	float fadein_sec = 0.0;
 
-	uint flags;
+	uint flags = 0;
 	float master_volume = 0.0;
+	invariant {
+		import std.math : isNaN;
+		assert(!master_volume.isNaN, "Master volume should never be NaN!");
+		assert(!fadein_sec.isNaN, "fadein_sec should never be NaN!");
+		assert(!start_pos_float.isNaN, "start_pos_float should never be NaN!");
+	}
 }
 
 alias pxtnSampledCallback = bool function(void* user, const(pxtnService)* pxtn) nothrow;
