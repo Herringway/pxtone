@@ -886,7 +886,7 @@ public:
 				value = p.value;
 			}
 
-			if (!p_doc.v_w_asfile(clock / rough, null)) {
+			if (!p_doc.v_w_asfile(clock / rough)) {
 				return false;
 			}
 			if (!p_doc.w_asfile(&p.unit_no, ubyte.sizeof, 1)) {
@@ -895,7 +895,7 @@ public:
 			if (!p_doc.w_asfile(&p.kind, ubyte.sizeof, 1)) {
 				return false;
 			}
-			if (!p_doc.v_w_asfile(value, null)) {
+			if (!p_doc.v_w_asfile(value)) {
 				return false;
 			}
 

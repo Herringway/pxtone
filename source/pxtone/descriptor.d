@@ -220,7 +220,11 @@ public:
 	}
 
 	// ..uint
-	int v_w_asfile(int val, int* p_add) nothrow @system {
+	int v_w_asfile(int val) nothrow @system {
+		int dummy;
+		return v_w_asfile(val, dummy);
+	}
+	int v_w_asfile(int val, ref int p_add) nothrow @system {
 		if (!isOpen) {
 			return 0;
 		}
@@ -278,9 +282,7 @@ public:
 		} catch (Exception) {
 			return false;
 		}
-		if (p_add) {
-			*p_add += bytes;
-		}
+		p_add += bytes;
 		_size += bytes;
 		return true;
 

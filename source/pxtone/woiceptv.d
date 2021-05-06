@@ -11,7 +11,7 @@ import pxtone.woice;
 
 __gshared int _version = 20060111; // support no-envelope
 
-bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_total) nothrow @system {
+bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, ref int p_total) nothrow @system {
 	bool b_ret = false;
 	int num, i, size;
 	byte sc;
@@ -36,12 +36,12 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_to
 			if (!p_doc.w_asfile(&uc, 1, 1)) {
 				goto End;
 			}
-			(*p_total)++;
+			p_total++;
 			sc = cast(byte) p_vc.wave.points[i].y;
 			if (!p_doc.w_asfile(&sc, 1, 1)) {
 				goto End;
 			}
-			(*p_total)++;
+			p_total++;
 		}
 		break;
 
@@ -88,7 +88,7 @@ bool _Write_Wave(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_to
 		if (!p_doc.w_asfile(p_vc.p_pcm.get_p_buf().ptr, 1, size)) {
 			goto End;
 		}
-		*p_total += size;
+		p_total += size;
 		break;
 
 	case pxtnVOICETYPE.OggVorbis:
@@ -103,7 +103,7 @@ End:
 	return b_ret;
 }
 
-bool _Write_Envelope(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, int* p_total) nothrow @system {
+bool _Write_Envelope(ref pxtnDescriptor p_doc, const(pxtnVOICEUNIT)* p_vc, ref int p_total) nothrow @system {
 	bool b_ret = false;
 	int num, i;
 

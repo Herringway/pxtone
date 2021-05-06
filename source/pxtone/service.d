@@ -233,7 +233,7 @@ private:
 
 	int _group_num;
 
-	pxtnERR _ReadVersion(ref pxtnDescriptor p_doc, _enum_FMTVER* p_fmt_ver, ushort* p_exe_ver) nothrow @system {
+	pxtnERR _ReadVersion(ref pxtnDescriptor p_doc, out _enum_FMTVER p_fmt_ver, out ushort p_exe_ver) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.INIT;
 		}
@@ -247,35 +247,35 @@ private:
 
 		// fmt version
 		if (version_[0 .. _VERSIONSIZE] == _code_proj_x1x) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x1x;
-			*p_exe_ver = 0;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x1x;
+			p_exe_ver = 0;
 			return pxtnERR.OK;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x2x) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
-			*p_exe_ver = 0;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
+			p_exe_ver = 0;
 			return pxtnERR.OK;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x3x) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x4x) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x4x;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x4x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_v5) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x2x) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
-			*p_exe_ver = 0;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
+			p_exe_ver = 0;
 			return pxtnERR.OK;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x3x) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x4x) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_x4x;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x4x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_v5) {
-			*p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
+			p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
 		} else {
 			return pxtnERR.fmt_unknown;
 		}
 
 		// exe version
-		if (!p_doc.r(*p_exe_ver)) {
+		if (!p_doc.r(p_exe_ver)) {
 			return pxtnERR.desc_r;
 		}
 		if (!p_doc.r(dummy)) {
@@ -313,7 +313,7 @@ private:
 				// new -------
 			case _enum_Tag.num_UNIT: {
 					int num = 0;
-					res = _io_UNIT_num_r(p_doc, &num);
+					res = _io_UNIT_num_r(p_doc, num);
 					if (res != pxtnERR.OK) {
 						goto term;
 					}
@@ -817,7 +817,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_UNIT_num_r(ref pxtnDescriptor p_doc, int* p_num) nothrow @system {
+	pxtnERR _io_UNIT_num_r(ref pxtnDescriptor p_doc, out int p_num) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.INIT;
 		}
@@ -843,7 +843,7 @@ private:
 		if (data.num < 0) {
 			return pxtnERR.fmt_unknown;
 		}
-		*p_num = data.num;
+		p_num = data.num;
 
 		return pxtnERR.OK;
 	}
@@ -1099,12 +1099,9 @@ private:
 		return true;
 	}
 
-	pxtnERR _pre_count_event(ref pxtnDescriptor p_doc, int* p_count) nothrow @system {
+	pxtnERR _pre_count_event(ref pxtnDescriptor p_doc, out int p_count) nothrow @system {
 		if (!_b_init) {
 			return pxtnERR.INIT;
-		}
-		if (!p_count) {
-			return pxtnERR.param;
 		}
 
 		pxtnERR res = pxtnERR.VOID;
@@ -1118,7 +1115,7 @@ private:
 		ushort exe_ver = 0;
 		_enum_FMTVER fmt_ver = _enum_FMTVER._enum_FMTVER_unknown;
 
-		res = _ReadVersion(p_doc, &fmt_ver, &exe_ver);
+		res = _ReadVersion(p_doc, fmt_ver, exe_ver);
 		if (res != pxtnERR.OK) {
 			goto term;
 		}
@@ -1203,9 +1200,9 @@ private:
 	term:
 
 		if (res != pxtnERR.OK) {
-			*p_count = 0;
+			p_count = 0;
 		} else {
-			*p_count = count;
+			p_count = count;
 		}
 
 		return res;
@@ -1799,7 +1796,7 @@ public:
 
 		clear();
 
-		res = _pre_count_event(p_doc, &event_num);
+		res = _pre_count_event(p_doc, event_num);
 		if (res != pxtnERR.OK) {
 			goto term;
 		}
@@ -1817,7 +1814,7 @@ public:
 			}
 		}
 
-		res = _ReadVersion(p_doc, &fmt_ver, &exe_ver);
+		res = _ReadVersion(p_doc, fmt_ver, exe_ver);
 		if (res != pxtnERR.OK) {
 			goto term;
 		}
@@ -2459,49 +2456,37 @@ public:
 	}
 
 	// preparation
-	bool moo_preparation(const(pxtnVOMITPREPARATION)* p_prep) nothrow @system {
+	bool moo_preparation() nothrow @system {
+		return moo_preparation(pxtnVOMITPREPARATION.init);
+	}
+	bool moo_preparation(in pxtnVOMITPREPARATION p_prep) nothrow @system {
 		if (!_moo_b_init || !_moo_b_valid_data || !_dst_ch_num || !_dst_sps || !_dst_byte_per_smp) {
 			_moo_b_end_vomit = true;
 			return false;
 		}
 
-		bool b_ret = false;
-		int start_meas = 0;
-		int start_sample = 0;
-		float start_float = 0;
-
 		int meas_end = master.get_play_meas();
 		int meas_repeat = master.get_repeat_meas();
-		float fadein_sec = 0;
 
-		if (p_prep) {
-			start_meas = p_prep.start_pos_meas;
-			start_sample = p_prep.start_pos_sample;
-			start_float = p_prep.start_pos_float;
-
-			if (p_prep.meas_end) {
-				meas_end = p_prep.meas_end;
-			}
-			if (p_prep.meas_repeat) {
-				meas_repeat = p_prep.meas_repeat;
-			}
-			if (p_prep.fadein_sec) {
-				fadein_sec = p_prep.fadein_sec;
-			}
-
-			if (p_prep.flags & pxtnVOMITPREPFLAG_unit_mute) {
-				_moo_b_mute_by_unit = true;
-			} else {
-				_moo_b_mute_by_unit = false;
-			}
-			if (p_prep.flags & pxtnVOMITPREPFLAG_loop) {
-				_moo_b_loop = true;
-			} else {
-				_moo_b_loop = false;
-			}
-
-			_moo_master_vol = p_prep.master_volume;
+		if (p_prep.meas_end) {
+			meas_end = p_prep.meas_end;
 		}
+		if (p_prep.meas_repeat) {
+			meas_repeat = p_prep.meas_repeat;
+		}
+
+		if (p_prep.flags & pxtnVOMITPREPFLAG_unit_mute) {
+			_moo_b_mute_by_unit = true;
+		} else {
+			_moo_b_mute_by_unit = false;
+		}
+		if (p_prep.flags & pxtnVOMITPREPFLAG_loop) {
+			_moo_b_loop = true;
+		} else {
+			_moo_b_loop = false;
+		}
+
+		_moo_master_vol = p_prep.master_volume;
 
 		_moo_bt_clock = master.get_beat_clock();
 		_moo_bt_num = master.get_beat_num();
@@ -2515,19 +2500,19 @@ public:
 		_moo_smp_end = cast(int)(cast(double) meas_end * cast(double) _moo_bt_num * cast(double) _moo_bt_clock * _moo_clock_rate);
 		_moo_smp_repeat = cast(int)(cast(double) meas_repeat * cast(double) _moo_bt_num * cast(double) _moo_bt_clock * _moo_clock_rate);
 
-		if (start_float) {
-			_moo_smp_start = cast(int)(cast(float) moo_get_total_sample() * start_float);
-		} else if (start_sample) {
-			_moo_smp_start = start_sample;
+		if (p_prep.start_pos_float) {
+			_moo_smp_start = cast(int)(cast(float) moo_get_total_sample() * p_prep.start_pos_float);
+		} else if (p_prep.start_pos_sample) {
+			_moo_smp_start = p_prep.start_pos_sample;
 		} else {
-			_moo_smp_start = cast(int)(cast(double) start_meas * cast(double) _moo_bt_num * cast(double) _moo_bt_clock * _moo_clock_rate);
+			_moo_smp_start = cast(int)(cast(double) p_prep.start_pos_meas * cast(double) _moo_bt_num * cast(double) _moo_bt_clock * _moo_clock_rate);
 		}
 
 		_moo_smp_count = _moo_smp_start;
 		_moo_smp_smooth = _dst_sps / 250; // (0.004sec) // (0.010sec)
 
-		if (fadein_sec > 0) {
-			moo_set_fade(1, fadein_sec);
+		if (p_prep.fadein_sec > 0) {
+			moo_set_fade(1, p_prep.fadein_sec);
 		} else {
 			moo_set_fade(0, 0);
 		}
@@ -2538,14 +2523,9 @@ public:
 
 		_moo_InitUnitTone();
 
-		b_ret = true;
-		if (b_ret) {
-			_moo_b_end_vomit = false;
-		} else {
-			_moo_b_end_vomit = true;
-		}
+		_moo_b_end_vomit = false;
 
-		return b_ret;
+		return true;
 	}
 
 	////////////////////

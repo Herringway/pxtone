@@ -76,7 +76,7 @@ struct pxtoneNoise {
 		}
 	}
 
-	bool generate(ref pxtnDescriptor p_doc, void[]* pp_buf, int* p_size) const nothrow @system {
+	bool generate(ref pxtnDescriptor p_doc, out void[] pp_buf, out int p_size) const nothrow @system {
 		bool b_ret = false;
 		pxtnPulse_NoiseBuilder* bldr = cast(pxtnPulse_NoiseBuilder*) _bldr;
 		pxtnPulse_Noise* noise = allocate!pxtnPulse_Noise();
@@ -90,8 +90,8 @@ struct pxtoneNoise {
 			goto End;
 		}
 
-		*p_size = pcm.get_buf_size();
-		*pp_buf = pcm.Devolve_SamplingBuffer();
+		p_size = pcm.get_buf_size();
+		pp_buf = pcm.Devolve_SamplingBuffer();
 
 		b_ret = true;
 	End:

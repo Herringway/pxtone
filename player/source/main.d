@@ -15,9 +15,9 @@ enum _BUFFER_PER_SEC = (0.3f);
 
 __gshared SDL_AudioDeviceID dev;
 
-bool _load_ptcop(ref pxtnService pxtn, void[] data, out pxtnERR p_pxtn_err) nothrow {
+bool _load_ptcop(ref pxtnService pxtn, ubyte[] data, out pxtnERR p_pxtn_err) {
 	bool okay;
-	pxtnDescriptor* desc = allocate!pxtnDescriptor();
+	auto desc = pxtnDescriptor();
 
 	scope (exit) {
 		if (!okay) {
@@ -25,11 +25,11 @@ bool _load_ptcop(ref pxtnService pxtn, void[] data, out pxtnERR p_pxtn_err) noth
 		}
 	}
 
-	if (!desc.set_memory_r(data.ptr, cast(int) data.length)) {
+	if (!desc.set_memory_r(data)) {
 		return false;
 	}
 
-	p_pxtn_err = pxtn.read(*desc);
+	p_pxtn_err = pxtn.read(desc);
 	if (p_pxtn_err != pxtnERR.OK) {
 		return false;
 	}
@@ -81,15 +81,14 @@ int main(string[] args) {
 	pxtnERR pxtn_err = pxtnERR.VOID;
 
 	auto filePath = args[1];
-	auto file = read(args[1]);
+	auto file = cast(ubyte[])read(args[1]);
 
 	// pxtone initialization
-	pxtnService* pxtn = allocate!pxtnService();
+	auto pxtn = pxtnService();
 	scope (exit) {
 		if (!okay) {
 			criticalf("pxtone: %s", pxtnError_get_string(pxtn_err));
 		}
-		deallocate(pxtn);
 	}
 	pxtn_err = pxtn.init_();
 	if (pxtn_err != pxtnERR.OK) {
@@ -100,7 +99,7 @@ int main(string[] args) {
 	}
 
 	// Load file
-	if (!_load_ptcop(*pxtn, file, pxtn_err)) {
+	if (!_load_ptcop(pxtn, file, pxtn_err)) {
 		return -1;
 	}
 
@@ -111,11 +110,11 @@ int main(string[] args) {
 		prep.start_pos_float = 0;
 		prep.master_volume = 0.80f;
 
-		if (!pxtn.moo_preparation(&prep)) {
+		if (!pxtn.moo_preparation(prep)) {
 			return -1;
 		}
 	}
-	if (!initAudio(&_sampling_func, _CHANNEL_NUM, _SAMPLE_PER_SECOND, pxtn)) {
+	if (!initAudio(&_sampling_func, _CHANNEL_NUM, _SAMPLE_PER_SECOND, &pxtn)) {
 		return 1;
 	}
 	tracef("SDL audio init success");

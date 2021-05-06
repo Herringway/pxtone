@@ -574,16 +574,16 @@ public:
 		work = 0;
 
 		// p_ptv. (5)
-		if (!p_doc.v_w_asfile(work, &total)) {
+		if (!p_doc.v_w_asfile(work, total)) {
 			goto End; // basic_key (no use)
 		}
-		if (!p_doc.v_w_asfile(work, &total)) {
+		if (!p_doc.v_w_asfile(work, total)) {
 			goto End;
 		}
-		if (!p_doc.v_w_asfile(work, &total)) {
+		if (!p_doc.v_w_asfile(work, total)) {
 			goto End;
 		}
-		if (!p_doc.v_w_asfile(_voice_num, &total)) {
+		if (!p_doc.v_w_asfile(_voice_num, total)) {
 			goto End;
 		}
 
@@ -594,30 +594,30 @@ public:
 				goto End;
 			}
 
-			if (!p_doc.v_w_asfile(p_vc.basic_key, &total)) {
+			if (!p_doc.v_w_asfile(p_vc.basic_key, total)) {
 				goto End;
 			}
-			if (!p_doc.v_w_asfile(p_vc.volume, &total)) {
+			if (!p_doc.v_w_asfile(p_vc.volume, total)) {
 				goto End;
 			}
-			if (!p_doc.v_w_asfile(p_vc.pan, &total)) {
+			if (!p_doc.v_w_asfile(p_vc.pan, total)) {
 				goto End;
 			}
 			work = *(cast(uint*)&p_vc.tuning);
-			if (!p_doc.v_w_asfile(work, &total)) {
+			if (!p_doc.v_w_asfile(work, total)) {
 				goto End;
 			}
-			if (!p_doc.v_w_asfile(p_vc.voice_flags, &total)) {
+			if (!p_doc.v_w_asfile(p_vc.voice_flags, total)) {
 				goto End;
 			}
-			if (!p_doc.v_w_asfile(p_vc.data_flags, &total)) {
+			if (!p_doc.v_w_asfile(p_vc.data_flags, total)) {
 				goto End;
 			}
 
-			if (p_vc.data_flags & PTV_DATAFLAG_WAVE && !_Write_Wave(p_doc, p_vc, &total)) {
+			if (p_vc.data_flags & PTV_DATAFLAG_WAVE && !_Write_Wave(p_doc, p_vc, total)) {
 				goto End;
 			}
-			if (p_vc.data_flags & PTV_DATAFLAG_ENVELOPE && !_Write_Envelope(p_doc, p_vc, &total)) {
+			if (p_vc.data_flags & PTV_DATAFLAG_ENVELOPE && !_Write_Envelope(p_doc, p_vc, total)) {
 				goto End;
 			}
 		}

@@ -99,7 +99,7 @@ __gshared const(char)* _code = "PTNOISE-";
 //_ver =  20051028 ; -v.0.9.2.3
 __gshared const uint _ver = 20120418; // 16 wave types.
 
-bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor p_doc, int* p_add) nothrow @system {
+bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor p_doc, ref int p_add) nothrow @system {
 	int work;
 	work = cast(int) p_osc.type;
 	if (!p_doc.v_w_asfile(work, p_add)) {
@@ -223,7 +223,7 @@ public:
 			goto End;
 		}
 		seek += 12;
-		if (!p_doc.v_w_asfile(_smp_num_44k, &seek)) {
+		if (!p_doc.v_w_asfile(_smp_num_44k, seek)) {
 			goto End;
 		}
 
@@ -238,18 +238,18 @@ public:
 			if (pU.bEnable) {
 				// フラグ
 				flags = _MakeFlags(pU);
-				if (!p_doc.v_w_asfile(flags, &seek)) {
+				if (!p_doc.v_w_asfile(flags, seek)) {
 					goto End;
 				}
 				if (flags & NOISEEDITFLAG_ENVELOPE) {
-					if (!p_doc.v_w_asfile(pU.enve_num, &seek)) {
+					if (!p_doc.v_w_asfile(pU.enve_num, seek)) {
 						goto End;
 					}
 					for (e = 0; e < pU.enve_num; e++) {
-						if (!p_doc.v_w_asfile(pU.enves[e].x, &seek)) {
+						if (!p_doc.v_w_asfile(pU.enves[e].x, seek)) {
 							goto End;
 						}
-						if (!p_doc.v_w_asfile(pU.enves[e].y, &seek)) {
+						if (!p_doc.v_w_asfile(pU.enves[e].y, seek)) {
 							goto End;
 						}
 					}
@@ -262,17 +262,17 @@ public:
 					seek++;
 				}
 				if (flags & NOISEEDITFLAG_OSC_MAIN) {
-					if (!_WriteOscillator(&pU.main, p_doc, &seek)) {
+					if (!_WriteOscillator(&pU.main, p_doc, seek)) {
 						goto End;
 					}
 				}
 				if (flags & NOISEEDITFLAG_OSC_FREQ) {
-					if (!_WriteOscillator(&pU.freq, p_doc, &seek)) {
+					if (!_WriteOscillator(&pU.freq, p_doc, seek)) {
 						goto End;
 					}
 				}
 				if (flags & NOISEEDITFLAG_OSC_VOLU) {
-					if (!_WriteOscillator(&pU.volu, p_doc, &seek)) {
+					if (!_WriteOscillator(&pU.volu, p_doc, seek)) {
 						goto End;
 					}
 				}
