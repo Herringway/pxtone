@@ -70,17 +70,6 @@ public:
 		return true;
 	}
 
-	bool set_memory_r(void* p_mem, int size) nothrow @system {
-		if (!p_mem || size < 1) {
-			return false;
-		}
-		_p_desc = (cast(ubyte*)p_mem)[0 .. size];
-		_size = size;
-		_b_file = false;
-		_b_read = true;
-		_cur = 0;
-		return true;
-	}
 	bool set_memory_r(ubyte[] buf) nothrow @safe {
 		if (buf.length < 1) {
 			return false;
