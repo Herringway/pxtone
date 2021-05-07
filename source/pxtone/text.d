@@ -40,11 +40,11 @@ term:
 	return b_ret;
 }
 
-bool _write4(const char* p, int buf_size, ref pxtnDescriptor p_doc) nothrow @system {
-	if (!p_doc.w_asfile(buf_size)) {
+bool _write4(const char[] p, ref pxtnDescriptor p_doc) nothrow @system {
+	if (!p_doc.w_asfile(cast(int)p.length)) {
 		return false;
 	}
-	if (!p_doc.w_asfile(p[0 .. buf_size])) {
+	if (!p_doc.w_asfile(p)) {
 		return false;
 	}
 	return true;
@@ -140,7 +140,7 @@ public:
 		if (!_p_comment_buf) {
 			return false;
 		}
-		return _write4(_p_comment_buf.ptr, _comment_size, p_doc);
+		return _write4(_p_comment_buf, p_doc);
 	}
 
 	bool Name_r(ref pxtnDescriptor p_doc) nothrow @system {
@@ -151,6 +151,6 @@ public:
 		if (!_p_name_buf) {
 			return false;
 		}
-		return _write4(_p_name_buf.ptr, _name_size, p_doc);
+		return _write4(_p_name_buf, p_doc);
 	}
 }
