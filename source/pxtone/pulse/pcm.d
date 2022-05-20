@@ -613,7 +613,7 @@ public:
 		return true;
 	}
 
-	pxtnERR Copy(pxtnPulse_PCM* p_dst) const nothrow @system {
+	pxtnERR Copy(ref pxtnPulse_PCM p_dst) const nothrow @system {
 		pxtnERR res = pxtnERR.VOID;
 		if (!_p_smp) {
 			p_dst.Release();
@@ -628,7 +628,7 @@ public:
 		return pxtnERR.OK;
 	}
 
-	bool Copy_(pxtnPulse_PCM* p_dst, int start, int end) const nothrow @system {
+	bool Copy_(ref pxtnPulse_PCM p_dst, int start, int end) const nothrow @system {
 		int size, offset;
 
 		if (_smp_head || _smp_tail) {

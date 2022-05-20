@@ -117,7 +117,7 @@ private:
 	pxtnPulse_Frequency _freq;
 
 public:
-	pxtnPulse_PCM BuildNoise(pxtnPulse_Noise* p_noise, int ch, int sps, int bps) const nothrow @system {
+	pxtnPulse_PCM BuildNoise(ref pxtnPulse_Noise p_noise, int ch, int sps, int bps) const nothrow @system {
 		bool b_ret = false;
 		int offset = 0;
 		double work = 0;

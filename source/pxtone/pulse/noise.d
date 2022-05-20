@@ -467,11 +467,7 @@ public:
 		return b_ret;
 	}
 
-	bool Copy(pxtnPulse_Noise* p_dst) const nothrow @system {
-		if (!p_dst) {
-			return false;
-		}
-
+	bool Copy(ref pxtnPulse_Noise p_dst) const nothrow @system {
 		bool b_ret = false;
 
 		p_dst.Release();

@@ -226,7 +226,7 @@ private:
 
 	int _delay_max;
 	int _delay_num;
-	pxtnDelay*[] _delays;
+	pxtnDelay[] _delays;
 	int _ovdrv_max;
 	int _ovdrv_num;
 	pxtnOverDrive*[] _ovdrvs;
@@ -235,7 +235,7 @@ private:
 	pxtnWoice*[] _woices;
 	int _unit_max;
 	int _unit_num;
-	pxtnUnit*[] _units;
+	pxtnUnit[] _units;
 
 	int _group_num;
 
@@ -324,7 +324,7 @@ private:
 						goto term;
 					}
 					for (int i = 0; i < num; i++) {
-						_units[i] = allocate!pxtnUnit();
+						_units[i] = pxtnUnit.init;
 					}
 					_unit_num = num;
 					break;
@@ -520,7 +520,7 @@ private:
 		}
 
 		pxtnERR res = pxtnERR.VOID;
-		pxtnDelay* delay = allocate!pxtnDelay();
+		pxtnDelay delay;
 
 		res = delay.Read(p_doc);
 		if (res != pxtnERR.OK) {
@@ -531,8 +531,6 @@ private:
 		if (res == pxtnERR.OK) {
 			_delays[_delay_num] = delay;
 			_delay_num++;
-		} else {
-			deallocate(delay);
 		}
 		return res;
 	}
@@ -670,7 +668,7 @@ private:
 		res = pxtnERR.OK;
 	term:
 		if (res == pxtnERR.OK) {
-			_units[_unit_num] = unit;
+			_units[_unit_num] = *unit;
 			_unit_num++;
 		} else {
 			deallocate(unit);
@@ -1006,7 +1004,7 @@ private:
 		}
 
 		// delay
-		_delays = allocate!(pxtnDelay*)(pxtnMAX_TUNEDELAYSTRUCT);
+		_delays = allocate!(pxtnDelay)(pxtnMAX_TUNEDELAYSTRUCT);
 		if (!(_delays)) {
 			res = pxtnERR.memory;
 			goto End;
@@ -1030,7 +1028,7 @@ private:
 		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
 
 		// unit
-		_units = allocate!(pxtnUnit*)(pxtnMAX_TUNEUNITSTRUCT);
+		_units = allocate!(pxtnUnit)(pxtnMAX_TUNEUNITSTRUCT);
 		if (!(_units)) {
 			res = pxtnERR.memory;
 			goto End;
@@ -1071,9 +1069,6 @@ private:
 		deallocate(evels);
 		deallocate(_ptn_bldr);
 		if (_delays) {
-			for (int i = 0; i < _delay_num; i++) {
-				deallocate(_delays[i]);
-			}
 			deallocate(_delays);
 			_delays = null;
 		}
@@ -1092,9 +1087,6 @@ private:
 			_woices = null;
 		}
 		if (_units) {
-			for (int i = 0; i < _unit_num; i++) {
-				deallocate(_units[i]);
-			}
 			deallocate(_units);
 			_units = null;
 		}
@@ -1311,7 +1303,7 @@ private:
 		// events..
 		for (; _moo_p_eve && _moo_p_eve.clock <= clock; _moo_p_eve = _moo_p_eve.next) {
 			int u = _moo_p_eve.unit_no;
-			pxtnUnit* p_u = _units[u];
+			pxtnUnit* p_u = &_units[u];
 			pxtnVOICETONE* p_tone;
 			const(pxtnWoice)* p_wc;
 			const(pxtnVOICEINSTANCE)* p_vi;
@@ -1545,9 +1537,6 @@ public:
 
 		evels.Clear();
 
-		for (int i = 0; i < _delay_num; i++) {
-			deallocate(_delays[i]);
-		}
 		_delay_num = 0;
 		for (int i = 0; i < _delay_num; i++) {
 			deallocate(_ovdrvs[i]);
@@ -1557,9 +1546,6 @@ public:
 			deallocate(_woices[i]);
 		}
 		_woice_num = 0;
-		for (int i = 0; i < _unit_num; i++) {
-			deallocate(_units[i]);
-		}
 		_unit_num = 0;
 
 		master.Reset();
@@ -1957,7 +1943,7 @@ public:
 		if (_delay_num >= _delay_max) {
 			return false;
 		}
-		_delays[_delay_num] = allocate!pxtnDelay();
+		_delays[_delay_num] = pxtnDelay.init;
 		_delays[_delay_num].Set(unit, freq, rate, group);
 		_delay_num++;
 		return true;
@@ -1971,12 +1957,11 @@ public:
 			return false;
 		}
 
-		deallocate(_delays[idx]);
 		_delay_num--;
 		for (int i = idx; i < _delay_num; i++) {
 			_delays[i] = _delays[i + 1];
 		}
-		_delays[_delay_num] = null;
+		_delays[_delay_num] = pxtnDelay.init;
 		return true;
 	}
 
@@ -1997,7 +1982,7 @@ public:
 		if (idx < 0 || idx >= _delay_num) {
 			return null;
 		}
-		return _delays[idx];
+		return &_delays[idx];
 	}
 
 	// ---------------------------
@@ -2198,7 +2183,7 @@ public:
 		if (idx < 0 || idx >= _unit_num) {
 			return null;
 		}
-		return _units[idx];
+		return &_units[idx];
 	}
 
 	bool Unit_Remove(int idx) nothrow @system {
@@ -2208,12 +2193,11 @@ public:
 		if (idx < 0 || idx >= _unit_num) {
 			return false;
 		}
-		deallocate(_units[idx]);
 		_unit_num--;
 		for (int i = idx; i < _unit_num; i++) {
 			_units[i] = _units[i + 1];
 		}
-		_units[_unit_num] = null;
+		_units[_unit_num] = pxtnUnit.init;
 		return true;
 	}
 
@@ -2222,7 +2206,7 @@ public:
 			return false;
 		}
 
-		pxtnUnit* p_w = _units[old_place];
+		pxtnUnit p_w = _units[old_place];
 		int max_place = _unit_num - 1;
 
 		if (new_place > max_place) {
@@ -2234,15 +2218,11 @@ public:
 
 		if (old_place < new_place) {
 			for (int w = old_place; w < new_place; w++) {
-				if (_units[w]) {
-					_units[w] = _units[w + 1];
-				}
+				_units[w] = _units[w + 1];
 			}
 		} else {
 			for (int w = old_place; w > new_place; w--) {
-				if (_units[w]) {
-					_units[w] = _units[w - 1];
-				}
+				_units[w] = _units[w - 1];
 			}
 		}
 		_units[new_place] = p_w;
@@ -2253,7 +2233,7 @@ public:
 		if (_unit_num >= _unit_max) {
 			return false;
 		}
-		_units[_unit_num] = allocate!pxtnUnit();
+		_units[_unit_num] = pxtnUnit.init;
 		_unit_num++;
 		return true;
 	}

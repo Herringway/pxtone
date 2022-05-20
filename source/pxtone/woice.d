@@ -82,10 +82,10 @@ struct pxtnVOICEUNIT {
 	uint data_flags;
 
 	pxtnVOICETYPE type;
-	pxtnPulse_PCM* p_pcm;
-	pxtnPulse_Noise* p_ptn;
+	pxtnPulse_PCM p_pcm;
+	pxtnPulse_Noise p_ptn;
 	version (pxINCLUDE_OGGVORBIS) {
-		pxtnPulse_Oggv* p_oggv;
+		pxtnPulse_Oggv p_oggv;
 	}
 
 	pxtnVOICEWAVE wave;
@@ -109,11 +109,6 @@ struct pxtnVOICETONE {
 
 private void _Voice_Release(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi) nothrow @system {
 	if (p_vc) {
-		deallocate(p_vc.p_pcm);
-		deallocate(p_vc.p_ptn);
-		version (pxINCLUDE_OGGVORBIS) {
-			deallocate(p_vc.p_oggv);
-		}
 		deallocate(p_vc.envelope.points);
 		p_vc.envelope = pxtnVOICEENVELOPE.init;
 		deallocate(p_vc.wave.points);
@@ -347,10 +342,10 @@ public:
 			p_vc.tuning = 1.0f;
 			p_vc.voice_flags = PTV_VOICEFLAG_SMOOTH;
 			p_vc.data_flags = PTV_DATAFLAG_WAVE;
-			p_vc.p_pcm = allocate!pxtnPulse_PCM();
-			p_vc.p_ptn = allocate!pxtnPulse_Noise();
+			p_vc.p_pcm = pxtnPulse_PCM.init;
+			p_vc.p_ptn = pxtnPulse_Noise.init;
 			version (pxINCLUDE_OGGVORBIS) {
-				p_vc.p_oggv = allocate!pxtnPulse_Oggv();
+				p_vc.p_oggv = pxtnPulse_Oggv.init;
 			}
 			p_vc.envelope = pxtnVOICEENVELOPE.init;
 		}
@@ -763,7 +758,7 @@ public:
 	}
 
 	bool io_matePCM_w(ref pxtnDescriptor p_doc) const nothrow @system {
-		const pxtnPulse_PCM* p_pcm = _voices[0].p_pcm;
+		const pxtnPulse_PCM* p_pcm = &_voices[0].p_pcm;
 		const(pxtnVOICEUNIT)* p_vc = &_voices[0];
 		_MATERIALSTRUCT_PCM pcm;
 
@@ -1006,10 +1001,6 @@ public:
 			_MATERIALSTRUCT_OGGV mate;
 			const(pxtnVOICEUNIT)* p_vc = &_voices[0];
 
-			if (!p_vc.p_oggv) {
-				return false;
-			}
-
 			int oggv_size = p_vc.p_oggv.GetSize();
 
 			mate.tuning = p_vc.tuning;
@@ -1121,7 +1112,7 @@ public:
 
 			case pxtnVOICETYPE.Sampling:
 
-				res = p_vc.p_pcm.Copy(&pcm_work);
+				res = p_vc.p_pcm.Copy(pcm_work);
 				if (res != pxtnERR.OK) {
 					goto term;
 				}

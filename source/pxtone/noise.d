@@ -68,7 +68,7 @@ struct pxtoneNoise {
 		if (noise.read(p_doc) != pxtnERR.OK) {
 			return false;
 		}
-		pxtnPulse_PCM pcm = _bldr.BuildNoise(&noise, _ch_num, _sps, _bps);
+		pxtnPulse_PCM pcm = _bldr.BuildNoise(noise, _ch_num, _sps, _bps);
 
 		p_size = pcm.get_buf_size();
 		pp_buf = pcm.Devolve_SamplingBuffer();

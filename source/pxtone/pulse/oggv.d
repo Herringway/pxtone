@@ -388,7 +388,7 @@ public:
 		return b_ret;
 	}
 
-	bool Copy(pxtnPulse_Oggv* p_dst) const nothrow @system {
+	bool Copy(ref pxtnPulse_Oggv p_dst) const nothrow @system {
 		p_dst.Release();
 		if (!_p_data) {
 			return true;
