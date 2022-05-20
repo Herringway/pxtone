@@ -142,8 +142,8 @@ private:
 public:
 	 ~this() nothrow @system {
 		_b_init = false;
-		for (int i = 0; i < pxWAVETYPE.num; i++) {
-			deallocate(_p_tables[i]);
+		foreach (ref table; _p_tables) {
+			deallocate(table);
 		}
 	}
 
@@ -173,8 +173,8 @@ public:
 			goto End;
 		}
 
-		for (s = 0; s < pxWAVETYPE.num; s++) {
-			_p_tables[s] = null;
+		foreach (ref table; _p_tables) {
+			table = null;
 		}
 
 		_p_tables[pxWAVETYPE.None] = allocate!short(_smp_num);
