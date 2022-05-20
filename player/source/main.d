@@ -106,19 +106,23 @@ int main(string[] args) {
 			criticalf("pxtone: %s", pxtnError_get_string(pxtn_err));
 		}
 	}
+	trace("Initializing pxtone");
 	pxtn_err = pxtn.init_();
 	if (pxtn_err != pxtnERR.OK) {
 		return -1;
 	}
+	trace("Setting quality");
 	if (!pxtn.set_destination_quality(_CHANNEL_NUM, _SAMPLE_PER_SECOND)) {
 		return -1;
 	}
 
+	trace("Loading ptcop");
 	// Load file
 	if (!_load_ptcop(pxtn, file, pxtn_err)) {
 		return -1;
 	}
 
+	trace("Preparing pxtone");
 	// Prepare to play music
 	{
 		pxtnVOMITPREPARATION prep;
