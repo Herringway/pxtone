@@ -142,17 +142,17 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 	byte sc;
 	ubyte uc;
 
-	if (!p_doc.v_r(cast(int*)&p_vc.type)) {
+	if (!p_doc.v_r(*cast(int*)&p_vc.type)) {
 		return pxtnERR.desc_r;
 	}
 
 	switch (p_vc.type) {
 		// coodinate (3)
 	case pxtnVOICETYPE.Coodinate:
-		if (!p_doc.v_r(&p_vc.wave.num)) {
+		if (!p_doc.v_r(p_vc.wave.num)) {
 			return pxtnERR.desc_r;
 		}
-		if (!p_doc.v_r(&p_vc.wave.reso)) {
+		if (!p_doc.v_r(p_vc.wave.reso)) {
 			return pxtnERR.desc_r;
 		}
 		num = p_vc.wave.num;
@@ -175,7 +175,7 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 		// overtone (2)
 	case pxtnVOICETYPE.Overtone:
 
-		if (!p_doc.v_r(&p_vc.wave.num)) {
+		if (!p_doc.v_r(p_vc.wave.num)) {
 			return pxtnERR.desc_r;
 		}
 		num = p_vc.wave.num;
@@ -184,10 +184,10 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 			return pxtnERR.memory;
 		}
 		for (i = 0; i < num; i++) {
-			if (!p_doc.v_r(&p_vc.wave.points[i].x)) {
+			if (!p_doc.v_r(p_vc.wave.points[i].x)) {
 				return pxtnERR.desc_r;
 			}
-			if (!p_doc.v_r(&p_vc.wave.points[i].y)) {
+			if (!p_doc.v_r(p_vc.wave.points[i].y)) {
 				return pxtnERR.desc_r;
 			}
 		}
@@ -197,12 +197,12 @@ pxtnERR _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @syste
 	case pxtnVOICETYPE.Sampling:
 		return pxtnERR.fmt_unknown; // un-support
 
-		//if( !p_doc.v_r( &p_vc.pcm.ch       ) ) goto End;
-		//if( !p_doc.v_r( &p_vc.pcm.bps      ) ) goto End;
-		//if( !p_doc.v_r( &p_vc.pcm.sps      ) ) goto End;
-		//if( !p_doc.v_r( &p_vc.pcm.smp_head ) ) goto End;
-		//if( !p_doc.v_r( &p_vc.pcm.smp_body ) ) goto End;
-		//if( !p_doc.v_r( &p_vc.pcm.smp_tail ) ) goto End;
+		//if( !p_doc.v_r( p_vc.pcm.ch       ) ) goto End;
+		//if( !p_doc.v_r( p_vc.pcm.bps      ) ) goto End;
+		//if( !p_doc.v_r( p_vc.pcm.sps      ) ) goto End;
+		//if( !p_doc.v_r( p_vc.pcm.smp_head ) ) goto End;
+		//if( !p_doc.v_r( p_vc.pcm.smp_body ) ) goto End;
+		//if( !p_doc.v_r( p_vc.pcm.smp_tail ) ) goto End;
 		//size = ( p_vc.pcm.smp_head + p_vc.pcm.smp_body + p_vc.pcm.smp_tail ) * p_vc.pcm.ch * p_vc.pcm.bps / 8;
 		//if( !_malloc_zero( (void **)&p_vc.pcm.p_smp,    size )          ) goto End;
 		//if( !p_doc.r(        p_vc.pcm.p_smp, 1, size ) ) goto End;
@@ -220,19 +220,19 @@ pxtnERR _Read_Envelope(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @s
 	int num, i;
 
 	//p_vc.envelope. (5)
-	if (!p_doc.v_r(&p_vc.envelope.fps)) {
+	if (!p_doc.v_r(p_vc.envelope.fps)) {
 		res = pxtnERR.desc_r;
 		goto term;
 	}
-	if (!p_doc.v_r(&p_vc.envelope.head_num)) {
+	if (!p_doc.v_r(p_vc.envelope.head_num)) {
 		res = pxtnERR.desc_r;
 		goto term;
 	}
-	if (!p_doc.v_r(&p_vc.envelope.body_num)) {
+	if (!p_doc.v_r(p_vc.envelope.body_num)) {
 		res = pxtnERR.desc_r;
 		goto term;
 	}
-	if (!p_doc.v_r(&p_vc.envelope.tail_num)) {
+	if (!p_doc.v_r(p_vc.envelope.tail_num)) {
 		res = pxtnERR.desc_r;
 		goto term;
 	}
@@ -252,11 +252,11 @@ pxtnERR _Read_Envelope(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) nothrow @s
 		goto term;
 	}
 	for (i = 0; i < num; i++) {
-		if (!p_doc.v_r(&p_vc.envelope.points[i].x)) {
+		if (!p_doc.v_r(p_vc.envelope.points[i].x)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		}
-		if (!p_doc.v_r(&p_vc.envelope.points[i].y)) {
+		if (!p_doc.v_r(p_vc.envelope.points[i].y)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		}

@@ -674,15 +674,15 @@ public:
 		}
 
 		// p_ptv. (5)
-		if (!p_doc.v_r(&_x3x_basic_key)) {
+		if (!p_doc.v_r(_x3x_basic_key)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		}
-		if (!p_doc.v_r(&work1)) {
+		if (!p_doc.v_r(work1)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		}
-		if (!p_doc.v_r(&work2)) {
+		if (!p_doc.v_r(work2)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		}
@@ -690,7 +690,7 @@ public:
 			res = pxtnERR.fmt_unknown;
 			goto term;
 		}
-		if (!p_doc.v_r(&num)) {
+		if (!p_doc.v_r(num)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		}
@@ -706,28 +706,28 @@ public:
 				res = pxtnERR.FATAL;
 				goto term;
 			}
-			if (!p_doc.v_r(&p_vc.basic_key)) {
+			if (!p_doc.v_r(p_vc.basic_key)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}
-			if (!p_doc.v_r(&p_vc.volume)) {
+			if (!p_doc.v_r(p_vc.volume)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}
-			if (!p_doc.v_r(&p_vc.pan)) {
+			if (!p_doc.v_r(p_vc.pan)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}
-			if (!p_doc.v_r(&work1)) {
+			if (!p_doc.v_r(work1)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}
 			p_vc.tuning = *(cast(float*)&work1);
-			if (!p_doc.v_r(cast(int*)&p_vc.voice_flags)) {
+			if (!p_doc.v_r(*cast(int*)&p_vc.voice_flags)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}
-			if (!p_doc.v_r(cast(int*)&p_vc.data_flags)) {
+			if (!p_doc.v_r(*cast(int*)&p_vc.data_flags)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}

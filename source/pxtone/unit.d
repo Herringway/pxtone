@@ -66,7 +66,7 @@ public:
 		}
 	}
 
-	void Tone_Clear() nothrow @system {
+	void Tone_Clear() nothrow @safe {
 		for (int i = 0; i < pxtnMAX_CHANNEL; i++) {
 			_pan_time_bufs[i][0 .. pxtnBUFSIZE_TIMEPAN] = 0;
 		}
@@ -82,7 +82,7 @@ public:
 		p_tone.offset_freq = offset_freq;
 	}
 
-	void Tone_Envelope() nothrow @system {
+	void Tone_Envelope() nothrow @safe {
 		if (!_p_woice) {
 			return;
 		}
@@ -177,7 +177,7 @@ public:
 		_v_TUNING = val;
 	}
 
-	void Tone_Sample(bool b_mute_by_unit, int ch_num, int time_pan_index, int smooth_smp) nothrow @system {
+	void Tone_Sample(bool b_mute_by_unit, int ch_num, int time_pan_index, int smooth_smp) nothrow @safe {
 		if (!_p_woice) {
 			return;
 		}
@@ -199,11 +199,11 @@ public:
 				int work = 0;
 
 				if (p_vt.life_count > 0) {
-					int pos = cast(int) p_vt.smp_pos * 4 + ch * 2;
-					work += *(cast(short*)&p_vi.p_smp_w[pos]);
+					int pos = cast(int) p_vt.smp_pos * 2 + ch;
+					work += (cast(const(short)[])p_vi.p_smp_w)[pos];
 
 					if (ch_num == 1) {
-						work += *(cast(short*)&p_vi.p_smp_w[pos + 2]);
+						work += (cast(const(short)[])p_vi.p_smp_w)[pos + 1];
 						work = work / 2;
 					}
 
@@ -248,7 +248,7 @@ public:
 		return _key_now;
 	}
 
-	void Tone_Increment_Sample(float freq) nothrow @system {
+	void Tone_Increment_Sample(float freq) nothrow @safe {
 		if (!_p_woice) {
 			return;
 		}
@@ -302,15 +302,18 @@ public:
 		return _p_woice;
 	}
 
-	bool set_name_buf(const(char)* name, int buf_size) nothrow @system {
-		if (!name || buf_size < 0 || buf_size > pxtnMAX_TUNEUNITNAME) {
+	deprecated bool set_name_buf(const(char)* name, int buf_size) nothrow @system {
+		return setNameBuf(name[0 .. buf_size]);
+	}
+	bool setNameBuf(const(char)[] name) nothrow @safe {
+		if (!name || name.length > pxtnMAX_TUNEUNITNAME) {
 			return false;
 		}
 		_name_buf[0 .. $] = 0;
-		if (buf_size) {
-			_name_buf[0 .. buf_size] = name[0 .. buf_size];
+		if (name.length) {
+			_name_buf[0 .. name.length] = name;
 		}
-		_name_size = buf_size;
+		_name_size = cast(int)name.length;
 		return true;
 	}
 

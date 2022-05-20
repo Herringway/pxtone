@@ -923,7 +923,7 @@ public:
 		int value = 0;
 
 		for (int e = 0; e < eve_num; e++) {
-			if (!p_doc.v_r(&clock)) {
+			if (!p_doc.v_r(clock)) {
 				return pxtnERR.desc_r;
 			}
 			if (!p_doc.r(unit_no)) {
@@ -932,7 +932,7 @@ public:
 			if (!p_doc.r(kind)) {
 				return pxtnERR.desc_r;
 			}
-			if (!p_doc.v_r(&value)) {
+			if (!p_doc.v_r(value)) {
 				return pxtnERR.desc_r;
 			}
 			absolute += clock;
@@ -961,7 +961,7 @@ public:
 		int value = 0;
 
 		for (int e = 0; e < eve_num; e++) {
-			if (!p_doc.v_r(&clock)) {
+			if (!p_doc.v_r(clock)) {
 				return 0;
 			}
 			if (!p_doc.r(unit_no)) {
@@ -970,7 +970,7 @@ public:
 			if (!p_doc.r(kind)) {
 				return 0;
 			}
-			if (!p_doc.v_r(&value)) {
+			if (!p_doc.v_r(value)) {
 				return 0;
 			}
 			count++;
@@ -1087,10 +1087,10 @@ public:
 
 		absolute = 0;
 		for (e = 0; e < cast(int) evnt.event_num; e++) {
-			if (!p_doc.v_r(&clock)) {
+			if (!p_doc.v_r(clock)) {
 				break;
 			}
-			if (!p_doc.v_r(&value)) {
+			if (!p_doc.v_r(value)) {
 				break;
 			}
 			absolute += clock;
@@ -1132,10 +1132,10 @@ public:
 		}
 
 		for (e = 0; e < cast(int) evnt.event_num; e++) {
-			if (!p_doc.v_r(&work)) {
+			if (!p_doc.v_r(work)) {
 				break;
 			}
-			if (!p_doc.v_r(&work)) {
+			if (!p_doc.v_r(work)) {
 				break;
 			}
 		}

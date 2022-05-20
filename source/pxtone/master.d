@@ -273,13 +273,13 @@ public:
 		absolute = 0;
 
 		for (e = 0; e < cast(int) mast.event_num; e++) {
-			if (!p_doc.v_r(&status)) {
+			if (!p_doc.v_r(status)) {
 				break;
 			}
-			if (!p_doc.v_r(&clock)) {
+			if (!p_doc.v_r(clock)) {
 				break;
 			}
-			if (!p_doc.v_r(&volume)) {
+			if (!p_doc.v_r(volume)) {
 				break;
 			}
 			absolute += clock;
@@ -353,13 +353,13 @@ public:
 		}
 
 		for (e = 0; e < cast(int) mast.event_num; e++) {
-			if (!p_doc.v_r(&work)) {
+			if (!p_doc.v_r(work)) {
 				return 0;
 			}
-			if (!p_doc.v_r(&work)) {
+			if (!p_doc.v_r(work)) {
 				return 0;
 			}
-			if (!p_doc.v_r(&work)) {
+			if (!p_doc.v_r(work)) {
 				return 0;
 			}
 		}

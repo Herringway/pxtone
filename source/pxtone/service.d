@@ -768,7 +768,7 @@ private:
 		return true;
 	}
 
-	pxtnERR _io_assiUNIT_r(ref pxtnDescriptor p_doc) nothrow @system {
+	pxtnERR _io_assiUNIT_r(ref pxtnDescriptor p_doc) nothrow @safe {
 		if (!_b_init) {
 			return pxtnERR.INIT;
 		}
@@ -792,7 +792,7 @@ private:
 			return pxtnERR.fmt_unknown;
 		}
 
-		if (!_units[assi.unit_index].set_name_buf(assi.name.ptr, pxtnMAX_TUNEUNITNAME)) {
+		if (!_units[assi.unit_index].setNameBuf(assi.name[])) {
 			return pxtnERR.FATAL;
 		}
 
@@ -1300,7 +1300,7 @@ private:
 		return true;
 	}
 
-	bool _moo_PXTONE_SAMPLE(void* p_data) nothrow @system {
+	bool _moo_PXTONE_SAMPLE(ubyte[] p_data) nothrow @safe {
 		if (!_moo_b_init) {
 			return false;
 		}
@@ -1417,7 +1417,7 @@ private:
 				p_u.Tone_GroupNo(_moo_p_eve.value);
 				break;
 			case EVENTKIND.TUNING:
-				p_u.Tone_Tuning(*(cast(float*)(&_moo_p_eve.value)));
+				p_u.Tone_Tuning(*(cast(const(float)*)(&_moo_p_eve.value)));
 				break;
 			default:
 				break;
@@ -1464,7 +1464,7 @@ private:
 			if (work < -_moo_top) {
 				work = -_moo_top;
 			}
-			*(cast(short*) p_data + ch) = cast(short)(work);
+			(cast(short[])p_data)[ch] = cast(short)(work);
 		}
 
 		// --------------
@@ -2564,7 +2564,7 @@ public:
 			short[2] sample;
 
 			for (smp_w = 0; smp_w < smp_num; smp_w++) {
-				if (!_moo_PXTONE_SAMPLE(sample.ptr)) {
+				if (!_moo_PXTONE_SAMPLE(cast(ubyte[])(sample[]))) {
 					_moo_b_end_vomit = true;
 					break;
 				}

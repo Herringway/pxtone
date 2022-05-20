@@ -126,26 +126,26 @@ bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor
 
 pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescriptor p_doc) nothrow @system {
 	int work;
-	if (!p_doc.v_r(&work)) {
+	if (!p_doc.v_r(work)) {
 		return pxtnERR.desc_r;
 	}
 	p_osc.type = cast(pxWAVETYPE) work;
 	if (p_osc.type >= pxWAVETYPE.num) {
 		return pxtnERR.fmt_unknown;
 	}
-	if (!p_doc.v_r(&work)) {
+	if (!p_doc.v_r(work)) {
 		return pxtnERR.desc_r;
 	}
 	p_osc.b_rev = work ? true : false;
-	if (!p_doc.v_r(&work)) {
+	if (!p_doc.v_r(work)) {
 		return pxtnERR.desc_r;
 	}
 	p_osc.freq = cast(float) work / 10;
-	if (!p_doc.v_r(&work)) {
+	if (!p_doc.v_r(work)) {
 		return pxtnERR.desc_r;
 	}
 	p_osc.volume = cast(float) work / 10;
-	if (!p_doc.v_r(&work)) {
+	if (!p_doc.v_r(work)) {
 		return pxtnERR.desc_r;
 	}
 	p_osc.offset = cast(float) work / 10;
@@ -325,7 +325,7 @@ public:
 			res = pxtnERR.fmt_new;
 			goto term;
 		}
-		if (!p_doc.v_r(&_smp_num_44k)) {
+		if (!p_doc.v_r(_smp_num_44k)) {
 			res = pxtnERR.desc_r;
 			goto term;
 		}
@@ -353,7 +353,7 @@ public:
 			pU = &_units[u];
 			pU.bEnable = true;
 
-			if (!p_doc.v_r(cast(int*)&flags)) {
+			if (!p_doc.v_r(*cast(int*)&flags)) {
 				res = pxtnERR.desc_r;
 				goto term;
 			}
@@ -364,7 +364,7 @@ public:
 
 			// envelope
 			if (flags & NOISEEDITFLAG_ENVELOPE) {
-				if (!p_doc.v_r(&pU.enve_num)) {
+				if (!p_doc.v_r(pU.enve_num)) {
 					res = pxtnERR.desc_r;
 					goto term;
 				}
@@ -378,11 +378,11 @@ public:
 					goto term;
 				}
 				for (int e = 0; e < pU.enve_num; e++) {
-					if (!p_doc.v_r(&pU.enves[e].x)) {
+					if (!p_doc.v_r(pU.enves[e].x)) {
 						res = pxtnERR.desc_r;
 						goto term;
 					}
-					if (!p_doc.v_r(&pU.enves[e].y)) {
+					if (!p_doc.v_r(pU.enves[e].y)) {
 						res = pxtnERR.desc_r;
 						goto term;
 					}

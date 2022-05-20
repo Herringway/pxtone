@@ -7,6 +7,7 @@ module pxtone.descriptor;
 import pxtone.pxtn;
 
 import std.stdio;
+import std.traits;
 
 enum pxSCE = false;
 
@@ -31,7 +32,7 @@ private:
 	}
 public:
 
-	bool set_file_r(ref File fd) nothrow @system {
+	bool set_file_r(ref File fd) nothrow @safe {
 		if (!fd.isOpen) {
 			return false;
 		}
@@ -142,7 +143,7 @@ public:
 		return true;
 	}
 
-	bool r(T)(T[] p) nothrow @system {
+	bool r(T)(T[] p) nothrow @safe {
 		if (!isOpen) {
 			return false;
 		}
@@ -154,7 +155,7 @@ public:
 
 		if (_b_file) {
 			try {
-				file.rawRead(p);
+				file.trustedRead(p);
 			} catch (Exception) {
 				goto End;
 			}
@@ -172,7 +173,7 @@ public:
 	End:
 		return b_ret;
 	}
-	bool r(T)(ref T p) nothrow @system if (!is(T : U[], U)) {
+	bool r(T)(ref T p) nothrow @safe if (!is(T : U[], U)) {
 		if (!isOpen) {
 			return false;
 		}
@@ -183,13 +184,11 @@ public:
 		bool b_ret = false;
 
 		if (_b_file) {
-			ubyte[T.sizeof] buf;
 			try {
-				file.rawRead(buf[]);
+				p = file.trustedRead!T();
 			} catch (Exception) {
 				goto End;
 			}
-			p = (cast(T[])(buf[]))[0];
 		} else {
 			if (_cur + T.sizeof > _p_desc.length) {
 				goto End;
@@ -273,7 +272,7 @@ public:
 		//return false;
 	}
 	// 可変長読み込み（int  までを保証）
-	bool v_r(int* p) nothrow @system {
+	bool v_r(ref int p) nothrow @safe {
 		if (!isOpen) {
 			return false;
 		}
@@ -325,7 +324,7 @@ public:
 			break;
 		}
 
-		*p = *(cast(int*) b.ptr);
+		p = (cast(int[]) b[0 .. 4])[0];
 
 		return true;
 	}
@@ -357,4 +356,14 @@ int pxtnDescriptor_v_chk(int val) nothrow @safe {
 	}
 
 	return 6;
+}
+
+T trustedRead(T)(File file) @safe if (!hasIndirections!T) {
+	T[1] p;
+	file.trustedRead(p);
+	return p[0];
+}
+
+void trustedRead(T)(File file, T[] arr) @trusted if (!hasIndirections!T) {
+	file.rawRead(arr);
 }
