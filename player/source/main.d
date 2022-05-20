@@ -42,6 +42,22 @@ bool _load_ptcop(ref pxtnService pxtn, ubyte[] data, out pxtnERR p_pxtn_err) {
 	okay = true;
 	return true;
 }
+bool _write_ptcop(ref pxtnService pxtn, ref File file, out pxtnERR p_pxtn_err) {
+	bool okay;
+	auto desc = pxtnDescriptor();
+
+	if (!desc.set_file_w(file)) {
+		return false;
+	}
+
+	p_pxtn_err = pxtn.write(desc, false, 0);
+	if (p_pxtn_err != pxtnERR.OK) {
+		return false;
+	}
+
+	okay = true;
+	return true;
+}
 
 bool initAudio(SDL_AudioCallback fun, ubyte channels, uint sampleRate, void* userdata = null) {
 	import bindbc.sdl;
