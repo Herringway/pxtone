@@ -1150,16 +1150,11 @@ public:
 				}
 
 			case pxtnVOICETYPE.Noise: {
-					pxtnPulse_PCM* p_pcm = null;
 					if (!ptn_bldr) {
 						res = pxtnERR.ptn_init;
 						goto term;
 					}
-					p_pcm = ptn_bldr.BuildNoise(p_vc.p_ptn, ch, sps, bps);
-					if (!(p_pcm)) {
-						res = pxtnERR.ptn_build;
-						goto term;
-					}
+					pxtnPulse_PCM p_pcm = ptn_bldr.BuildNoise(p_vc.p_ptn, ch, sps, bps);
 					p_vi.p_smp_w = cast(ubyte[]) p_pcm.Devolve_SamplingBuffer();
 					p_vi.smp_body_w = p_vc.p_ptn.get_smp_num_44k();
 					break;

@@ -117,7 +117,7 @@ private:
 	pxtnPulse_Frequency _freq;
 
 public:
-	pxtnPulse_PCM* BuildNoise(pxtnPulse_Noise* p_noise, int ch, int sps, int bps) const nothrow @system {
+	pxtnPulse_PCM BuildNoise(pxtnPulse_Noise* p_noise, int ch, int sps, int bps) const nothrow @system {
 		bool b_ret = false;
 		int offset = 0;
 		double work = 0;
@@ -130,7 +130,7 @@ public:
 		int smp_num = 0;
 
 		_UNIT[] units = null;
-		pxtnPulse_PCM* p_pcm = null;
+		pxtnPulse_PCM p_pcm;
 
 		p_noise.Fix();
 
@@ -189,7 +189,7 @@ public:
 
 		smp_num = cast(int)(cast(double) p_noise.get_smp_num_44k() / (44100.0 / sps));
 
-		p_pcm = allocate!pxtnPulse_PCM();
+		p_pcm = pxtnPulse_PCM.init;
 		if (p_pcm.Create(ch, sps, bps, smp_num) != pxtnERR.OK) {
 			goto End;
 		}
@@ -348,10 +348,6 @@ public:
 				deallocate(units[i].enves);
 			}
 			deallocate(units);
-		}
-
-		if (!b_ret && p_pcm) {
-			deallocate(p_pcm);
 		}
 
 		return p_pcm;

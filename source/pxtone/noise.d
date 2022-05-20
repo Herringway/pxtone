@@ -11,20 +11,10 @@ import pxtone.pulse.pcm;
 import pxtone.error;
 
 struct pxtoneNoise {
-	void* _bldr;
+	pxtnPulse_NoiseBuilder _bldr;
 	int _ch_num = 2;
 	int _sps = 44100;
 	int _bps = 16;
-
-	~this() nothrow @system {
-		deallocate(_bldr);
-	}
-
-	bool init() nothrow @system {
-		pxtnPulse_NoiseBuilder* bldr = allocate!pxtnPulse_NoiseBuilder();
-		_bldr = cast(void*) bldr;
-		return true;
-	}
 
 	bool quality_set(int ch_num, int sps, int bps) nothrow @safe {
 		switch (ch_num) {
@@ -73,27 +63,16 @@ struct pxtoneNoise {
 	}
 
 	bool generate(ref pxtnDescriptor p_doc, out void[] pp_buf, out int p_size) const nothrow @system {
-		bool b_ret = false;
-		pxtnPulse_NoiseBuilder* bldr = cast(pxtnPulse_NoiseBuilder*) _bldr;
-		pxtnPulse_Noise* noise = allocate!pxtnPulse_Noise();
-		pxtnPulse_PCM* pcm = null;
+		pxtnPulse_Noise noise;
 
 		if (noise.read(p_doc) != pxtnERR.OK) {
-			goto End;
+			return false;
 		}
-		pcm = bldr.BuildNoise(noise, _ch_num, _sps, _bps);
-		if (!(pcm)) {
-			goto End;
-		}
+		pxtnPulse_PCM pcm = _bldr.BuildNoise(&noise, _ch_num, _sps, _bps);
 
 		p_size = pcm.get_buf_size();
 		pp_buf = pcm.Devolve_SamplingBuffer();
 
-		b_ret = true;
-	End:
-		deallocate(noise);
-		deallocate(pcm);
-
-		return b_ret;
+		return true;
 	}
 }
