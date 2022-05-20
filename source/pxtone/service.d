@@ -994,10 +994,6 @@ private:
 			res = pxtnERR.INIT;
 			goto End;
 		}
-		if (!_ptn_bldr.Init()) {
-			res = pxtnERR.ptn_init;
-			goto End;
-		}
 
 		if (fix_evels_num) {
 			_b_fix_evels_num = true;
@@ -1223,7 +1219,7 @@ private:
 		bool b_ret = false;
 
 		_moo_freq = allocate!pxtnPulse_Frequency();
-		if (!(_moo_freq) || !_moo_freq.Init()) {
+		if (!_moo_freq) {
 			goto term;
 		}
 		_moo_group_smps = allocate!int(_group_num);

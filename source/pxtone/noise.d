@@ -22,10 +22,6 @@ struct pxtoneNoise {
 
 	bool init() nothrow @system {
 		pxtnPulse_NoiseBuilder* bldr = allocate!pxtnPulse_NoiseBuilder();
-		if (!bldr.Init()) {
-			deallocate(bldr);
-			return false;
-		}
 		_bldr = cast(void*) bldr;
 		return true;
 	}
