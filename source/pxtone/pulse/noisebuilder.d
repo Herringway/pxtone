@@ -137,12 +137,11 @@ private:
 		return cast(short) w2;
 	}
 
-	pxtnPulse_Frequency* _freq;
+	pxtnPulse_Frequency _freq;
 
 public:
 	 ~this() nothrow @system {
 		_b_init = false;
-		deallocate(_freq);
 		for (int i = 0; i < pxWAVETYPE.num; i++) {
 			deallocate(_p_tables[i]);
 		}
@@ -169,7 +168,7 @@ public:
 			return true;
 		}
 
-		_freq = allocate!pxtnPulse_Frequency();
+		_freq = pxtnPulse_Frequency.init;
 		if (!_freq.Init()) {
 			goto End;
 		}
