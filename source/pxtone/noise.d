@@ -11,10 +11,10 @@ import pxtone.pulse.pcm;
 import pxtone.error;
 
 struct pxtoneNoise {
-	pxtnPulse_NoiseBuilder _bldr;
-	int _ch_num = 2;
-	int _sps = 44100;
-	int _bps = 16;
+	private pxtnPulse_NoiseBuilder _bldr;
+	private int _ch_num = 2;
+	private int _sps = 44100;
+	private int _bps = 16;
 
 	bool quality_set(int ch_num, int sps, int bps) nothrow @safe {
 		switch (ch_num) {
