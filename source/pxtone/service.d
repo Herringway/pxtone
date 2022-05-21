@@ -1284,6 +1284,20 @@ private:
 
 public:
 
+	void load(ubyte[] buffer) @system {
+		pxtnDescriptor desc;
+		desc.set_memory_r(buffer);
+		read(desc);
+		tones_ready();
+	}
+
+	void load(File fd) @system {
+		pxtnDescriptor desc;
+		desc.set_file_r(fd);
+		read(desc);
+		tones_ready();
+	}
+
 	 ~this() nothrow @system {
 		_release();
 	}

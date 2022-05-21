@@ -16,19 +16,6 @@ enum _BUFFER_PER_SEC = (0.3f);
 
 __gshared SDL_AudioDeviceID dev;
 
-void _load_ptcop(ref pxtnService pxtn, ubyte[] data) {
-	auto desc = pxtnDescriptor();
-
-	scope (failure) {
-		pxtn.evels.Release();
-	}
-
-	desc.set_memory_r(data);
-
-	pxtn.read(desc);
-
-	pxtn.tones_ready();
-}
 void _write_ptcop(ref pxtnService pxtn, ref File file) {
 	auto desc = pxtnDescriptor();
 
@@ -84,7 +71,7 @@ int main(string[] args) {
 
 	trace("Loading ptcop");
 	// Load file
-	_load_ptcop(pxtn, file);
+	pxtn.load(file);
 
 	trace("Preparing pxtone");
 	// Prepare to play music
