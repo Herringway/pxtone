@@ -840,7 +840,7 @@ public:
 		}
 	}
 
-	void Tone_Ready_sample(const pxtnPulse_NoiseBuilder* ptn_bldr) @system {
+	void Tone_Ready_sample(const pxtnPulse_NoiseBuilder ptn_bldr) @system {
 		pxtnVOICEINSTANCE* p_vi = null;
 		pxtnVOICEUNIT* p_vc = null;
 		pxtnPulse_PCM pcm_work;
@@ -909,9 +909,6 @@ public:
 				}
 
 			case pxtnVOICETYPE.Noise: {
-					if (!ptn_bldr) {
-						throw new PxtoneException("ptn init");
-					}
 					pxtnPulse_PCM p_pcm = ptn_bldr.BuildNoise(p_vc.p_ptn, ch, sps, bps);
 					p_vi.p_smp_w = cast(ubyte[]) p_pcm.Devolve_SamplingBuffer();
 					p_vi.smp_body_w = p_vc.p_ptn.get_smp_num_44k();
@@ -998,7 +995,7 @@ public:
 		deallocate(p_point);
 	}
 
-	void Tone_Ready(const pxtnPulse_NoiseBuilder* ptn_bldr, int sps) @system {
+	void Tone_Ready(const pxtnPulse_NoiseBuilder ptn_bldr, int sps) @system {
 		Tone_Ready_sample(ptn_bldr);
 		Tone_Ready_envelope(sps);
 	}

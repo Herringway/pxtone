@@ -223,7 +223,7 @@ private:
 
 	int _dst_ch_num, _dst_sps, _dst_byte_per_smp;
 
-	pxtnPulse_NoiseBuilder* _ptn_bldr;
+	pxtnPulse_NoiseBuilder _ptn_bldr;
 
 	int _delay_max;
 	int _delay_num;
@@ -808,22 +808,10 @@ private:
 			}
 		}
 
-		text = allocate!pxtnText();
-		if (!(text)) {
-			throw new PxtoneException("pxtnService text not initialized");
-		}
-		master = allocate!pxtnMaster();
-		if (!(master)) {
-			throw new PxtoneException("pxtnService master not initialized");
-		}
-		evels = allocate!pxtnEvelist();
-		if (!(evels)) {
-			throw new PxtoneException("pxtnService evels not initialized");
-		}
-		_ptn_bldr = allocate!pxtnPulse_NoiseBuilder();
-		if (!(_ptn_bldr)) {
-			throw new PxtoneException("pxtnService noisebuilder not initialized");
-		}
+		text = pxtnText.init;
+		master = pxtnMaster.init;
+		evels = pxtnEvelist.init;
+		_ptn_bldr = pxtnPulse_NoiseBuilder.init;
 
 		if (fix_evels_num) {
 			_b_fix_evels_num = true;
@@ -883,10 +871,6 @@ private:
 
 		_moo_destructer();
 
-		deallocate(text);
-		deallocate(master);
-		deallocate(evels);
-		deallocate(_ptn_bldr);
 		if (_delays) {
 			deallocate(_delays);
 			_delays = null;
@@ -1304,9 +1288,9 @@ public:
 		_release();
 	}
 
-	pxtnText* text;
-	pxtnMaster* master;
-	pxtnEvelist* evels;
+	pxtnText text;
+	pxtnMaster master;
+	pxtnEvelist evels;
 
 	void initialize() @system {
 		_init(0, false);
