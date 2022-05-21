@@ -197,15 +197,14 @@ public:
 		Release();
 	}
 
-	bool Allocate(int max_event_num) nothrow @system {
+	void Allocate(int max_event_num) @system {
 		Release();
 		_eves = allocate!EVERECORD(max_event_num);
 		if (!(_eves)) {
-			return false;
+			throw new PxtoneException("Unable to allocate memory");
 		}
 		_eves[0 .. max_event_num] = EVERECORD.init;
 		_eve_allocated_num = max_event_num;
-		return true;
 	}
 
 	int get_Num_Max() const nothrow @safe {
@@ -849,7 +848,7 @@ public:
 	// io
 	// ------------
 
-	bool io_Write(ref pxtnDescriptor p_doc, int rough) const nothrow @system {
+	void io_Write(ref pxtnDescriptor p_doc, int rough) const @system {
 		int eve_num = get_Count();
 		int ralatived_size = 0;
 		int absolute = 0;
@@ -868,12 +867,8 @@ public:
 		}
 
 		int size = cast(int)(int.sizeof + ralatived_size);
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(eve_num)) {
-			return false;
-		}
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(eve_num);
 
 		absolute = 0;
 
@@ -886,35 +881,21 @@ public:
 				value = p.value;
 			}
 
-			if (!p_doc.v_w_asfile(clock / rough)) {
-				return false;
-			}
-			if (!p_doc.w_asfile(p.unit_no)) {
-				return false;
-			}
-			if (!p_doc.w_asfile(p.kind)) {
-				return false;
-			}
-			if (!p_doc.v_w_asfile(value)) {
-				return false;
-			}
+			p_doc.v_w_asfile(clock / rough);
+			p_doc.w_asfile(p.unit_no);
+			p_doc.w_asfile(p.kind);
+			p_doc.v_w_asfile(value);
 
 			absolute = p.clock;
 		}
-
-		return true;
 	}
 
-	pxtnERR io_Read(ref pxtnDescriptor p_doc) nothrow @system {
+	void io_Read(ref pxtnDescriptor p_doc) @system {
 		int size = 0;
 		int eve_num = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(eve_num)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(eve_num);
 
 		int clock = 0;
 		int absolute = 0;
@@ -923,36 +904,22 @@ public:
 		int value = 0;
 
 		for (int e = 0; e < eve_num; e++) {
-			if (!p_doc.v_r(clock)) {
-				return pxtnERR.desc_r;
-			}
-			if (!p_doc.r(unit_no)) {
-				return pxtnERR.desc_r;
-			}
-			if (!p_doc.r(kind)) {
-				return pxtnERR.desc_r;
-			}
-			if (!p_doc.v_r(value)) {
-				return pxtnERR.desc_r;
-			}
+			p_doc.v_r(clock);
+			p_doc.r(unit_no);
+			p_doc.r(kind);
+			p_doc.v_r(value);
 			absolute += clock;
 			clock = absolute;
 			Linear_Add_i(clock, unit_no, kind, value);
 		}
-
-		return pxtnERR.OK;
 	}
 
-	int io_Read_EventNum(ref pxtnDescriptor p_doc) const nothrow @system {
+	int io_Read_EventNum(ref pxtnDescriptor p_doc) const @system {
 		int size = 0;
 		int eve_num = 0;
 
-		if (!p_doc.r(size)) {
-			return 0;
-		}
-		if (!p_doc.r(eve_num)) {
-			return 0;
-		}
+		p_doc.r(size);
+		p_doc.r(eve_num);
 
 		int count = 0;
 		int clock = 0;
@@ -961,18 +928,10 @@ public:
 		int value = 0;
 
 		for (int e = 0; e < eve_num; e++) {
-			if (!p_doc.v_r(clock)) {
-				return 0;
-			}
-			if (!p_doc.r(unit_no)) {
-				return 0;
-			}
-			if (!p_doc.r(kind)) {
-				return 0;
-			}
-			if (!p_doc.v_r(value)) {
-				return 0;
-			}
+			p_doc.v_r(clock);
+			p_doc.r(unit_no);
+			p_doc.r(kind);
+			p_doc.v_r(value);
 			count++;
 		}
 		if (count != eve_num) {
@@ -1060,7 +1019,7 @@ public:
 	}
 
 	// write event.
-	pxtnERR io_Unit_Read_x4x_EVENT(ref pxtnDescriptor p_doc, bool bTailAbsolute, bool bCheckRRR) nothrow @system {
+	void io_Unit_Read_x4x_EVENT(ref pxtnDescriptor p_doc, bool bTailAbsolute, bool bCheckRRR) @system {
 		_x4x_EVENTSTRUCT evnt;
 		int clock = 0;
 		int value = 0;
@@ -1068,31 +1027,23 @@ public:
 		int e = 0;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(evnt)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(evnt);
 
 		if (evnt.data_num != 2) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (evnt.event_kind >= EVENTKIND.NUM) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (bCheckRRR && evnt.rrr) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		absolute = 0;
 		for (e = 0; e < cast(int) evnt.event_num; e++) {
-			if (!p_doc.v_r(clock)) {
-				break;
-			}
-			if (!p_doc.v_r(value)) {
-				break;
-			}
+			p_doc.v_r(clock);
+			p_doc.v_r(value);
 			absolute += clock;
 			clock = absolute;
 			x4x_Read_Add(clock, cast(ubyte) evnt.unit_index, cast(ubyte) evnt.event_kind, value);
@@ -1101,17 +1052,15 @@ public:
 			}
 		}
 		if (e != evnt.event_num) {
-			return pxtnERR.desc_broken;
+			throw new PxtoneException("desc broken");
 		}
 
 		x4x_Read_NewKind();
-
-		return pxtnERR.OK;
 	}
 
-	pxtnERR io_Read_x4x_EventNum(ref pxtnDescriptor p_doc, int* p_num) const nothrow @system {
+	void io_Read_x4x_EventNum(ref pxtnDescriptor p_doc, int* p_num) const @system {
 		if (!p_num) {
-			return pxtnERR.param;
+			throw new PxtoneException("param");
 		}
 
 		_x4x_EVENTSTRUCT evnt;
@@ -1119,32 +1068,22 @@ public:
 		int e = 0;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(evnt)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(evnt);
 
 		// support only 2
 		if (evnt.data_num != 2) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		for (e = 0; e < cast(int) evnt.event_num; e++) {
-			if (!p_doc.v_r(work)) {
-				break;
-			}
-			if (!p_doc.v_r(work)) {
-				break;
-			}
+			p_doc.v_r(work);
+			p_doc.v_r(work);
 		}
 		if (e != evnt.event_num) {
-			return pxtnERR.desc_broken;
+			throw new PxtoneException("desc broken");
 		}
 
 		*p_num = evnt.event_num;
-
-		return pxtnERR.OK;
 	}
 }

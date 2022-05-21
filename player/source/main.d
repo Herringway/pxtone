@@ -1,6 +1,7 @@
 import pxtone;
 
 import std.experimental.logger;
+import std.exception;
 import std.file;
 import std.format;
 import std.path;
@@ -15,54 +16,31 @@ enum _BUFFER_PER_SEC = (0.3f);
 
 __gshared SDL_AudioDeviceID dev;
 
-bool _load_ptcop(ref pxtnService pxtn, ubyte[] data, out pxtnERR p_pxtn_err) {
-	bool okay;
+void _load_ptcop(ref pxtnService pxtn, ubyte[] data) {
 	auto desc = pxtnDescriptor();
 
-	scope (exit) {
-		if (!okay) {
-			pxtn.evels.Release();
-		}
+	scope (failure) {
+		pxtn.evels.Release();
 	}
 
-	if (!desc.set_memory_r(data)) {
-		return false;
-	}
+	desc.set_memory_r(data);
 
-	p_pxtn_err = pxtn.read(desc);
-	if (p_pxtn_err != pxtnERR.OK) {
-		return false;
-	}
+	pxtn.read(desc);
 
-	p_pxtn_err = pxtn.tones_ready();
-	if (p_pxtn_err != pxtnERR.OK) {
-		return false;
-	}
-
-	okay = true;
-	return true;
+	pxtn.tones_ready();
 }
-bool _write_ptcop(ref pxtnService pxtn, ref File file, out pxtnERR p_pxtn_err) {
-	bool okay;
+void _write_ptcop(ref pxtnService pxtn, ref File file) {
 	auto desc = pxtnDescriptor();
 
-	if (!desc.set_file_w(file)) {
-		return false;
-	}
+	desc.set_file_w(file);
 
-	p_pxtn_err = pxtn.write(desc, false, 0);
-	if (p_pxtn_err != pxtnERR.OK) {
-		return false;
-	}
-
-	okay = true;
-	return true;
+	pxtn.write(desc, false, 0);
 }
 
 bool initAudio(SDL_AudioCallback fun, ubyte channels, uint sampleRate, void* userdata = null) {
 	import bindbc.sdl;
 
-	assert(loadSDL() == sdlSupport);
+	enforce(loadSDL() == sdlSupport);
 	if (SDL_Init(SDL_INIT_AUDIO) != 0) {
 		criticalf("SDL init failed: %s", SDL_GetError().fromStringz);
 		return false;
@@ -92,35 +70,21 @@ int main(string[] args) {
 	if (args.length < 2) {
 		return 1;
 	}
-
-	bool okay = false;
-	pxtnERR pxtn_err = pxtnERR.VOID;
+	sharedLog = new FileLogger(stdout, LogLevel.trace);
 
 	auto filePath = args[1];
 	auto file = cast(ubyte[])read(args[1]);
 
 	// pxtone initialization
 	auto pxtn = pxtnService();
-	scope (exit) {
-		if (!okay) {
-			criticalf("pxtone: %s", pxtnError_get_string(pxtn_err));
-		}
-	}
 	trace("Initializing pxtone");
-	pxtn_err = pxtn.init_();
-	if (pxtn_err != pxtnERR.OK) {
-		return -1;
-	}
+	pxtn.initialize();
 	trace("Setting quality");
-	if (!pxtn.set_destination_quality(_CHANNEL_NUM, _SAMPLE_PER_SECOND)) {
-		return -1;
-	}
+	pxtn.set_destination_quality(_CHANNEL_NUM, _SAMPLE_PER_SECOND);
 
 	trace("Loading ptcop");
 	// Load file
-	if (!_load_ptcop(pxtn, file, pxtn_err)) {
-		return -1;
-	}
+	_load_ptcop(pxtn, file);
 
 	trace("Preparing pxtone");
 	// Prepare to play music
@@ -130,14 +94,12 @@ int main(string[] args) {
 		prep.start_pos_float = 0;
 		prep.master_volume = 0.80f;
 
-		if (!pxtn.moo_preparation(prep)) {
-			return -1;
-		}
+		pxtn.moo_preparation(prep);
 	}
 	if (!initAudio(&_sampling_func, _CHANNEL_NUM, _SAMPLE_PER_SECOND, &pxtn)) {
 		return 1;
 	}
-	tracef("SDL audio init success");
+	trace("SDL audio init success");
 
 	writefln!"file: %s"(filePath.baseName);
 	writefln!"name: %s"(pxtn.text.get_name_buf());
@@ -153,6 +115,5 @@ int main(string[] args) {
 	writeln("Press enter to exit");
 	readln();
 
-	okay = true;
 	return 0;
 }

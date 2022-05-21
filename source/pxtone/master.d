@@ -149,7 +149,7 @@ public:
 		return _beat_num * _beat_clock * meas + _beat_clock * beat + clock;
 	}
 
-	bool io_w_v5(ref pxtnDescriptor p_doc, int rough) const nothrow @system {
+	void io_w_v5(ref pxtnDescriptor p_doc, int rough) const @system {
 
 		uint size = 15;
 		short bclock = cast(short)(_beat_clock / rough);
@@ -157,30 +157,15 @@ public:
 		int clock_last = bclock * _beat_num * get_last_meas();
 		byte bnum = cast(byte) _beat_num;
 		float btempo = _beat_tempo;
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(bclock)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(bnum)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(btempo)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(clock_repeat)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(clock_last)) {
-			return false;
-		}
-
-		return true;
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(bclock);
+		p_doc.w_asfile(bnum);
+		p_doc.w_asfile(btempo);
+		p_doc.w_asfile(clock_repeat);
+		p_doc.w_asfile(clock_last);
 	}
 
-	pxtnERR io_r_v5(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void io_r_v5(ref pxtnDescriptor p_doc) @system {
 		short beat_clock = 0;
 		byte beat_num = 0;
 		float beat_tempo = 0;
@@ -189,28 +174,16 @@ public:
 
 		uint size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
 		if (size != 15) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
-		if (!p_doc.r(beat_clock)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(beat_num)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(beat_tempo)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(clock_repeat)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(clock_last)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(beat_clock);
+		p_doc.r(beat_num);
+		p_doc.r(beat_tempo);
+		p_doc.r(clock_repeat);
+		p_doc.r(clock_last);
 
 		_beat_clock = beat_clock;
 		_beat_num = beat_num;
@@ -218,26 +191,20 @@ public:
 
 		set_repeat_meas(clock_repeat / (beat_num * beat_clock));
 		set_last_meas(clock_last / (beat_num * beat_clock));
-
-		return pxtnERR.OK;
 	}
 
-	int io_r_v5_EventNum(ref pxtnDescriptor p_doc) nothrow @system {
+	int io_r_v5_EventNum(ref pxtnDescriptor p_doc) @system {
 		uint size;
-		if (!p_doc.r(size)) {
-			return 0;
-		}
+		p_doc.r(size);
 		if (size != 15) {
 			return 0;
 		}
 		byte[15] buf;
-		if (!p_doc.r(buf[])) {
-			return 0;
-		}
+		p_doc.r(buf[]);
 		return 5;
 	}
 
-	pxtnERR io_r_x4x(ref pxtnDescriptor p_doc) nothrow @system {
+	void io_r_x4x(ref pxtnDescriptor p_doc) @system {
 		_x4x_MASTER mast;
 		int size = 0;
 		int e = 0;
@@ -249,19 +216,15 @@ public:
 		int beat_clock, beat_num, repeat_clock, last_clock;
 		float beat_tempo = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(mast)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(mast);
 
 		// unknown format
 		if (mast.data_num != 3) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (mast.rrr) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		beat_clock = EVENTDEFAULT_BEATCLOCK;
@@ -273,15 +236,9 @@ public:
 		absolute = 0;
 
 		for (e = 0; e < cast(int) mast.event_num; e++) {
-			if (!p_doc.v_r(status)) {
-				break;
-			}
-			if (!p_doc.v_r(clock)) {
-				break;
-			}
-			if (!p_doc.v_r(volume)) {
-				break;
-			}
+			p_doc.v_r(status);
+			p_doc.v_r(clock);
+			p_doc.v_r(volume);
 			absolute += clock;
 			clock = absolute;
 
@@ -289,40 +246,40 @@ public:
 			case EVENTKIND.BEATCLOCK:
 				beat_clock = volume;
 				if (clock) {
-					return pxtnERR.desc_broken;
+					throw new PxtoneException("desc broken");
 				}
 				break;
 			case EVENTKIND.BEATTEMPO:
 				beat_tempo = *(cast(float*)&volume);
 				if (clock) {
-					return pxtnERR.desc_broken;
+					throw new PxtoneException("desc broken");
 				}
 				break;
 			case EVENTKIND.BEATNUM:
 				beat_num = volume;
 				if (clock) {
-					return pxtnERR.desc_broken;
+					throw new PxtoneException("desc broken");
 				}
 				break;
 			case EVENTKIND.REPEAT:
 				repeat_clock = clock;
 				if (volume) {
-					return pxtnERR.desc_broken;
+					throw new PxtoneException("desc broken");
 				}
 				break;
 			case EVENTKIND.LAST:
 				last_clock = clock;
 				if (volume) {
-					return pxtnERR.desc_broken;
+					throw new PxtoneException("desc broken");
 				}
 				break;
 			default:
-				return pxtnERR.fmt_unknown;
+				throw new PxtoneException("fmt unknown");
 			}
 		}
 
 		if (e != mast.event_num) {
-			return pxtnERR.desc_broken;
+			throw new PxtoneException("desc broken");
 		}
 
 		_beat_num = beat_num;
@@ -331,37 +288,25 @@ public:
 
 		set_repeat_meas(repeat_clock / (beat_num * beat_clock));
 		set_last_meas(last_clock / (beat_num * beat_clock));
-
-		return pxtnERR.OK;
 	}
 
-	int io_r_x4x_EventNum(ref pxtnDescriptor p_doc) nothrow @system {
+	int io_r_x4x_EventNum(ref pxtnDescriptor p_doc) @system {
 		_x4x_MASTER mast;
 		int size;
 		int work;
 		int e;
 
-		if (!p_doc.r(size)) {
-			return 0;
-		}
-		if (!p_doc.r(mast)) {
-			return 0;
-		}
+		p_doc.r(size);
+		p_doc.r(mast);
 
 		if (mast.data_num != 3) {
 			return 0;
 		}
 
 		for (e = 0; e < cast(int) mast.event_num; e++) {
-			if (!p_doc.v_r(work)) {
-				return 0;
-			}
-			if (!p_doc.v_r(work)) {
-				return 0;
-			}
-			if (!p_doc.v_r(work)) {
-				return 0;
-			}
+			p_doc.v_r(work);
+			p_doc.v_r(work);
+			p_doc.v_r(work);
 		}
 
 		return mast.event_num;

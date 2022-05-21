@@ -117,8 +117,7 @@ private:
 	pxtnPulse_Frequency _freq;
 
 public:
-	pxtnPulse_PCM BuildNoise(ref pxtnPulse_Noise p_noise, int ch, int sps, int bps) const nothrow @system {
-		bool b_ret = false;
+	pxtnPulse_PCM BuildNoise(ref pxtnPulse_Noise p_noise, int ch, int sps, int bps) const @system {
 		int offset = 0;
 		double work = 0;
 		double vol = 0;
@@ -137,8 +136,14 @@ public:
 		unit_num = p_noise.get_unit_num();
 
 		units = allocate!_UNIT(unit_num);
+		scope(exit) {
+			for (int i = 0; i < unit_num; i++) {
+				deallocate(units[i].enves);
+			}
+			deallocate(units);
+		}
 		if (!units) {
-			goto End;
+			throw new PxtoneException("Unit buffer allocation failed");
 		}
 
 		for (int u = 0; u < unit_num; u++) {
@@ -161,7 +166,7 @@ public:
 
 			pU.enves = allocate!_POINT(pU.enve_num);
 			if (!pU.enves) {
-				goto End;
+				throw new PxtoneException("Envelope buffer allocation failed");
 			}
 
 			// envelope
@@ -190,9 +195,7 @@ public:
 		smp_num = cast(int)(cast(double) p_noise.get_smp_num_44k() / (44100.0 / sps));
 
 		p_pcm = pxtnPulse_PCM.init;
-		if (p_pcm.Create(ch, sps, bps, smp_num) != pxtnERR.OK) {
-			goto End;
-		}
+		p_pcm.Create(ch, sps, bps, smp_num);
 		p = p_pcm.get_p_buf().ptr;
 
 		for (int s = 0; s < smp_num; s++) {
@@ -339,15 +342,6 @@ public:
 					}
 				}
 			}
-		}
-
-		b_ret = true;
-	End:
-		if (units) {
-			for (int i = 0; i < unit_num; i++) {
-				deallocate(units[i].enves);
-			}
-			deallocate(units);
 		}
 
 		return p_pcm;

@@ -9,6 +9,8 @@ import pxtone.evelist;
 import pxtone.max;
 import pxtone.woice;
 
+import std.exception;
+
 // v1x (20byte) =================
 struct _x1x_UNIT {
 	char[pxtnMAX_TUNEUNITNAME] name;
@@ -351,41 +353,28 @@ public:
 		return _bPlayed;
 	}
 
-	pxtnERR Read_v3x(ref pxtnDescriptor p_doc, int* p_group) nothrow @system {
+	void Read_v3x(ref pxtnDescriptor p_doc, int* p_group) @system {
 		_x3x_UNIT unit;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(unit)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(unit);
 		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PCM && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PTV && cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PTN) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		*p_group = unit.group;
-
-		return pxtnERR.OK;
 	}
 
-	bool Read_v1x(ref pxtnDescriptor p_doc, int* p_group) nothrow @system {
+	void Read_v1x(ref pxtnDescriptor p_doc, int* p_group) @system {
 		_x1x_UNIT unit;
 		int size;
 
-		if (!p_doc.r(size)) {
-			return false;
-		}
-		if (!p_doc.r(unit)) {
-			return false;
-		}
-		if (cast(pxtnWOICETYPE) unit.type != pxtnWOICETYPE.PCM) {
-			return false;
-		}
+		p_doc.r(size);
+		p_doc.r(unit);
+		enforce(cast(pxtnWOICETYPE) unit.type == pxtnWOICETYPE.PCM, new PxtoneException("Expecting a PCM unit"));
 
 		_name_buf[0 .. pxtnMAX_TUNEUNITNAME] = unit.name[0 .. pxtnMAX_TUNEUNITNAME];
 		_name_buf[pxtnMAX_TUNEUNITNAME] = '\0';
 		*p_group = unit.group;
-		return true;
 	}
 }

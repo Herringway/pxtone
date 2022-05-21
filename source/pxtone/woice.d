@@ -319,18 +319,19 @@ public:
 		return false;
 	}
 
-	bool Voice_Allocate(int voice_num) nothrow @system {
-		bool b_ret = false;
-
+	void Voice_Allocate(int voice_num) @system {
 		Voice_Release();
 
+		scope(failure) {
+			Voice_Release();
+		}
 		_voices = allocate!pxtnVOICEUNIT(voice_num);
 		if (!_voices) {
-			goto End;
+			throw new PxtoneException("Voice buffer allocation failed");
 		}
 		_voinsts = allocate!pxtnVOICEINSTANCE(voice_num);
 		if (!_voinsts) {
-			goto End;
+			throw new PxtoneException("Instrument buffer allocation failed");
 		}
 		_voice_num = voice_num;
 
@@ -349,15 +350,6 @@ public:
 			}
 			p_vc.envelope = pxtnVOICEENVELOPE.init;
 		}
-
-		b_ret = true;
-	End:
-
-		if (!b_ret) {
-			Voice_Release();
-		}
-
-		return b_ret;
 	}
 
 	void Voice_Release() nothrow @system {
@@ -369,15 +361,16 @@ public:
 		_voice_num = 0;
 	}
 
-	bool Copy(pxtnWoice* p_dst) const nothrow @system {
+	bool Copy(pxtnWoice* p_dst) const @system {
 		bool b_ret = false;
 		int v, num;
 		size_t size;
 		const(pxtnVOICEUNIT)* p_vc1 = null;
 		pxtnVOICEUNIT* p_vc2 = null;
 
-		if (!p_dst.Voice_Allocate(_voice_num)) {
-			goto End;
+		p_dst.Voice_Allocate(_voice_num);
+		scope(failure) {
+			p_dst.Voice_Release();
 		}
 
 		p_dst._type = _type;
@@ -419,9 +412,7 @@ public:
 			}
 			p_vc2.wave.points[0 .. size] = p_vc1.wave.points[0 .. size];
 
-			if (p_vc1.p_pcm.Copy(p_vc2.p_pcm) != pxtnERR.OK) {
-				goto End;
-			}
+			p_vc1.p_pcm.Copy(p_vc2.p_pcm);
 			if (!p_vc1.p_ptn.Copy(p_vc2.p_ptn)) {
 				goto End;
 			}
@@ -464,22 +455,15 @@ public:
 		}
 	}
 
-	pxtnERR read(ref pxtnDescriptor desc, pxtnWOICETYPE type) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
-
+	void read(ref pxtnDescriptor desc, pxtnWOICETYPE type) @system {
 		switch (type) {
 			// PCM
 		case pxtnWOICETYPE.PCM: {
 				pxtnVOICEUNIT* p_vc;
-				if (!Voice_Allocate(1)) {
-					goto term;
-				}
+				Voice_Allocate(1);
 				p_vc = &_voices[0];
 				p_vc.type = pxtnVOICETYPE.Sampling;
-				res = p_vc.p_pcm.read(desc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				p_vc.p_pcm.read(desc);
 				// if under 0.005 sec, set LOOP.
 				if (p_vc.p_pcm.get_sec() < 0.005f) {
 					p_vc.voice_flags |= PTV_VOICEFLAG_WAVELOOP;
@@ -492,26 +476,17 @@ public:
 
 			// PTV
 		case pxtnWOICETYPE.PTV: {
-				res = PTV_Read(desc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				PTV_Read(desc);
 			}
 			break;
 
 			// PTN
 		case pxtnWOICETYPE.PTN:
-			if (!Voice_Allocate(1)) {
-				res = pxtnERR.memory;
-				goto term;
-			}
+			Voice_Allocate(1);
 			{
 				pxtnVOICEUNIT* p_vc = &_voices[0];
 				p_vc.type = pxtnVOICETYPE.Noise;
-				res = p_vc.p_ptn.read(desc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				p_vc.p_ptn.read(desc);
 				_type = pxtnWOICETYPE.PTN;
 			}
 			break;
@@ -519,68 +494,42 @@ public:
 			// OGGV
 		case pxtnWOICETYPE.OGGV:
 			version (pxINCLUDE_OGGVORBIS) {
-				if (!Voice_Allocate(1)) {
-					res = pxtnERR.memory;
-					goto term;
-				}
+				Voice_Allocate(1);
 				{
 					pxtnVOICEUNIT* p_vc;
 					p_vc = &_voices[0];
 					p_vc.type = pxtnVOICETYPE.OggVorbis;
-					res = p_vc.p_oggv.ogg_read(desc);
-					if (res != pxtnERR.OK) {
-						goto term;
-					}
+					p_vc.p_oggv.ogg_read(desc);
 					_type = pxtnWOICETYPE.OGGV;
 				}
 				break;
 			} else {
-				res = pxtnERR.ogg_no_supported;
-				goto term;
+				throw new PxtoneException("Ogg Vorbis support is required");
 			}
 
 		default:
-			goto term;
+			throw new PxtoneException("Unknown woice type");
 		}
-
-		res = pxtnERR.OK;
-	term:
-
-		return res;
 	}
 
-	bool PTV_Write(ref pxtnDescriptor p_doc, int* p_total) const nothrow @system {
+	bool PTV_Write(ref pxtnDescriptor p_doc, int* p_total) const @system {
 		bool b_ret = false;
 		const(pxtnVOICEUNIT)* p_vc = null;
 		uint work = 0;
 		int v = 0;
 		int total = 0;
 
-		if (!p_doc.w_asfile(_code)) {
-			goto End;
-		}
-		if (!p_doc.w_asfile(_version)) {
-			goto End;
-		}
-		if (!p_doc.w_asfile(total)) {
-			goto End;
-		}
+		p_doc.w_asfile(_code);
+		p_doc.w_asfile(_version);
+		p_doc.w_asfile(total);
 
 		work = 0;
 
 		// p_ptv. (5)
-		if (!p_doc.v_w_asfile(work, total)) {
-			goto End; // basic_key (no use)
-		}
-		if (!p_doc.v_w_asfile(work, total)) {
-			goto End;
-		}
-		if (!p_doc.v_w_asfile(work, total)) {
-			goto End;
-		}
-		if (!p_doc.v_w_asfile(_voice_num, total)) {
-			goto End;
-		}
+		p_doc.v_w_asfile(work, total);
+		p_doc.v_w_asfile(work, total);
+		p_doc.v_w_asfile(work, total);
+		p_doc.v_w_asfile(_voice_num, total);
 
 		for (v = 0; v < _voice_num; v++) {
 			// p_ptvv. (9)
@@ -589,44 +538,26 @@ public:
 				goto End;
 			}
 
-			if (!p_doc.v_w_asfile(p_vc.basic_key, total)) {
-				goto End;
-			}
-			if (!p_doc.v_w_asfile(p_vc.volume, total)) {
-				goto End;
-			}
-			if (!p_doc.v_w_asfile(p_vc.pan, total)) {
-				goto End;
-			}
+			p_doc.v_w_asfile(p_vc.basic_key, total);
+			p_doc.v_w_asfile(p_vc.volume, total);
+			p_doc.v_w_asfile(p_vc.pan, total);
 			work = *(cast(uint*)&p_vc.tuning);
-			if (!p_doc.v_w_asfile(work, total)) {
-				goto End;
-			}
-			if (!p_doc.v_w_asfile(p_vc.voice_flags, total)) {
-				goto End;
-			}
-			if (!p_doc.v_w_asfile(p_vc.data_flags, total)) {
-				goto End;
-			}
+			p_doc.v_w_asfile(work, total);
+			p_doc.v_w_asfile(p_vc.voice_flags, total);
+			p_doc.v_w_asfile(p_vc.data_flags, total);
 
-			if (p_vc.data_flags & PTV_DATAFLAG_WAVE && !_Write_Wave(p_doc, p_vc, total)) {
-				goto End;
+			if (p_vc.data_flags & PTV_DATAFLAG_WAVE) {
+				_Write_Wave(p_doc, p_vc, total);
 			}
-			if (p_vc.data_flags & PTV_DATAFLAG_ENVELOPE && !_Write_Envelope(p_doc, p_vc, total)) {
-				goto End;
+			if (p_vc.data_flags & PTV_DATAFLAG_ENVELOPE) {
+				_Write_Envelope(p_doc, p_vc, total);
 			}
 		}
 
 		// total size
-		if (!p_doc.seek(pxtnSEEK.cur, -(total + 4))) {
-			goto End;
-		}
-		if (!p_doc.w_asfile(total)) {
-			goto End;
-		}
-		if (!p_doc.seek(pxtnSEEK.cur, (total))) {
-			goto End;
-		}
+		p_doc.seek(pxtnSEEK.cur, -(total + 4));
+		p_doc.w_asfile(total);
+		p_doc.seek(pxtnSEEK.cur, total);
 
 		if (p_total) {
 			*p_total = 16 + total;
@@ -637,8 +568,7 @@ public:
 		return b_ret;
 	}
 
-	pxtnERR PTV_Read(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void PTV_Read(ref pxtnDescriptor p_doc) @system {
 		pxtnVOICEUNIT* p_vc = null;
 		ubyte[8] code = 0;
 		int version_ = 0;
@@ -647,117 +577,58 @@ public:
 		int total = 0;
 		int num = 0;
 
-		if (!p_doc.r(code[])) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
-		if (!p_doc.r(version_)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
+		p_doc.r(code[]);
+		p_doc.r(version_);
 		if (code[0 .. 8] != _code) {
-			res = pxtnERR.inv_code;
-			goto term;
+			throw new PxtoneException("inv code");
 		}
-		if (!p_doc.r(total)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
+		p_doc.r(total);
 		if (version_ > _version) {
-			res = pxtnERR.fmt_new;
-			goto term;
+			throw new PxtoneException("fmt new");
 		}
 
 		// p_ptv. (5)
-		if (!p_doc.v_r(_x3x_basic_key)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
-		if (!p_doc.v_r(work1)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
-		if (!p_doc.v_r(work2)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
+		p_doc.v_r(_x3x_basic_key);
+		p_doc.v_r(work1);
+		p_doc.v_r(work2);
 		if (work1 || work2) {
-			res = pxtnERR.fmt_unknown;
-			goto term;
+			throw new PxtoneException("fmt unknown");
 		}
-		if (!p_doc.v_r(num)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
-		if (!Voice_Allocate(num)) {
-			res = pxtnERR.memory;
-			goto term;
-		}
+		p_doc.v_r(num);
+		Voice_Allocate(num);
 
 		for (int v = 0; v < _voice_num; v++) {
 			// p_ptvv. (8)
 			p_vc = &_voices[v];
 			if (!p_vc) {
-				res = pxtnERR.FATAL;
-				goto term;
+				throw new PxtoneException("FATAL");
 			}
-			if (!p_doc.v_r(p_vc.basic_key)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
-			if (!p_doc.v_r(p_vc.volume)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
-			if (!p_doc.v_r(p_vc.pan)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
-			if (!p_doc.v_r(work1)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			p_doc.v_r(p_vc.basic_key);
+			p_doc.v_r(p_vc.volume);
+			p_doc.v_r(p_vc.pan);
+			p_doc.v_r(work1);
 			p_vc.tuning = *(cast(float*)&work1);
-			if (!p_doc.v_r(*cast(int*)&p_vc.voice_flags)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
-			if (!p_doc.v_r(*cast(int*)&p_vc.data_flags)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			p_doc.v_r(*cast(int*)&p_vc.voice_flags);
+			p_doc.v_r(*cast(int*)&p_vc.data_flags);
 
 			// no support.
 			if (p_vc.voice_flags & PTV_VOICEFLAG_UNCOVERED) {
-				res = pxtnERR.fmt_unknown;
-				goto term;
+				throw new PxtoneException("fmt unknown");
 			}
 			if (p_vc.data_flags & PTV_DATAFLAG_UNCOVERED) {
-				res = pxtnERR.fmt_unknown;
-				goto term;
+				throw new PxtoneException("fmt unknown");
 			}
 			if (p_vc.data_flags & PTV_DATAFLAG_WAVE) {
-				res = _Read_Wave(p_doc, p_vc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_Read_Wave(p_doc, p_vc);
 			}
 			if (p_vc.data_flags & PTV_DATAFLAG_ENVELOPE) {
-				res = _Read_Envelope(p_doc, p_vc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_Read_Envelope(p_doc, p_vc);
 			}
 		}
 		_type = pxtnWOICETYPE.PTV;
-
-		res = pxtnERR.OK;
-	term:
-
-		return res;
 	}
 
-	bool io_matePCM_w(ref pxtnDescriptor p_doc) const nothrow @system {
+	void io_matePCM_w(ref pxtnDescriptor p_doc) const @system {
 		const pxtnPulse_PCM* p_pcm = &_voices[0].p_pcm;
 		const(pxtnVOICEUNIT)* p_vc = &_voices[0];
 		_MATERIALSTRUCT_PCM pcm;
@@ -772,38 +643,25 @@ public:
 		pcm.basic_key = cast(ushort) p_vc.basic_key;
 
 		uint size = cast(uint)(_MATERIALSTRUCT_PCM.sizeof + pcm.data_size);
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(pcm)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(p_pcm.get_p_buf())) {
-			return false;
-		}
-
-		return true;
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(pcm);
+		p_doc.w_asfile(p_pcm.get_p_buf());
 	}
 
-	pxtnERR io_matePCM_r(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void io_matePCM_r(ref pxtnDescriptor p_doc) @system {
 		_MATERIALSTRUCT_PCM pcm;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(pcm)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(pcm);
 
 		if ((cast(int) pcm.voice_flags) & PTV_VOICEFLAG_UNCOVERED) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
-		if (!Voice_Allocate(1)) {
-			res = pxtnERR.memory;
-			goto term;
+		Voice_Allocate(1);
+		scope(failure) {
+			Voice_Release();
 		}
 
 		{
@@ -811,14 +669,8 @@ public:
 
 			p_vc.type = pxtnVOICETYPE.Sampling;
 
-			res = p_vc.p_pcm.Create(pcm.ch, pcm.sps, pcm.bps, pcm.data_size / (pcm.bps / 8 * pcm.ch));
-			if (res != pxtnERR.OK) {
-				goto term;
-			}
-			if (!p_doc.r(p_vc.p_pcm.get_p_buf()[0 .. pcm.data_size])) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			p_vc.p_pcm.Create(pcm.ch, pcm.sps, pcm.bps, pcm.data_size / (pcm.bps / 8 * pcm.ch));
+			p_doc.r(p_vc.p_pcm.get_p_buf()[0 .. pcm.data_size]);
 			_type = pxtnWOICETYPE.PCM;
 
 			p_vc.voice_flags = pcm.voice_flags;
@@ -827,16 +679,9 @@ public:
 			_x3x_basic_key = pcm.basic_key;
 			_x3x_tuning = 0;
 		}
-		res = pxtnERR.OK;
-	term:
-
-		if (res != pxtnERR.OK) {
-			Voice_Release();
-		}
-		return res;
 	}
 
-	bool io_matePTN_w(ref pxtnDescriptor p_doc) const nothrow @system {
+	void io_matePTN_w(ref pxtnDescriptor p_doc) const @system {
 		_MATERIALSTRUCT_PTN ptn;
 		const(pxtnVOICEUNIT)* p_vc;
 		int size = 0;
@@ -851,59 +696,38 @@ public:
 		ptn.rrr = 1;
 
 		// pre
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(ptn)) {
-			return false;
-		}
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(ptn);
 		size += _MATERIALSTRUCT_PTN.sizeof;
-		if (!p_vc.p_ptn.write(p_doc, &size)) {
-			return false;
-		}
-		if (!p_doc.seek(pxtnSEEK.cur, cast(int)(-size - int.sizeof))) {
-			return false;
-		}
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.seek(pxtnSEEK.cur, size)) {
-			return false;
-		}
-
-		return true;
+		p_vc.p_ptn.write(p_doc, &size);
+		p_doc.seek(pxtnSEEK.cur, cast(int)(-size - int.sizeof));
+		p_doc.w_asfile(size);
+		p_doc.seek(pxtnSEEK.cur, size);
 	}
 
-	pxtnERR io_matePTN_r(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void io_matePTN_r(ref pxtnDescriptor p_doc) @system {
 		_MATERIALSTRUCT_PTN ptn;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
+		scope(failure) {
+			Voice_Release();
 		}
-		if (!p_doc.r(ptn)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(ptn);
 
 		if (ptn.rrr > 1) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		} else if (ptn.rrr < 0) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
-		if (!Voice_Allocate(1)) {
-			return pxtnERR.memory;
-		}
+		Voice_Allocate(1);
 
 		{
 			pxtnVOICEUNIT* p_vc = &_voices[0];
 
 			p_vc.type = pxtnVOICETYPE.Noise;
-			res = p_vc.p_ptn.read(p_doc);
-			if (res != pxtnERR.OK) {
-				goto term;
-			}
+			p_vc.p_ptn.read(p_doc);
 			_type = pxtnWOICETYPE.PTN;
 			p_vc.voice_flags = ptn.voice_flags;
 			p_vc.basic_key = ptn.basic_key;
@@ -912,16 +736,9 @@ public:
 
 		_x3x_basic_key = ptn.basic_key;
 		_x3x_tuning = 0;
-
-		res = pxtnERR.OK;
-	term:
-		if (res != pxtnERR.OK) {
-			Voice_Release();
-		}
-		return res;
 	}
 
-	bool io_matePTV_w(ref pxtnDescriptor p_doc) const nothrow @system {
+	bool io_matePTV_w(ref pxtnDescriptor p_doc) const @system {
 		_MATERIALSTRUCT_PTV ptv;
 		int head_size = _MATERIALSTRUCT_PTV.sizeof + int.sizeof;
 		int size = 0;
@@ -932,68 +749,43 @@ public:
 		ptv.size = 0;
 
 		// pre write
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(ptv)) {
-			return false;
-		}
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(ptv);
 		if (!PTV_Write(p_doc, &ptv.size)) {
 			return false;
 		}
 
-		if (!p_doc.seek(pxtnSEEK.cur, -(ptv.size + head_size))) {
-			return false;
-		}
+		p_doc.seek(pxtnSEEK.cur, -(ptv.size + head_size));
 
 		size = cast(int)(ptv.size + _MATERIALSTRUCT_PTV.sizeof);
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(ptv)) {
-			return false;
-		}
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(ptv);
 
-		if (!p_doc.seek(pxtnSEEK.cur, ptv.size)) {
-			return false;
-		}
+		p_doc.seek(pxtnSEEK.cur, ptv.size);
 
 		return true;
 	}
 
-	pxtnERR io_matePTV_r(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void io_matePTV_r(ref pxtnDescriptor p_doc) @system {
 		_MATERIALSTRUCT_PTV ptv;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(ptv)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(ptv);
 		if (ptv.rrr) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
-		res = PTV_Read(p_doc);
-		if (res != pxtnERR.OK) {
-			goto term;
-		}
+		PTV_Read(p_doc);
 
 		if (ptv.x3x_tuning != 1.0) {
 			_x3x_tuning = ptv.x3x_tuning;
 		} else {
 			_x3x_tuning = 0;
 		}
-
-		res = pxtnERR.OK;
-	term:
-
-		return res;
 	}
 
 	version (pxINCLUDE_OGGVORBIS) {
-		bool io_mateOGGV_w(ref pxtnDescriptor p_doc) const nothrow @system {
+		bool io_mateOGGV_w(ref pxtnDescriptor p_doc) const @system {
 			if (!_voices) {
 				return false;
 			}
@@ -1008,46 +800,34 @@ public:
 			mate.basic_key = cast(ushort) p_vc.basic_key;
 
 			uint size = cast(uint)(_MATERIALSTRUCT_OGGV.sizeof + oggv_size);
-			if (!p_doc.w_asfile(size)) {
-				return false;
-			}
-			if (!p_doc.w_asfile(mate)) {
-				return false;
-			}
-			if (!p_vc.p_oggv.pxtn_write(p_doc)) {
-				return false;
-			}
+			p_doc.w_asfile(size);
+			p_doc.w_asfile(mate);
+			p_vc.p_oggv.pxtn_write(p_doc);
 
 			return true;
 		}
 
-		pxtnERR io_mateOGGV_r(ref pxtnDescriptor p_doc) nothrow @system {
-			pxtnERR res = pxtnERR.VOID;
+		void io_mateOGGV_r(ref pxtnDescriptor p_doc) @system {
 			_MATERIALSTRUCT_OGGV mate;
 			int size = 0;
 
-			if (!p_doc.r(size)) {
-				return pxtnERR.desc_r;
-			}
-			if (!p_doc.r(mate)) {
-				return pxtnERR.desc_r;
-			}
+			p_doc.r(size);
+			p_doc.r(mate);
 
 			if ((cast(int) mate.voice_flags) & PTV_VOICEFLAG_UNCOVERED) {
-				return pxtnERR.fmt_unknown;
+				throw new PxtoneException("fmt unknown");
 			}
 
-			if (!Voice_Allocate(1)) {
-				goto End;
+			Voice_Allocate(1);
+			scope(failure) {
+				Voice_Release();
 			}
 
 			{
 				pxtnVOICEUNIT* p_vc = &_voices[0];
 				p_vc.type = pxtnVOICETYPE.OggVorbis;
 
-				if (!p_vc.p_oggv.pxtn_read(p_doc)) {
-					goto End;
-				}
+				p_vc.p_oggv.pxtn_read(p_doc);
 
 				p_vc.voice_flags = mate.voice_flags;
 				p_vc.basic_key = mate.basic_key;
@@ -1057,18 +837,10 @@ public:
 			_x3x_basic_key = mate.basic_key;
 			_x3x_tuning = 0;
 			_type = pxtnWOICETYPE.OGGV;
-
-			res = pxtnERR.OK;
-		End:
-			if (res != pxtnERR.OK) {
-				Voice_Release();
-			}
-			return res;
 		}
 	}
 
-	pxtnERR Tone_Ready_sample(const pxtnPulse_NoiseBuilder* ptn_bldr) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void Tone_Ready_sample(const pxtnPulse_NoiseBuilder* ptn_bldr) @system {
 		pxtnVOICEINSTANCE* p_vi = null;
 		pxtnVOICEUNIT* p_vc = null;
 		pxtnPulse_PCM pcm_work;
@@ -1084,6 +856,15 @@ public:
 			p_vi.smp_body_w = 0;
 			p_vi.smp_tail_w = 0;
 		}
+		scope (failure) {
+			for (int v = 0; v < _voice_num; v++) {
+				p_vi = &_voinsts[v];
+				deallocate(p_vi.p_smp_w);
+				p_vi.smp_head_w = 0;
+				p_vi.smp_body_w = 0;
+				p_vi.smp_tail_w = 0;
+			}
+		}
 
 		for (int v = 0; v < _voice_num; v++) {
 			p_vi = &_voinsts[v];
@@ -1093,33 +874,21 @@ public:
 			case pxtnVOICETYPE.OggVorbis:
 
 				version (pxINCLUDE_OGGVORBIS) {
-					res = p_vc.p_oggv.Decode(&pcm_work);
-					if (res != pxtnERR.OK) {
-						goto term;
-					}
-					if (!pcm_work.Convert(ch, sps, bps)) {
-						goto term;
-					}
+					p_vc.p_oggv.Decode(&pcm_work);
+					pcm_work.Convert(ch, sps, bps);
 					p_vi.smp_head_w = pcm_work.get_smp_head();
 					p_vi.smp_body_w = pcm_work.get_smp_body();
 					p_vi.smp_tail_w = pcm_work.get_smp_tail();
 					p_vi.p_smp_w = cast(ubyte[]) pcm_work.Devolve_SamplingBuffer();
 					break;
 				} else {
-					res = pxtnERR.ogg_no_supported;
-					goto term;
+					throw new PxtoneException("Ogg Vorbis support is required");
 				}
 
 			case pxtnVOICETYPE.Sampling:
 
-				res = p_vc.p_pcm.Copy(pcm_work);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
-				if (!pcm_work.Convert(ch, sps, bps)) {
-					res = pxtnERR.pcm_convert;
-					goto term;
-				}
+				p_vc.p_pcm.Copy(pcm_work);
+				pcm_work.Convert(ch, sps, bps);
 				p_vi.smp_head_w = pcm_work.get_smp_head();
 				p_vi.smp_body_w = pcm_work.get_smp_body();
 				p_vi.smp_tail_w = pcm_work.get_smp_tail();
@@ -1132,8 +901,7 @@ public:
 					int size = p_vi.smp_body_w * ch * bps / 8;
 					p_vi.p_smp_w = allocate!ubyte(size);
 					if (!(p_vi.p_smp_w)) {
-						res = pxtnERR.memory;
-						goto term;
+						throw new PxtoneException("Sample buffer allocation failed");
 					}
 					p_vi.p_smp_w[0 .. size] = 0x00;
 					_UpdateWavePTV(p_vc, p_vi, ch, sps, bps);
@@ -1142,8 +910,7 @@ public:
 
 			case pxtnVOICETYPE.Noise: {
 					if (!ptn_bldr) {
-						res = pxtnERR.ptn_init;
-						goto term;
+						throw new PxtoneException("ptn init");
 					}
 					pxtnPulse_PCM p_pcm = ptn_bldr.BuildNoise(p_vc.p_ptn, ch, sps, bps);
 					p_vi.p_smp_w = cast(ubyte[]) p_pcm.Devolve_SamplingBuffer();
@@ -1154,27 +921,17 @@ public:
 				break;
 			}
 		}
-
-		res = pxtnERR.OK;
-	term:
-		if (res != pxtnERR.OK) {
-			for (int v = 0; v < _voice_num; v++) {
-				p_vi = &_voinsts[v];
-				deallocate(p_vi.p_smp_w);
-				p_vi.smp_head_w = 0;
-				p_vi.smp_body_w = 0;
-				p_vi.smp_tail_w = 0;
-			}
-		}
-
-		return res;
 	}
 
-	pxtnERR Tone_Ready_envelope(int sps) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void Tone_Ready_envelope(int sps) @system {
 		int e = 0;
 		pxtnPOINT[] p_point = null;
 
+		scope(failure) {
+			for (int v = 0; v < _voice_num; v++) {
+				deallocate(_voinsts[v].p_env);
+			}
+		}
 		for (int v = 0; v < _voice_num; v++) {
 			pxtnVOICEINSTANCE* p_vi = &_voinsts[v];
 			pxtnVOICEUNIT* p_vc = &_voices[v];
@@ -1194,13 +951,11 @@ public:
 
 				p_vi.p_env = allocate!ubyte(p_vi.env_size);
 				if (!p_vi.p_env) {
-					res = pxtnERR.memory;
-					goto term;
+					throw new PxtoneException("Envelope buffer allocation failed");
 				}
 				p_point = allocate!pxtnPOINT(p_enve.head_num);
 				if (!p_point) {
-					res = pxtnERR.memory;
-					goto term;
+					throw new PxtoneException("Envelope buffer allocation failed");
 				}
 
 				// convert points.
@@ -1240,31 +995,11 @@ public:
 				p_vi.env_release = 0;
 			}
 		}
-
-		res = pxtnERR.OK;
-	term:
-
 		deallocate(p_point);
-
-		if (res != pxtnERR.OK) {
-			for (int v = 0; v < _voice_num; v++) {
-				deallocate(_voinsts[v].p_env);
-			}
-		}
-
-		return res;
 	}
 
-	pxtnERR Tone_Ready(const pxtnPulse_NoiseBuilder* ptn_bldr, int sps) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
-		res = Tone_Ready_sample(ptn_bldr);
-		if (res != pxtnERR.OK) {
-			return res;
-		}
-		res = Tone_Ready_envelope(sps);
-		if (res != pxtnERR.OK) {
-			return res;
-		}
-		return pxtnERR.OK;
+	void Tone_Ready(const pxtnPulse_NoiseBuilder* ptn_bldr, int sps) @system {
+		Tone_Ready_sample(ptn_bldr);
+		Tone_Ready_envelope(sps);
 	}
 }

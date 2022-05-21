@@ -62,17 +62,13 @@ struct pxtoneNoise {
 		}
 	}
 
-	bool generate(ref pxtnDescriptor p_doc, out void[] pp_buf, out int p_size) const nothrow @system {
+	void generate(ref pxtnDescriptor p_doc, out void[] pp_buf, out int p_size) const @system {
 		pxtnPulse_Noise noise;
 
-		if (noise.read(p_doc) != pxtnERR.OK) {
-			return false;
-		}
+		noise.read(p_doc);
 		pxtnPulse_PCM pcm = _bldr.BuildNoise(noise, _ch_num, _sps, _bps);
 
 		p_size = pcm.get_buf_size();
 		pp_buf = pcm.Devolve_SamplingBuffer();
-
-		return true;
 	}
 }

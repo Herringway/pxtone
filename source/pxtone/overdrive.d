@@ -69,7 +69,7 @@ struct pxtnOverDrive {
 		group_smps[_group] = cast(int)(cast(float) work * _amp_f);
 	}
 
-	bool Write(ref pxtnDescriptor p_doc) const nothrow @system {
+	void Write(ref pxtnDescriptor p_doc) const @system {
 		_OVERDRIVESTRUCT over;
 		int size;
 
@@ -79,45 +79,33 @@ struct pxtnOverDrive {
 
 		// dela ----------
 		size = _OVERDRIVESTRUCT.sizeof;
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(over)) {
-			return false;
-		}
-
-		return true;
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(over);
 	}
 
-	pxtnERR Read(ref pxtnDescriptor p_doc) nothrow @system {
+	void Read(ref pxtnDescriptor p_doc) @system {
 		_OVERDRIVESTRUCT over;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(over)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(over);
 
 		if (over.xxx) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (over.yyy) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (over.cut > TUNEOVERDRIVE_CUT_MAX || over.cut < TUNEOVERDRIVE_CUT_MIN) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (over.amp > TUNEOVERDRIVE_AMP_MAX || over.amp < TUNEOVERDRIVE_AMP_MIN) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		_cut_f = over.cut;
 		_amp_f = over.amp;
 		_group = over.group;
-
-		return pxtnERR.OK;
 	}
 }
 

@@ -99,58 +99,35 @@ immutable _code = "PTNOISE-";
 //_ver =  20051028 ; -v.0.9.2.3
 __gshared const uint _ver = 20120418; // 16 wave types.
 
-bool _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor p_doc, ref int p_add) nothrow @system {
+void _WriteOscillator(const(pxNOISEDESIGN_OSCILLATOR)* p_osc, ref pxtnDescriptor p_doc, ref int p_add) @system {
 	int work;
 	work = cast(int) p_osc.type;
-	if (!p_doc.v_w_asfile(work, p_add)) {
-		return false;
-	}
+	p_doc.v_w_asfile(work, p_add);
 	work = cast(int) p_osc.b_rev;
-	if (!p_doc.v_w_asfile(work, p_add)) {
-		return false;
-	}
+	p_doc.v_w_asfile(work, p_add);
 	work = cast(int)(p_osc.freq * 10);
-	if (!p_doc.v_w_asfile(work, p_add)) {
-		return false;
-	}
+	p_doc.v_w_asfile(work, p_add);
 	work = cast(int)(p_osc.volume * 10);
-	if (!p_doc.v_w_asfile(work, p_add)) {
-		return false;
-	}
+	p_doc.v_w_asfile(work, p_add);
 	work = cast(int)(p_osc.offset * 10);
-	if (!p_doc.v_w_asfile(work, p_add)) {
-		return false;
-	}
-	return true;
+	p_doc.v_w_asfile(work, p_add);
 }
 
-pxtnERR _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescriptor p_doc) nothrow @system {
+void _ReadOscillator(pxNOISEDESIGN_OSCILLATOR* p_osc, ref pxtnDescriptor p_doc) @system {
 	int work;
-	if (!p_doc.v_r(work)) {
-		return pxtnERR.desc_r;
-	}
+	p_doc.v_r(work);
 	p_osc.type = cast(pxWAVETYPE) work;
 	if (p_osc.type >= pxWAVETYPE.num) {
-		return pxtnERR.fmt_unknown;
+		throw new PxtoneException("fmt unknown");
 	}
-	if (!p_doc.v_r(work)) {
-		return pxtnERR.desc_r;
-	}
+	p_doc.v_r(work);
 	p_osc.b_rev = work ? true : false;
-	if (!p_doc.v_r(work)) {
-		return pxtnERR.desc_r;
-	}
+	p_doc.v_r(work);
 	p_osc.freq = cast(float) work / 10;
-	if (!p_doc.v_r(work)) {
-		return pxtnERR.desc_r;
-	}
+	p_doc.v_r(work);
 	p_osc.volume = cast(float) work / 10;
-	if (!p_doc.v_r(work)) {
-		return pxtnERR.desc_r;
-	}
+	p_doc.v_r(work);
 	p_osc.offset = cast(float) work / 10;
-
-	return pxtnERR.OK;
 }
 
 uint _MakeFlags(const(pxNOISEDESIGN_UNIT)* pU) nothrow @safe {
@@ -201,7 +178,7 @@ public:
 		Release();
 	}
 
-	bool write(ref pxtnDescriptor p_doc, int* p_add) const nothrow @system {
+	void write(ref pxtnDescriptor p_doc, int* p_add) const @system {
 		bool b_ret = false;
 		int u, e, seek, num_seek, flags;
 		char _byte;
@@ -216,20 +193,12 @@ public:
 			seek = 0;
 		}
 
-		if (!p_doc.w_asfile(_code)) {
-			goto End;
-		}
-		if (!p_doc.w_asfile(_ver)) {
-			goto End;
-		}
+		p_doc.w_asfile(_code);
+		p_doc.w_asfile(_ver);
 		seek += 12;
-		if (!p_doc.v_w_asfile(_smp_num_44k, seek)) {
-			goto End;
-		}
+		p_doc.v_w_asfile(_smp_num_44k, seek);
 
-		if (!p_doc.w_asfile(unit_num)) {
-			goto End;
-		}
+		p_doc.w_asfile(unit_num);
 		num_seek = seek;
 		seek += 1;
 
@@ -238,43 +207,27 @@ public:
 			if (pU.bEnable) {
 				// フラグ
 				flags = _MakeFlags(pU);
-				if (!p_doc.v_w_asfile(flags, seek)) {
-					goto End;
-				}
+				p_doc.v_w_asfile(flags, seek);
 				if (flags & NOISEEDITFLAG_ENVELOPE) {
-					if (!p_doc.v_w_asfile(pU.enve_num, seek)) {
-						goto End;
-					}
+					p_doc.v_w_asfile(pU.enve_num, seek);
 					for (e = 0; e < pU.enve_num; e++) {
-						if (!p_doc.v_w_asfile(pU.enves[e].x, seek)) {
-							goto End;
-						}
-						if (!p_doc.v_w_asfile(pU.enves[e].y, seek)) {
-							goto End;
-						}
+						p_doc.v_w_asfile(pU.enves[e].x, seek);
+						p_doc.v_w_asfile(pU.enves[e].y, seek);
 					}
 				}
 				if (flags & NOISEEDITFLAG_PAN) {
 					_byte = cast(char) pU.pan;
-					if (!p_doc.w_asfile(_byte)) {
-						goto End;
-					}
+					p_doc.w_asfile(_byte);
 					seek++;
 				}
 				if (flags & NOISEEDITFLAG_OSC_MAIN) {
-					if (!_WriteOscillator(&pU.main, p_doc, seek)) {
-						goto End;
-					}
+					_WriteOscillator(&pU.main, p_doc, seek);
 				}
 				if (flags & NOISEEDITFLAG_OSC_FREQ) {
-					if (!_WriteOscillator(&pU.freq, p_doc, seek)) {
-						goto End;
-					}
+					_WriteOscillator(&pU.freq, p_doc, seek);
 				}
 				if (flags & NOISEEDITFLAG_OSC_VOLU) {
-					if (!_WriteOscillator(&pU.volu, p_doc, seek)) {
-						goto End;
-					}
+					_WriteOscillator(&pU.volu, p_doc, seek);
 				}
 				unit_num++;
 			}
@@ -282,9 +235,7 @@ public:
 
 		// update unit_num.
 		p_doc.seek(pxtnSEEK.cur, num_seek - seek);
-		if (!p_doc.w_asfile(unit_num)) {
-			goto End;
-		}
+		p_doc.w_asfile(unit_num);
 		p_doc.seek(pxtnSEEK.cur, seek - num_seek - 1);
 		if (p_add) {
 			*p_add = seek;
@@ -293,11 +244,12 @@ public:
 		b_ret = true;
 	End:
 
-		return b_ret;
+		if (!b_ret) {
+			throw new PxtoneException("");
+		}
 	}
 
-	pxtnERR read(ref pxtnDescriptor p_doc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void read(ref pxtnDescriptor p_doc) @system {
 		uint flags = 0;
 		char unit_num = 0;
 		char _byte = 0;
@@ -309,121 +261,72 @@ public:
 
 		Release();
 
-		if (!p_doc.r(code[])) {
-			res = pxtnERR.desc_r;
-			goto term;
+		scope(failure) {
+			Release();
 		}
+		p_doc.r(code[]);
 		if (code != _code[0 .. 8]) {
-			res = pxtnERR.inv_code;
-			goto term;
+			throw new PxtoneException("inv code");
 		}
-		if (!p_doc.r(ver)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
+		p_doc.r(ver);
 		if (ver > _ver) {
-			res = pxtnERR.fmt_new;
-			goto term;
+			throw new PxtoneException("fmt new");
 		}
-		if (!p_doc.v_r(_smp_num_44k)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
-		if (!p_doc.r(unit_num)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
+		p_doc.v_r(_smp_num_44k);
+		p_doc.r(unit_num);
 		if (unit_num < 0) {
-			res = pxtnERR.inv_data;
-			goto term;
+			throw new PxtoneException("inv data");
 		}
 		if (unit_num > MAX_NOISEEDITUNITNUM) {
-			res = pxtnERR.fmt_unknown;
-			goto term;
+			throw new PxtoneException("fmt unknown");
 		}
 		_unit_num = unit_num;
 
 		_units = allocate!pxNOISEDESIGN_UNIT(_unit_num);
 		if (!_units) {
-			res = pxtnERR.memory;
-			goto term;
+			throw new PxtoneException("Unit buffer allocation failed");
 		}
 
 		for (int u = 0; u < _unit_num; u++) {
 			pU = &_units[u];
 			pU.bEnable = true;
 
-			if (!p_doc.v_r(*cast(int*)&flags)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			p_doc.v_r(*cast(int*)&flags);
 			if (flags & NOISEEDITFLAG_UNCOVERED) {
-				res = pxtnERR.fmt_unknown;
-				goto term;
+				throw new PxtoneException("fmt unknown");
 			}
 
 			// envelope
 			if (flags & NOISEEDITFLAG_ENVELOPE) {
-				if (!p_doc.v_r(pU.enve_num)) {
-					res = pxtnERR.desc_r;
-					goto term;
-				}
+				p_doc.v_r(pU.enve_num);
 				if (pU.enve_num > MAX_NOISEEDITENVELOPENUM) {
-					res = pxtnERR.fmt_unknown;
-					goto term;
+					throw new PxtoneException("fmt unknown");
 				}
 				pU.enves = allocate!pxtnPOINT(pU.enve_num);
 				if (!pU.enves) {
-					res = pxtnERR.memory;
-					goto term;
+					throw new PxtoneException("Envelope buffer allocation failed");
 				}
 				for (int e = 0; e < pU.enve_num; e++) {
-					if (!p_doc.v_r(pU.enves[e].x)) {
-						res = pxtnERR.desc_r;
-						goto term;
-					}
-					if (!p_doc.v_r(pU.enves[e].y)) {
-						res = pxtnERR.desc_r;
-						goto term;
-					}
+					p_doc.v_r(pU.enves[e].x);
+					p_doc.v_r(pU.enves[e].y);
 				}
 			}
 			// pan
 			if (flags & NOISEEDITFLAG_PAN) {
-				if (!p_doc.r(_byte)) {
-					res = pxtnERR.desc_r;
-					goto term;
-				}
+				p_doc.r(_byte);
 				pU.pan = _byte;
 			}
 
 			if (flags & NOISEEDITFLAG_OSC_MAIN) {
-				res = _ReadOscillator(&pU.main, p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_ReadOscillator(&pU.main, p_doc);
 			}
 			if (flags & NOISEEDITFLAG_OSC_FREQ) {
-				res = _ReadOscillator(&pU.freq, p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_ReadOscillator(&pU.freq, p_doc);
 			}
 			if (flags & NOISEEDITFLAG_OSC_VOLU) {
-				res = _ReadOscillator(&pU.volu, p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_ReadOscillator(&pU.volu, p_doc);
 			}
 		}
-
-		res = pxtnERR.OK;
-	term:
-		if (res != pxtnERR.OK) {
-			Release();
-		}
-
-		return res;
 	}
 
 	void Release() nothrow @system {

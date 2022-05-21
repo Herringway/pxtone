@@ -321,11 +321,11 @@ public:
 		Release();
 	}
 
-	pxtnERR Create(int ch, int sps, int bps, int sample_num) nothrow @system {
+	void Create(int ch, int sps, int bps, int sample_num) @system {
 		Release();
 
 		if (bps != 8 && bps != 16) {
-			return pxtnERR.pcm_unknown;
+			throw new PxtoneException("pcm unknown");
 		}
 
 		int size = 0;
@@ -343,7 +343,7 @@ public:
 
 		_p_smp = allocate!ubyte(size);
 		if (!(_p_smp)) {
-			return pxtnERR.memory;
+			throw new PxtoneException("Buffer allocation failed");
 		}
 
 		if (_bps == 8) {
@@ -351,8 +351,6 @@ public:
 		} else {
 			_p_smp[0 .. size] = 0;
 		}
-
-		return pxtnERR.OK;
 	}
 
 	void Release() nothrow @system {
@@ -368,99 +366,64 @@ public:
 		_smp_tail = 0;
 	}
 
-	pxtnERR read(ref pxtnDescriptor doc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void read(ref pxtnDescriptor doc) @system {
 		char[16] buf = 0;
 		uint size = 0;
 		WAVEFORMATCHUNK format;
 
 		_p_smp = null;
-
-		// 'RIFFxxxxWAVEfmt '
-		if (!doc.r(buf[])) {
-			res = pxtnERR.desc_r;
-			goto term;
+		scope(failure) {
+			if (_p_smp) {
+				deallocate(_p_smp);
+				_p_smp = null;
+			}
 		}
 
+		// 'RIFFxxxxWAVEfmt '
+		doc.r(buf[]);
+
 		if (buf[0] != 'R' || buf[1] != 'I' || buf[2] != 'F' || buf[3] != 'F' || buf[8] != 'W' || buf[9] != 'A' || buf[10] != 'V' || buf[11] != 'E' || buf[12] != 'f' || buf[13] != 'm' || buf[14] != 't' || buf[15] != ' ') {
-			res = pxtnERR.pcm_unknown;
-			goto term;
+			throw new PxtoneException("pcm unknown");
 		}
 
 		// read format.
-		if (!doc.r(size)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
-		if (!doc.r(format)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
+		doc.r(size);
+		doc.r(format);
 
 		if (format.formatID != 0x0001) {
-			res = pxtnERR.pcm_unknown;
-			goto term;
+			throw new PxtoneException("pcm unknown");
 		}
 		if (format.ch != 1 && format.ch != 2) {
-			res = pxtnERR.pcm_unknown;
-			goto term;
+			throw new PxtoneException("pcm unknown");
 		}
 		if (format.bps != 8 && format.bps != 16) {
-			res = pxtnERR.pcm_unknown;
-			goto term;
+			throw new PxtoneException("pcm unknown");
 		}
 
 		// find 'data'
-		if (!doc.seek(pxtnSEEK.set, 12)) {
-			res = pxtnERR.desc_r;
-			goto term;
-		} // skip 'RIFFxxxxWAVE'
+		doc.seek(pxtnSEEK.set, 12);
+	 	// skip 'RIFFxxxxWAVE'
 
 		while (1) {
-			if (!doc.r(buf[0 .. 4])) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
-			if (!doc.r(size)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			doc.r(buf[0 .. 4]);
+			doc.r(size);
 			if (buf[0] == 'd' && buf[1] == 'a' && buf[2] == 't' && buf[3] == 'a') {
 				break;
 			}
-			if (!doc.seek(pxtnSEEK.cur, size)) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			doc.seek(pxtnSEEK.cur, size);
 		}
 
-		res = Create(format.ch, format.sps, format.bps, size * 8 / format.bps / format.ch);
-		if (res != pxtnERR.OK) {
-			goto term;
-		}
+		Create(format.ch, format.sps, format.bps, size * 8 / format.bps / format.ch);
 
-		if (!doc.r(_p_smp[0 .. size])) {
-			res = pxtnERR.desc_r;
-			goto term;
-		}
-
-		res = pxtnERR.OK;
-	term:
-
-		if (res != pxtnERR.OK && _p_smp) {
-			deallocate(_p_smp);
-			_p_smp = null;
-		}
-		return res;
+		doc.r(_p_smp[0 .. size]);
 	}
 
-	bool write(ref pxtnDescriptor doc, const char[] pstrLIST) const nothrow @system {
+	void write(ref pxtnDescriptor doc, const char[] pstrLIST) const @system {
 		if (!_p_smp) {
-			return false;
+			throw new PxtoneException("_p_smp");
 		}
 
 		WAVEFORMATCHUNK format;
-		bool b_ret = false;
 		uint riff_size;
 		uint fact_size; // num sample.
 		uint list_size; // num list text.
@@ -511,76 +474,38 @@ public:
 
 		// open file..
 
-		if (!doc.w_asfile(tag_RIFF)) {
-			goto End;
-		}
-		if (!doc.w_asfile(riff_size)) {
-			goto End;
-		}
-		if (!doc.w_asfile(tag_WAVE)) {
-			goto End;
-		}
-		if (!doc.w_asfile(tag_fmt_)) {
-			goto End;
-		}
-		if (!doc.w_asfile(format)) {
-			goto End;
-		}
+		doc.w_asfile(tag_RIFF);
+		doc.w_asfile(riff_size);
+		doc.w_asfile(tag_WAVE);
+		doc.w_asfile(tag_fmt_);
+		doc.w_asfile(format);
 
 		if (bText) {
-			if (!doc.w_asfile(tag_LIST)) {
-				goto End;
-			}
-			if (!doc.w_asfile(list_size)) {
-				goto End;
-			}
-			if (!doc.w_asfile(tag_INFO)) {
-				goto End;
-			}
-			if (!doc.w_asfile(isft_size)) {
-				goto End;
-			}
-			if (!doc.w_asfile(pstrLIST)) {
-				goto End;
-			}
+			doc.w_asfile(tag_LIST);
+			doc.w_asfile(list_size);
+			doc.w_asfile(tag_INFO);
+			doc.w_asfile(isft_size);
+			doc.w_asfile(pstrLIST);
 		}
 
-		if (!doc.w_asfile(tag_fact)) {
-			goto End;
-		}
-		if (!doc.w_asfile(fact_size)) {
-			goto End;
-		}
-		if (!doc.w_asfile(tag_data)) {
-			goto End;
-		}
-		if (!doc.w_asfile(sample_size)) {
-			goto End;
-		}
-		if (!doc.w_asfile(_p_smp)) {
-			goto End;
-		}
-
-		b_ret = true;
-
-	End:
-
-		return b_ret;
+		doc.w_asfile(tag_fact);
+		doc.w_asfile(fact_size);
+		doc.w_asfile(tag_data);
+		doc.w_asfile(sample_size);
+		doc.w_asfile(_p_smp);
 	}
 
 	// convert..
-	bool Convert(int new_ch, int new_sps, int new_bps) nothrow @system {
+	void Convert(int new_ch, int new_sps, int new_bps) @system {
 		if (!_Convert_ChannelNum(new_ch)) {
-			return false;
+			throw new PxtoneException("_Convert_ChannelNum");
 		}
 		if (!_Convert_BitPerSample(new_bps)) {
-			return false;
+			throw new PxtoneException("_Convert_BitPerSample");
 		}
 		if (!_Convert_SamplePerSecond(new_sps)) {
-			return false;
+			throw new PxtoneException("_Convert_SamplePerSecond");
 		}
-
-		return true;
 	}
 
 	bool Convert_Volume(float v) nothrow @safe {
@@ -613,22 +538,17 @@ public:
 		return true;
 	}
 
-	pxtnERR Copy(ref pxtnPulse_PCM p_dst) const nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
+	void Copy(ref pxtnPulse_PCM p_dst) const @system {
 		if (!_p_smp) {
 			p_dst.Release();
-			return pxtnERR.OK;
+			return;
 		}
-		res = p_dst.Create(_ch, _sps, _bps, _smp_body);
-		if (res != pxtnERR.OK) {
-			return res;
-		}
+		p_dst.Create(_ch, _sps, _bps, _smp_body);
 		const size = (_smp_head + _smp_body + _smp_tail) * _ch * _bps / 8;
 		p_dst._p_smp[0 .. size] =_p_smp[0 .. size];
-		return pxtnERR.OK;
 	}
 
-	bool Copy_(ref pxtnPulse_PCM p_dst, int start, int end) const nothrow @system {
+	bool Copy_(ref pxtnPulse_PCM p_dst, int start, int end) const @system {
 		int size, offset;
 
 		if (_smp_head || _smp_tail) {
@@ -642,9 +562,7 @@ public:
 		size = (end - start) * _ch * _bps / 8;
 		offset = start * _ch * _bps / 8;
 
-		if (p_dst.Create(_ch, _sps, _bps, end - start) != pxtnERR.OK) {
-			return false;
-		}
+		p_dst.Create(_ch, _sps, _bps, end - start);
 
 		p_dst._p_smp[0 .. size] = _p_smp[offset .. offset + size];
 

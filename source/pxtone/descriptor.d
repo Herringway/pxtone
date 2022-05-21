@@ -4,8 +4,10 @@ module pxtone.descriptor;
 // '16/04/27 pxtnFile. (int)
 // '16/09/09 pxtnDescriptor.
 
+import pxtone.error;
 import pxtone.pxtn;
 
+import std.exception;
 import std.stdio;
 import std.traits;
 
@@ -32,191 +34,108 @@ private:
 	}
 public:
 
-	bool set_file_r(ref File fd) nothrow @safe {
-		if (!fd.isOpen) {
-			return false;
-		}
+	void set_file_r(ref File fd) @safe {
+		enforce(fd.isOpen, new PxtoneException("File must be opened for reading"));
 
-		ulong sz;
-		try {
-			fd.seek(0, SEEK_END);
-			sz = fd.tell;
-			fd.seek(0, SEEK_SET);
-			file = fd;
-		} catch (Exception) {
-			return false;
-		}
+		fd.seek(0, SEEK_END);
+		ulong sz = fd.tell;
+		fd.seek(0, SEEK_SET);
+		file = fd;
 
 		_size = cast(int) sz;
 
 		_b_file = true;
 		_b_read = true;
 		_cur = 0;
-		return true;
 	}
 
-	bool set_file_w(ref File fd) nothrow @safe {
-		if (!fd.isOpen) {
-			return false;
-		}
-		try {
-			file = fd;
-		} catch (Exception) {
-			return false;
-		}
+	void set_file_w(ref File fd) @safe {
+		file = fd;
 		_size = 0;
 		_b_file = true;
 		_b_read = false;
 		_cur = 0;
-		return true;
 	}
 
-	bool set_memory_r(ubyte[] buf) nothrow @safe {
-		if (buf.length < 1) {
-			return false;
-		}
+	void set_memory_r(ubyte[] buf) @safe {
+		enforce(buf.length >= 1, new PxtoneException("No data to read in buffer"));
 		_p_desc = buf;
 		_b_file = false;
 		_b_read = true;
 		_cur = 0;
-		return true;
 	}
 
-	bool seek(pxtnSEEK mode, int val) nothrow @safe {
+	void seek(pxtnSEEK mode, int val) @safe {
 		if (_b_file) {
 			int[pxtnSEEK.num] seek_tbl = [SEEK_SET, SEEK_CUR, SEEK_END];
-			try {
-				file.seek(val, seek_tbl[mode]);
-			} catch (Exception) {
-				return false;
-			}
+			file.seek(val, seek_tbl[mode]);
 		} else {
 			switch (mode) {
 			case pxtnSEEK.set:
-				if (val >= _p_desc.length) {
-					return false;
-				}
-				if (val < 0) {
-					return false;
-				}
+				enforce(val < _p_desc.length, "Unexpected end of data");
+				enforce(val >= 0, "Cannot seek to negative position");
 				_cur = val;
 				break;
 			case pxtnSEEK.cur:
-				if (_cur + val >= _p_desc.length) {
-					return false;
-				}
-				if (_cur + val < 0) {
-					return false;
-				}
+				enforce(_cur + val < _p_desc.length, "Unexpected end of data");
+				enforce(_cur + val >= 0, "Cannot seek to negative position");
 				_cur += val;
 				break;
 			case pxtnSEEK.end:
-				if (_p_desc.length + val >= _p_desc.length) {
-					return false;
-				}
-				if (_p_desc.length + val < 0) {
-					return false;
-				}
+				enforce(_p_desc.length + val < _p_desc.length, "Unexpected end of data");
+				enforce(_p_desc.length + val >= 0, "Cannot seek to negative position");
 				_cur = cast(int)_p_desc.length + val;
 				break;
 			default:
 				break;
 			}
 		}
-		return true;
 	}
 
-	bool w_asfile(T)(const T p) nothrow @system if (!is(T : U[], U)) {
-		return w_asfile((&p)[0 .. 1]);
+	void w_asfile(T)(const T p) @system if (!is(T : U[], U)) {
+		w_asfile((&p)[0 .. 1]);
 	}
-	bool w_asfile(T)(scope const(T)[] p) nothrow @system {
-		if (!isOpen || !_b_file || _b_read) {
-			return false;
-		}
+	void w_asfile(T)(scope const(T)[] p) @system {
+		enforce(isOpen && _b_file && !_b_read, new PxtoneException("File must be opened for writing"));
 
-		try {
-			file.rawWrite(p);
-		} catch (Exception) {
-			return false;
-		}
+		file.rawWrite(p);
 		_size += p.length * T.sizeof;
-		return true;
 	}
 
-	bool r(T)(T[] p) nothrow @safe {
-		if (!isOpen) {
-			return false;
-		}
-		if (!_b_read) {
-			return false;
-		}
-
-		bool b_ret = false;
+	void r(T)(T[] p) @safe {
+		enforce(isOpen, new PxtoneException("File must be opened for reading"));
+		enforce(_b_read, new PxtoneException("File must be opened for reading"));
 
 		if (_b_file) {
-			try {
-				file.trustedRead(p);
-			} catch (Exception) {
-				goto End;
-			}
+			file.trustedRead(p);
 		} else {
 			for (int i = 0; i < p.length; i++) {
-				if (_cur + T.sizeof > _p_desc.length) {
-					goto End;
-				}
+				enforce(_cur + T.sizeof < _p_desc.length, new PxtoneException("Unexpected end of buffer"));
 				p[i] = (cast(T[])_p_desc[_cur .. _cur + T.sizeof])[0];
 				_cur += T.sizeof;
 			}
 		}
-
-		b_ret = true;
-	End:
-		return b_ret;
 	}
-	bool r(T)(ref T p) nothrow @safe if (!is(T : U[], U)) {
-		if (!isOpen) {
-			return false;
-		}
-		if (!_b_read) {
-			return false;
-		}
-
-		bool b_ret = false;
+	void r(T)(ref T p) @safe if (!is(T : U[], U)) {
+		enforce(isOpen, new PxtoneException("File must be opened for reading"));
+		enforce(_b_read, new PxtoneException("File must be opened for reading"));
 
 		if (_b_file) {
-			try {
-				p = file.trustedRead!T();
-			} catch (Exception) {
-				goto End;
-			}
+			p = file.trustedRead!T();
 		} else {
-			if (_cur + T.sizeof > _p_desc.length) {
-				goto End;
-			}
+			enforce(_cur + T.sizeof < _p_desc.length, new PxtoneException("Unexpected end of buffer"));
 			p = (cast(T[])_p_desc[_cur .. _cur + T.sizeof])[0];
 			_cur += T.sizeof;
 		}
-
-		b_ret = true;
-	End:
-		return b_ret;
 	}
 
 	// ..uint
-	int v_w_asfile(int val) nothrow @system {
+	void v_w_asfile(int val) @system {
 		int dummy;
-		return v_w_asfile(val, dummy);
+		v_w_asfile(val, dummy);
 	}
-	int v_w_asfile(int val, ref int p_add) nothrow @system {
-		if (!isOpen) {
-			return 0;
-		}
-		if (!_b_file) {
-			return 0;
-		}
-		if (_b_read) {
-			return 0;
-		}
+	void v_w_asfile(int val, ref int p_add) @system {
+		enforce(isOpen && _b_file && !_b_read, new PxtoneException("File must be opened for writing"));
 
 		ubyte[5] a = 0;
 		ubyte[5] b = 0;
@@ -260,34 +179,20 @@ public:
 			b[3] = (a[2] >> 5) | ((a[3] << 3) & 0x7F) | 0x80;
 			b[4] = (a[3] >> 4) | ((a[4] << 4) & 0x7F);
 		}
-		try {
-			file.rawWrite(b[0 .. bytes]);
-		} catch (Exception) {
-			return false;
-		}
+		file.rawWrite(b[0 .. bytes]);
 		p_add += bytes;
 		_size += bytes;
-		return true;
-
-		//return false;
 	}
 	// 可変長読み込み（int  までを保証）
-	bool v_r(ref int p) nothrow @safe {
-		if (!isOpen) {
-			return false;
-		}
-		if (!_b_read) {
-			return false;
-		}
+	void v_r(ref int p) @safe {
+		enforce(isOpen && _b_read, new PxtoneException("File must be opened for reading"));
 
 		int i;
 		ubyte[5] a = 0;
 		ubyte[5] b = 0;
 
 		for (i = 0; i < 5; i++) {
-			if (!r(a[i])) {
-				return false;
-			}
+			r(a[i]);
 			if (!(a[i] & 0x80)) {
 				break;
 			}
@@ -319,14 +224,12 @@ public:
 			b[4] = (a[4] & 0x7F) >> 4;
 			break;
 		case 5:
-			return false;
+			throw new PxtoneException("Integer too large");
 		default:
 			break;
 		}
 
 		p = (cast(int[]) b[0 .. 4])[0];
-
-		return true;
 	}
 
 	int get_size_bytes() const nothrow @safe {

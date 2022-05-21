@@ -4,13 +4,11 @@
 import pxtone.descriptor;
 import pxtone.mem;
 
-bool _read4_malloc(char[]* pp, int* p_buf_size, ref pxtnDescriptor p_doc) nothrow @system {
+bool _read4_malloc(char[]* pp, int* p_buf_size, ref pxtnDescriptor p_doc) @system {
 	if (!pp) {
 		return false;
 	}
-	if (!p_doc.r(p_buf_size[0 .. 1])) {
-		return false;
-	}
+	p_doc.r(p_buf_size[0 .. 1]);
 	if (*p_buf_size < 0) {
 		return false;
 	}
@@ -25,9 +23,7 @@ bool _read4_malloc(char[]* pp, int* p_buf_size, ref pxtnDescriptor p_doc) nothro
 	(*pp)[0 .. *p_buf_size + 1] = 0;
 
 	if (*p_buf_size) {
-		if (!p_doc.r((*pp)[0 .. *p_buf_size])) {
-			goto term;
-		}
+		p_doc.r((*pp)[0 .. *p_buf_size]);
 	}
 
 	b_ret = true;
@@ -40,14 +36,9 @@ term:
 	return b_ret;
 }
 
-bool _write4(const char[] p, ref pxtnDescriptor p_doc) nothrow @system {
-	if (!p_doc.w_asfile(cast(int)p.length)) {
-		return false;
-	}
-	if (!p_doc.w_asfile(p)) {
-		return false;
-	}
-	return true;
+void _write4(const char[] p, ref pxtnDescriptor p_doc) @system {
+	p_doc.w_asfile(cast(int)p.length);
+	p_doc.w_asfile(p);
 }
 
 struct pxtnText {
@@ -132,25 +123,27 @@ public:
 		return false;
 	}
 
-	bool Comment_r(ref pxtnDescriptor p_doc) nothrow @system {
-		return _read4_malloc(&_p_comment_buf, &_comment_size, p_doc);
+	void Comment_r(ref pxtnDescriptor p_doc) @system {
+		_read4_malloc(&_p_comment_buf, &_comment_size, p_doc);
 	}
 
-	bool Comment_w(ref pxtnDescriptor p_doc) nothrow @system {
+	bool Comment_w(ref pxtnDescriptor p_doc) @system {
 		if (!_p_comment_buf) {
 			return false;
 		}
-		return _write4(_p_comment_buf, p_doc);
+		_write4(_p_comment_buf, p_doc);
+		return true;
 	}
 
-	bool Name_r(ref pxtnDescriptor p_doc) nothrow @system {
-		return _read4_malloc(&_p_name_buf, &_name_size, p_doc);
+	void Name_r(ref pxtnDescriptor p_doc) @system {
+		_read4_malloc(&_p_name_buf, &_name_size, p_doc);
 	}
 
-	bool Name_w(ref pxtnDescriptor p_doc) nothrow @system {
+	bool Name_w(ref pxtnDescriptor p_doc) @system {
 		if (!_p_name_buf) {
 			return false;
 		}
-		return _write4(_p_name_buf, p_doc);
+		_write4(_p_name_buf, p_doc);
+		return true;
 	}
 }

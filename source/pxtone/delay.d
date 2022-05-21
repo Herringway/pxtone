@@ -84,11 +84,12 @@ public:
 		_smp_num = 0;
 	}
 
-	pxtnERR Tone_Ready(int beat_num, float beat_tempo, int sps) nothrow @system {
+	void Tone_Ready(int beat_num, float beat_tempo, int sps) @system {
 		Tone_Release();
 
-		pxtnERR res = pxtnERR.VOID;
-
+		scope(failure) {
+			Tone_Release();
+		}
 		if (_freq && _rate) {
 			_offset = 0;
 			_rate_s32 = cast(int) _rate; // /100;
@@ -110,20 +111,10 @@ public:
 			for (int c = 0; c < pxtnMAX_CHANNEL; c++) {
 				_bufs[c] = allocate!int(_smp_num);
 				if (!_bufs[c]) {
-					res = pxtnERR.memory;
-					goto term;
+					throw new PxtoneException("Buffer allocation failed");
 				}
 			}
 		}
-
-		res = pxtnERR.OK;
-	term:
-
-		if (res != pxtnERR.OK) {
-			Tone_Release();
-		}
-
-		return res;
 	}
 
 	void Tone_Supple(int ch, int[] group_smps) nothrow @safe {
@@ -156,7 +147,7 @@ public:
 		}
 	}
 
-	bool Write(ref pxtnDescriptor p_doc) const nothrow @system {
+	void Write(ref pxtnDescriptor p_doc) const @system {
 		_DELAYSTRUCT dela;
 		int size;
 
@@ -167,28 +158,18 @@ public:
 
 		// dela ----------
 		size = _DELAYSTRUCT.sizeof;
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(dela)) {
-			return false;
-		}
-
-		return true;
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(dela);
 	}
 
-	pxtnERR Read(ref pxtnDescriptor p_doc) nothrow @system {
+	void Read(ref pxtnDescriptor p_doc) @system {
 		_DELAYSTRUCT dela;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(dela)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
+		p_doc.r(dela);
 		if (dela.unit >= DELAYUNIT.num) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		_unit = cast(DELAYUNIT) dela.unit;
@@ -199,7 +180,5 @@ public:
 		if (_group >= pxtnMAX_TUNEGROUPNUM) {
 			_group = 0;
 		}
-
-		return pxtnERR.OK;
 	}
 }

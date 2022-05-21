@@ -163,9 +163,7 @@ public:
 		Release();
 	}
 
-	pxtnERR Decode(pxtnPulse_PCM* p_pcm) const nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
-
+	void Decode(pxtnPulse_PCM* p_pcm) const @system {
 		OggVorbis_File vf;
 		vorbis_info* vi;
 		ov_callbacks oc;
@@ -186,20 +184,15 @@ public:
 
 		switch (ov_open_callbacks(&ovmem, &vf, null, 0, oc)) {
 		case OV_EREAD:
-			res = pxtnERR.ogg;
-			goto term; //{printf("A read from media returned an error.\n");exit(1);}
+			throw new PxtoneException("A read from media returned an error");
 		case OV_ENOTVORBIS:
-			res = pxtnERR.ogg;
-			goto term; //{printf("Bitstream is not Vorbis data. \n");exit(1);}
+			throw new PxtoneException("Bitstream is not Vorbis data");
 		case OV_EVERSION:
-			res = pxtnERR.ogg;
-			goto term; //{printf("Vorbis version mismatch. \n");exit(1);}
+			throw new PxtoneException("Vorbis version mismatch");
 		case OV_EBADHEADER:
-			res = pxtnERR.ogg;
-			goto term; //{printf("Invalid Vorbis bitstream header. \n");exit(1);}
+			throw new PxtoneException("Invalid Vorbis bitstream header");
 		case OV_EFAULT:
-			res = pxtnERR.ogg;
-			goto term; //{printf("Internal logic fault; indicates a bug or heap/stack corruption. \n");exit(1);}
+			throw new PxtoneException("Internal logic fault; indicates a bug or heap/stack corruption");
 		default:
 			break;
 		}
@@ -212,10 +205,7 @@ public:
 
 			bytes = vi.channels * 2 * smp_num;
 
-			res = p_pcm.Create(vi.channels, vi.rate, 16, smp_num);
-			if (res != pxtnERR.OK) {
-				goto term;
-			}
+			p_pcm.Create(vi.channels, vi.rate, 16, smp_num);
 		}
 		// decode..
 		{
@@ -233,11 +223,6 @@ public:
 
 		// end.
 		ov_clear(&vf);
-
-		res = pxtnERR.OK;
-
-	term:
-		return res;
 	}
 
 	void Release() nothrow @system {
@@ -276,116 +261,66 @@ public:
 		return cast(int)(int.sizeof * 4 + _size);
 	}
 
-	bool ogg_write(ref pxtnDescriptor desc) const nothrow @system {
-		bool b_ret = false;
-
-		if (!desc.w_asfile(_p_data)) {
-			goto End;
-		}
-
-		b_ret = true;
-	End:
-		return b_ret;
+	void ogg_write(ref pxtnDescriptor desc) const @system {
+		desc.w_asfile(_p_data);
 	}
 
-	pxtnERR ogg_read(ref pxtnDescriptor desc) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
-
+	void ogg_read(ref pxtnDescriptor desc) @system {
 		_size = desc.get_size_bytes();
 		if (!(_size)) {
-			res = pxtnERR.desc_r;
-			goto End;
+			throw new PxtoneException("desc r");
 		}
 		_p_data = allocate!ubyte(_size);
-		if (!(_p_data)) {
-			res = pxtnERR.memory;
-			goto End;
-		}
-		if (!desc.r(_p_data)) {
-			res = pxtnERR.desc_r;
-			goto End;
-		}
-		if (!_SetInformation()) {
-			goto End;
-		}
-
-		res = pxtnERR.OK;
-	End:
-
-		if (res != pxtnERR.OK) {
+		scope(failure) {
 			if (_p_data) {
 				deallocate(_p_data);
 			}
 			_p_data = null;
 			_size = 0;
 		}
-		return res;
+		if (!(_p_data)) {
+			throw new PxtoneException("Ogg buffer allocation failed");
+		}
+		desc.r(_p_data);
+		if (!_SetInformation()) {
+			throw new PxtoneException("_SetInformation");
+		}
 	}
 
-	bool pxtn_write(ref pxtnDescriptor p_doc) const nothrow @system {
+	void pxtn_write(ref pxtnDescriptor p_doc) const @system {
 		if (!_p_data) {
-			return false;
+			throw new PxtoneException("No data");
 		}
 
-		if (!p_doc.w_asfile(_ch)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(_sps2)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(_smp_num)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(_size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(_p_data)) {
-			return false;
-		}
-
-		return true;
+		p_doc.w_asfile(_ch);
+		p_doc.w_asfile(_sps2);
+		p_doc.w_asfile(_smp_num);
+		p_doc.w_asfile(_size);
+		p_doc.w_asfile(_p_data);
 	}
 
-	bool pxtn_read(ref pxtnDescriptor p_doc) nothrow @system {
-		bool b_ret = false;
-
-		if (!p_doc.r(_ch)) {
-			goto End;
-		}
-		if (!p_doc.r(_sps2)) {
-			goto End;
-		}
-		if (!p_doc.r(_smp_num)) {
-			goto End;
-		}
-		if (!p_doc.r(_size)) {
-			goto End;
-		}
+	void pxtn_read(ref pxtnDescriptor p_doc) @system {
+		p_doc.r(_ch);
+		p_doc.r(_sps2);
+		p_doc.r(_smp_num);
+		p_doc.r(_size);
 
 		if (!_size) {
-			goto End;
+			throw new PxtoneException("Invalid size read");
 		}
 
 		_p_data = allocate!ubyte(_size);
-		if (!(_p_data)) {
-			goto End;
+		if (!_p_data) {
+			throw new PxtoneException("Ogg buffer allocation failed");
 		}
-		if (!p_doc.r(_p_data)) {
-			goto End;
-		}
-
-		b_ret = true;
-	End:
-
-		if (!b_ret) {
+		scope(failure) {
 			if (_p_data) {
 				deallocate(_p_data);
 			}
 			_p_data = null;
 			_size = 0;
 		}
-
-		return b_ret;
+		p_doc.r(_p_data);
 	}
 
 	bool Copy(ref pxtnPulse_Oggv p_dst) const nothrow @system {

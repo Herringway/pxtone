@@ -17,6 +17,7 @@ import pxtone.pulse.frequency;
 import pxtone.unit;
 import pxtone.evelist;
 
+import std.exception;
 import std.format;
 
 enum PXTONEERRORSIZE = 64;
@@ -239,27 +240,25 @@ private:
 
 	int _group_num;
 
-	pxtnERR _ReadVersion(ref pxtnDescriptor p_doc, out _enum_FMTVER p_fmt_ver, out ushort p_exe_ver) nothrow @system {
+	void _ReadVersion(ref pxtnDescriptor p_doc, out _enum_FMTVER p_fmt_ver, out ushort p_exe_ver) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
 		char[_VERSIONSIZE] version_ = '\0';
 		ushort dummy;
 
-		if (!p_doc.r(version_[])) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(version_[]);
 
 		// fmt version
 		if (version_[0 .. _VERSIONSIZE] == _code_proj_x1x) {
 			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x1x;
 			p_exe_ver = 0;
-			return pxtnERR.OK;
+			return;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x2x) {
 			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
 			p_exe_ver = 0;
-			return pxtnERR.OK;
+			return;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x3x) {
 			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_proj_x4x) {
@@ -269,7 +268,7 @@ private:
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x2x) {
 			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x2x;
 			p_exe_ver = 0;
-			return pxtnERR.OK;
+			return;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x3x) {
 			p_fmt_ver = _enum_FMTVER._enum_FMTVER_x3x;
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_x4x) {
@@ -277,52 +276,38 @@ private:
 		} else if (version_[0 .. _VERSIONSIZE] == _code_tune_v5) {
 			p_fmt_ver = _enum_FMTVER._enum_FMTVER_v5;
 		} else {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		// exe version
-		if (!p_doc.r(p_exe_ver)) {
-			return pxtnERR.desc_r;
-		}
-		if (!p_doc.r(dummy)) {
-			return pxtnERR.desc_r;
-		}
-
-		return pxtnERR.OK;
+		p_doc.r(p_exe_ver);
+		p_doc.r(dummy);
 	}
 	////////////////////////////////////////
 	// Read Project //////////////
 	////////////////////////////////////////
 
-	pxtnERR _ReadTuneItems(ref pxtnDescriptor p_doc) nothrow @system {
+	void _ReadTuneItems(ref pxtnDescriptor p_doc) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
 		bool b_end = false;
 		char[_CODESIZE + 1] code = '\0';
 
 		/// must the unit before the voice.
 		while (!b_end) {
-			if (!p_doc.r(code[0 .._CODESIZE])) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			p_doc.r(code[0 .._CODESIZE]);
 
 			_enum_Tag tag = _CheckTagCode(code);
 			switch (tag) {
 			case _enum_Tag.antiOPER:
-				res = pxtnERR.anti_opreation;
-				goto term;
+				throw new PxtoneException("AntiOPER tag detected");
 
 				// new -------
 			case _enum_Tag.num_UNIT: {
 					int num = 0;
-					res = _io_UNIT_num_r(p_doc, num);
-					if (res != pxtnERR.OK) {
-						goto term;
-					}
+					_io_UNIT_num_r(p_doc, num);
 					for (int i = 0; i < num; i++) {
 						_units[i] = pxtnUnit.init;
 					}
@@ -330,85 +315,48 @@ private:
 					break;
 				}
 			case _enum_Tag.MasterV5:
-				res = master.io_r_v5(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				master.io_r_v5(p_doc);
 				break;
 			case _enum_Tag.Event_V5:
-				res = evels.io_Read(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				evels.io_Read(p_doc);
 				break;
 
 			case _enum_Tag.matePCM:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
 				break;
 			case _enum_Tag.matePTV:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PTV);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_Woice(p_doc, pxtnWOICETYPE.PTV);
 				break;
 			case _enum_Tag.matePTN:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PTN);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_Woice(p_doc, pxtnWOICETYPE.PTN);
 				break;
 
 			case _enum_Tag.mateOGGV:
 
 				version (pxINCLUDE_OGGVORBIS) {
-					res = _io_Read_Woice(p_doc, pxtnWOICETYPE.OGGV);
-					if (res != pxtnERR.OK) {
-						goto term;
-					}
+					_io_Read_Woice(p_doc, pxtnWOICETYPE.OGGV);
 					break;
 				} else {
-					res = pxtnERR.ogg_no_supported;
-					goto term;
+					throw new PxtoneException("Ogg Vorbis support is required");
 				}
 
 			case _enum_Tag.effeDELA:
-				res = _io_Read_Delay(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_Delay(p_doc);
 				break;
 			case _enum_Tag.effeOVER:
-				res = _io_Read_OverDrive(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_OverDrive(p_doc);
 				break;
 			case _enum_Tag.textNAME:
-				if (!text.Name_r(p_doc)) {
-					res = pxtnERR.desc_r;
-					goto term;
-				}
+				text.Name_r(p_doc);
 				break;
 			case _enum_Tag.textCOMM:
-				if (!text.Comment_r(p_doc)) {
-					res = pxtnERR.desc_r;
-					goto term;
-				}
+				text.Comment_r(p_doc);
 				break;
 			case _enum_Tag.assiWOIC:
-				res = _io_assiWOIC_r(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_assiWOIC_r(p_doc);
 				break;
 			case _enum_Tag.assiUNIT:
-				res = _io_assiUNIT_r(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_assiUNIT_r(p_doc);
 				break;
 			case _enum_Tag.pxtoneND:
 				b_end = true;
@@ -416,67 +364,40 @@ private:
 
 				// old -------
 			case _enum_Tag.x4x_evenMAST:
-				res = master.io_r_x4x(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				master.io_r_x4x(p_doc);
 				break;
 			case _enum_Tag.x4x_evenUNIT:
-				res = evels.io_Unit_Read_x4x_EVENT(p_doc, false, true);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				evels.io_Unit_Read_x4x_EVENT(p_doc, false, true);
 				break;
 			case _enum_Tag.x3x_pxtnUNIT:
-				res = _io_Read_OldUnit(p_doc, 3);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_OldUnit(p_doc, 3);
 				break;
 			case _enum_Tag.x1x_PROJ:
-				if (!_x1x_Project_Read(p_doc)) {
-					res = pxtnERR.desc_r;
-					goto term;
-				}
+				_x1x_Project_Read(p_doc);
 				break;
 			case _enum_Tag.x1x_UNIT:
-				res = _io_Read_OldUnit(p_doc, 1);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_OldUnit(p_doc, 1);
 				break;
 			case _enum_Tag.x1x_PCM:
-				res = _io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				_io_Read_Woice(p_doc, pxtnWOICETYPE.PCM);
 				break;
 			case _enum_Tag.x1x_EVEN:
-				res = evels.io_Unit_Read_x4x_EVENT(p_doc, true, false);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				evels.io_Unit_Read_x4x_EVENT(p_doc, true, false);
 				break;
 			case _enum_Tag.x1x_END:
 				b_end = true;
 				break;
 
 			default:
-				res = pxtnERR.fmt_unknown;
-				goto term;
+				throw new PxtoneException("fmt unknown");
 			}
 		}
 
-		res = pxtnERR.OK;
-	term:
-
-		return res;
-
 	}
 
-	bool _x1x_Project_Read(ref pxtnDescriptor p_doc) nothrow @system {
+	void _x1x_Project_Read(ref pxtnDescriptor p_doc) @system {
 		if (!_b_init) {
-			return false;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
 		_x1x_PROJECT prjc;
@@ -484,12 +405,8 @@ private:
 		int size;
 		float beat_tempo;
 
-		if (!p_doc.r(size)) {
-			return false;
-		}
-		if (!p_doc.r(prjc)) {
-			return false;
-		}
+		p_doc.r(size);
+		p_doc.r(prjc);
 
 		beat_num = prjc.x1x_beat_num;
 		beat_tempo = prjc.x1x_beat_tempo;
@@ -504,156 +421,112 @@ private:
 
 		text.set_name_buf(prjc.x1x_name.ptr, ns);
 		master.Set(beat_num, beat_tempo, beat_clock);
-
-		return true;
 	}
 
-	pxtnERR _io_Read_Delay(ref pxtnDescriptor p_doc) nothrow @system {
+	void _io_Read_Delay(ref pxtnDescriptor p_doc) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 		if (!_delays) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService delays not initialized");
 		}
 		if (_delay_num >= _delay_max) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
 		pxtnDelay delay;
 
-		res = delay.Read(p_doc);
-		if (res != pxtnERR.OK) {
-			goto term;
-		}
-		res = pxtnERR.OK;
-	term:
-		if (res == pxtnERR.OK) {
-			_delays[_delay_num] = delay;
-			_delay_num++;
-		}
-		return res;
+		delay.Read(p_doc);
+		_delays[_delay_num] = delay;
+		_delay_num++;
 	}
 
-	pxtnERR _io_Read_OverDrive(ref pxtnDescriptor p_doc) nothrow @system {
+	void _io_Read_OverDrive(ref pxtnDescriptor p_doc) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 		if (!_ovdrvs) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService overdrives not initialized");
 		}
 		if (_ovdrv_num >= _ovdrv_max) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
 		pxtnOverDrive* ovdrv = allocate!pxtnOverDrive();
-		res = ovdrv.Read(p_doc);
-		if (res != pxtnERR.OK) {
-			goto term;
-		}
-		res = pxtnERR.OK;
-	term:
-		if (res == pxtnERR.OK) {
-			_ovdrvs[_ovdrv_num] = ovdrv;
-			_ovdrv_num++;
-		} else {
+		scope(failure) {
 			deallocate(ovdrv);
 		}
-
-		return res;
+		ovdrv.Read(p_doc);
+		_ovdrvs[_ovdrv_num] = ovdrv;
+		_ovdrv_num++;
 	}
 
-	pxtnERR _io_Read_Woice(ref pxtnDescriptor p_doc, pxtnWOICETYPE type) nothrow @system {
-		pxtnERR res = pxtnERR.VOID;
-
+	void _io_Read_Woice(ref pxtnDescriptor p_doc, pxtnWOICETYPE type) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 		if (!_woices) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService woices not initialized");
 		}
 		if (_woice_num >= _woice_max) {
-			return pxtnERR.woice_full;
+			throw new PxtoneException("Too many woices");
 		}
 
 		pxtnWoice* woice = allocate!pxtnWoice();
+		scope(failure) {
+			deallocate(woice);
+		}
 
 		switch (type) {
 		case pxtnWOICETYPE.PCM:
-			res = woice.io_matePCM_r(p_doc);
-			if (res != pxtnERR.OK) {
-				goto term;
-			}
+			woice.io_matePCM_r(p_doc);
 			break;
 		case pxtnWOICETYPE.PTV:
-			res = woice.io_matePTV_r(p_doc);
-			if (res != pxtnERR.OK) {
-				goto term;
-			}
+			woice.io_matePTV_r(p_doc);
 			break;
 		case pxtnWOICETYPE.PTN:
-			res = woice.io_matePTN_r(p_doc);
-			if (res != pxtnERR.OK) {
-				goto term;
-			}
+			woice.io_matePTN_r(p_doc);
 			break;
 		case pxtnWOICETYPE.OGGV:
 			version (pxINCLUDE_OGGVORBIS) {
-				res = woice.io_mateOGGV_r(p_doc);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				woice.io_mateOGGV_r(p_doc);
 				break;
 			} else {
-				res = pxtnERR.ogg_no_supported;
-				goto term;
+				throw new PxtoneException("Ogg Vorbis support is required");
 			}
 
 		default:
-			res = pxtnERR.fmt_unknown;
-			goto term;
+			throw new PxtoneException("fmt unknown");
 		}
 		_woices[_woice_num] = woice;
 		_woice_num++;
-		res = pxtnERR.OK;
-	term:
-		if (res != pxtnERR.OK) {
-			deallocate(woice);
-		}
-		return res;
 	}
 
-	pxtnERR _io_Read_OldUnit(ref pxtnDescriptor p_doc, int ver) nothrow @system {
+	void _io_Read_OldUnit(ref pxtnDescriptor p_doc, int ver) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 		if (!_units) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService units not initialized");
 		}
 		if (_unit_num >= _unit_max) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
 		pxtnUnit* unit = allocate!pxtnUnit();
 		int group = 0;
-
+		scope(failure) {
+			deallocate(unit);
+		}
 		switch (ver) {
 		case 1:
-			if (!unit.Read_v1x(p_doc, &group)) {
-				goto term;
-			}
+			unit.Read_v1x(p_doc, &group);
 			break;
 		case 3:
-			res = unit.Read_v3x(p_doc, &group);
-			if (res != pxtnERR.OK) {
-				goto term;
-			}
+			unit.Read_v3x(p_doc, &group);
 			break;
 		default:
-			res = pxtnERR.fmt_unknown;
-			goto term;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		if (group >= _group_num) {
@@ -665,23 +538,16 @@ private:
 		evels.x4x_Read_Add(0, cast(ubyte) _unit_num, EVENTKIND.VOICENO, cast(int) _unit_num);
 		evels.x4x_Read_NewKind();
 
-		res = pxtnERR.OK;
 	term:
-		if (res == pxtnERR.OK) {
-			_units[_unit_num] = *unit;
-			_unit_num++;
-		} else {
-			deallocate(unit);
-		}
-
-		return res;
+		_units[_unit_num] = *unit;
+		_unit_num++;
 	}
 
 	/////////////
 	// assi woice
 	/////////////
 
-	bool _io_assiWOIC_w(ref pxtnDescriptor p_doc, int idx) const nothrow @system {
+	bool _io_assiWOIC_w(ref pxtnDescriptor p_doc, int idx) const @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -698,51 +564,41 @@ private:
 		assi.woice_index = cast(ushort) idx;
 
 		size = _ASSIST_WOICE.sizeof;
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(assi)) {
-			return false;
-		}
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(assi);
 
 		return true;
 	}
 
-	pxtnERR _io_assiWOIC_r(ref pxtnDescriptor p_doc) nothrow @system {
+	void _io_assiWOIC_r(ref pxtnDescriptor p_doc) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
 		_ASSIST_WOICE assi;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
 		if (size != assi.sizeof) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
-		if (!p_doc.r(assi)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(assi);
 		if (assi.rrr) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (assi.woice_index >= _woice_num) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		if (!_woices[assi.woice_index].set_name_buf(assi.name)) {
-			return pxtnERR.FATAL;
+			throw new PxtoneException("FATAL");
 		}
-
-		return pxtnERR.OK;
 	}
 	// -----
 	// assi unit.
 	// -----
 
-	bool _io_assiUNIT_w(ref pxtnDescriptor p_doc, int idx) const nothrow @system {
+	bool _io_assiUNIT_w(ref pxtnDescriptor p_doc, int idx) const @system {
 		if (!_b_init) {
 			return false;
 		}
@@ -756,53 +612,43 @@ private:
 		assi.unit_index = cast(ushort) idx;
 
 		size = assi.sizeof;
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(assi)) {
-			return false;
-		}
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(assi);
 
 		return true;
 	}
 
-	pxtnERR _io_assiUNIT_r(ref pxtnDescriptor p_doc) nothrow @safe {
+	void _io_assiUNIT_r(ref pxtnDescriptor p_doc) @safe {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
 		_ASSIST_UNIT assi;
 		int size;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
 		if (size != assi.sizeof) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
-		if (!p_doc.r(assi)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(assi);
 		if (assi.rrr) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (assi.unit_index >= _unit_num) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 
 		if (!_units[assi.unit_index].setNameBuf(assi.name[])) {
-			return pxtnERR.FATAL;
+			throw new PxtoneException("FATAL");
 		}
-
-		return pxtnERR.OK;
 	}
 	// -----
 	// unit num
 	// -----
 
-	bool _io_UNIT_num_w(ref pxtnDescriptor p_doc) const nothrow @system {
+	void _io_UNIT_num_w(ref pxtnDescriptor p_doc) const @system {
 		if (!_b_init) {
-			return false;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
 		_NUM_UNIT data;
@@ -811,45 +657,33 @@ private:
 		data.num = cast(short) _unit_num;
 
 		size = _NUM_UNIT.sizeof;
-		if (!p_doc.w_asfile(size)) {
-			return false;
-		}
-		if (!p_doc.w_asfile(data)) {
-			return false;
-		}
-
-		return true;
+		p_doc.w_asfile(size);
+		p_doc.w_asfile(data);
 	}
 
-	pxtnERR _io_UNIT_num_r(ref pxtnDescriptor p_doc, out int p_num) nothrow @system {
+	void _io_UNIT_num_r(ref pxtnDescriptor p_doc, out int p_num) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
 		_NUM_UNIT data;
 		int size = 0;
 
-		if (!p_doc.r(size)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(size);
 		if (size != _NUM_UNIT.sizeof) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
-		if (!p_doc.r(data)) {
-			return pxtnERR.desc_r;
-		}
+		p_doc.r(data);
 		if (data.rrr) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		if (data.num > _unit_max) {
-			return pxtnERR.fmt_new;
+			throw new PxtoneException("fmt new");
 		}
 		if (data.num < 0) {
-			return pxtnERR.fmt_unknown;
+			throw new PxtoneException("fmt unknown");
 		}
 		p_num = data.num;
-
-		return pxtnERR.OK;
 	}
 
 	// fix old key event
@@ -952,12 +786,15 @@ private:
 
 	pxtnPulse_Frequency* _moo_freq;
 
-	pxtnERR _init(int fix_evels_num, bool b_edit) nothrow @system {
+	void _init(int fix_evels_num, bool b_edit) @system {
 		if (_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
+		scope(failure) {
+			_release();
+		}
+
 		int byte_size = 0;
 
 		version (pxINCLUDE_OGGVORBIS) {
@@ -967,38 +804,30 @@ private:
 				DerelictVorbis.load();
 				DerelictVorbisFile.load();
 			} catch (Exception e) {
-				res = pxtnERR.ogg;
-				goto End;
+				throw new PxtoneException("Vorbis library failed to load");
 			}
 		}
 
 		text = allocate!pxtnText();
 		if (!(text)) {
-			res = pxtnERR.INIT;
-			goto End;
+			throw new PxtoneException("pxtnService text not initialized");
 		}
 		master = allocate!pxtnMaster();
 		if (!(master)) {
-			res = pxtnERR.INIT;
-			goto End;
+			throw new PxtoneException("pxtnService master not initialized");
 		}
 		evels = allocate!pxtnEvelist();
 		if (!(evels)) {
-			res = pxtnERR.INIT;
-			goto End;
+			throw new PxtoneException("pxtnService evels not initialized");
 		}
 		_ptn_bldr = allocate!pxtnPulse_NoiseBuilder();
 		if (!(_ptn_bldr)) {
-			res = pxtnERR.INIT;
-			goto End;
+			throw new PxtoneException("pxtnService noisebuilder not initialized");
 		}
 
 		if (fix_evels_num) {
 			_b_fix_evels_num = true;
-			if (!evels.Allocate(fix_evels_num)) {
-				res = pxtnERR.memory;
-				goto End;
-			}
+			evels.Allocate(fix_evels_num);
 		} else {
 			_b_fix_evels_num = false;
 		}
@@ -1006,40 +835,35 @@ private:
 		// delay
 		_delays = allocate!(pxtnDelay)(pxtnMAX_TUNEDELAYSTRUCT);
 		if (!(_delays)) {
-			res = pxtnERR.memory;
-			goto End;
+			throw new PxtoneException("Delays buffer allocation failed");
 		}
 		_delay_max = pxtnMAX_TUNEDELAYSTRUCT;
 
 		// over-drive
 		_ovdrvs = allocate!(pxtnOverDrive*)(pxtnMAX_TUNEOVERDRIVESTRUCT);
 		if (!(_ovdrvs)) {
-			res = pxtnERR.memory;
-			goto End;
+			throw new PxtoneException("Overdrives buffer allocation failed");
 		}
 		_ovdrv_max = pxtnMAX_TUNEOVERDRIVESTRUCT;
 
 		// woice
 		_woices = allocate!(pxtnWoice*)(pxtnMAX_TUNEWOICESTRUCT);
 		if (!(_woices)) {
-			res = pxtnERR.memory;
-			goto End;
+			throw new PxtoneException("Woice buffer allocation failed");
 		}
 		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
 
 		// unit
 		_units = allocate!(pxtnUnit)(pxtnMAX_TUNEUNITSTRUCT);
 		if (!(_units)) {
-			res = pxtnERR.memory;
-			goto End;
+			throw new PxtoneException("Unit buffer allocation failed");
 		}
 		_unit_max = pxtnMAX_TUNEUNITSTRUCT;
 
 		_group_num = pxtnMAX_TUNEGROUPNUM;
 
 		if (!_moo_init()) {
-			res = pxtnERR.moo_init;
-			goto End;
+			throw new PxtoneException("_moo_init failed");
 		}
 
 		if (fix_evels_num) {
@@ -1047,13 +871,8 @@ private:
 		}
 
 		_b_edit = b_edit;
-		res = pxtnERR.OK;
 		_b_init = true;
-	End:
-		if (!_b_init) {
-			_release();
-		}
-		return res;
+
 	}
 
 	bool _release() nothrow @system {
@@ -1093,12 +912,11 @@ private:
 		return true;
 	}
 
-	pxtnERR _pre_count_event(ref pxtnDescriptor p_doc, out int p_count) nothrow @system {
+	void _pre_count_event(ref pxtnDescriptor p_doc, out int p_count) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
 		bool b_end = false;
 
 		int count = 0;
@@ -1109,22 +927,19 @@ private:
 		ushort exe_ver = 0;
 		_enum_FMTVER fmt_ver = _enum_FMTVER._enum_FMTVER_unknown;
 
-		res = _ReadVersion(p_doc, fmt_ver, exe_ver);
-		if (res != pxtnERR.OK) {
-			goto term;
+		scope(failure) {
+			p_count = 0;
 		}
+
+		_ReadVersion(p_doc, fmt_ver, exe_ver);
 
 		if (fmt_ver == _enum_FMTVER._enum_FMTVER_x1x) {
 			count = _MAX_FMTVER_x1x_EVENTNUM;
-			res = pxtnERR.OK;
 			goto term;
 		}
 
 		while (!b_end) {
-			if (!p_doc.r(code[0 .. _CODESIZE])) {
-				res = pxtnERR.desc_r;
-				goto term;
-			}
+			p_doc.r(code[0 .. _CODESIZE]);
 
 			switch (_CheckTagCode(code)) {
 			case _enum_Tag.Event_V5:
@@ -1137,10 +952,7 @@ private:
 				count += master.io_r_x4x_EventNum(p_doc);
 				break;
 			case _enum_Tag.x4x_evenUNIT:
-				res = evels.io_Read_x4x_EventNum(p_doc, &c);
-				if (res != pxtnERR.OK) {
-					goto term;
-				}
+				evels.io_Read_x4x_EventNum(p_doc, &c);
 				count += c;
 				break;
 			case _enum_Tag.pxtoneND:
@@ -1162,14 +974,8 @@ private:
 			case _enum_Tag.assiUNIT:
 			case _enum_Tag.assiWOIC:
 
-				if (!p_doc.r(size)) {
-					res = pxtnERR.desc_r;
-					goto term;
-				}
-				if (!p_doc.seek(pxtnSEEK.cur, size)) {
-					res = pxtnERR.desc_r;
-					goto term;
-				}
+				p_doc.r(size);
+				p_doc.seek(pxtnSEEK.cur, size);
 				break;
 
 				// ignore
@@ -1178,11 +984,9 @@ private:
 			case _enum_Tag.x1x_PCM:
 			case _enum_Tag.x1x_EVEN:
 			case _enum_Tag.x1x_END:
-				res = pxtnERR.x1x_ignore;
-				goto term;
+				throw new PxtoneException("x1x ignore");
 			default:
-				res = pxtnERR.FATAL;
-				goto term;
+				throw new PxtoneException("FATAL");
 			}
 		}
 
@@ -1190,16 +994,9 @@ private:
 			count += pxtnMAX_TUNEUNITSTRUCT * 4; // voice_no, group_no, key tuning, key event x3x
 		}
 
-		res = pxtnERR.OK;
 	term:
 
-		if (res != pxtnERR.OK) {
-			p_count = 0;
-		} else {
-			p_count = count;
-		}
-
-		return res;
+		p_count = count;
 	}
 
 	void _moo_destructer() nothrow @system {
@@ -1511,11 +1308,11 @@ public:
 	pxtnMaster* master;
 	pxtnEvelist* evels;
 
-	pxtnERR init_() nothrow @system {
-		return _init(0, false);
+	void initialize() @system {
+		_init(0, false);
 	}
 
-	pxtnERR init_collage(int fix_evels_num) nothrow @system {
+	void init_collage(int fix_evels_num) @system {
 		return _init(fix_evels_num, true);
 	}
 
@@ -1562,105 +1359,60 @@ public:
 	// save               //////////////////
 	////////////////////////////////////////
 
-	pxtnERR write(ref pxtnDescriptor p_doc, bool b_tune, ushort exe_ver) nothrow @system {
+	void write(ref pxtnDescriptor p_doc, bool b_tune, ushort exe_ver) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
 		bool b_ret = false;
 		int rough = b_tune ? 10 : 1;
 		ushort rrr = 0;
-		pxtnERR res = pxtnERR.VOID;
 
 		// format version
 		if (b_tune) {
-			if (!p_doc.w_asfile(_code_tune_v5)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
+			p_doc.w_asfile(_code_tune_v5);
 		} else {
-			if (!p_doc.w_asfile(_code_proj_v5)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
+			p_doc.w_asfile(_code_proj_v5);
 		}
 
 		// exe version
-		if (!p_doc.w_asfile(exe_ver)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
-		if (!p_doc.w_asfile(rrr)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
+		p_doc.w_asfile(exe_ver);
+		p_doc.w_asfile(rrr);
 
 		// master
-		if (!p_doc.w_asfile(_code_MasterV5)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
-		if (!master.io_w_v5(p_doc, rough)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
+		p_doc.w_asfile(_code_MasterV5);
+		master.io_w_v5(p_doc, rough);
 
 		// event
-		if (!p_doc.w_asfile(_code_Event_V5)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
-		if (!evels.io_Write(p_doc, rough)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
+		p_doc.w_asfile(_code_Event_V5);
+		evels.io_Write(p_doc, rough);
 
 		// name
 		if (text.is_name_buf()) {
-			if (!p_doc.w_asfile(_code_textNAME)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
+			p_doc.w_asfile(_code_textNAME);
 			if (!text.Name_w(p_doc)) {
-				res = pxtnERR.desc_w;
-				goto End;
+				throw new PxtoneException("desc w");
 			}
 		}
 
 		// comment
 		if (text.is_comment_buf()) {
-			if (!p_doc.w_asfile(_code_textCOMM)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
+			p_doc.w_asfile(_code_textCOMM);
 			if (!text.Comment_w(p_doc)) {
-				res = pxtnERR.desc_w;
-				goto End;
+				throw new PxtoneException("desc w");
 			}
 		}
 
 		// delay
 		for (int d = 0; d < _delay_num; d++) {
-			if (!p_doc.w_asfile(_code_effeDELA)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
-			if (!_delays[d].Write(p_doc)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
+			p_doc.w_asfile(_code_effeDELA);
+			_delays[d].Write(p_doc);
 		}
 
 		// overdrive
 		for (int o = 0; o < _ovdrv_num; o++) {
-			if (!p_doc.w_asfile(_code_effeOVER)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
-			if (!_ovdrvs[o].Write(p_doc)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
+			p_doc.w_asfile(_code_effeOVER);
+			_ovdrvs[o].Write(p_doc);
 		}
 
 		// woice
@@ -1669,143 +1421,89 @@ public:
 
 			switch (p_w.get_type()) {
 			case pxtnWOICETYPE.PCM:
-				if (!p_doc.w_asfile(_code_matePCM)) {
-					res = pxtnERR.desc_w;
-					goto End;
-				}
-				if (!p_w.io_matePCM_w(p_doc)) {
-					res = pxtnERR.desc_w;
-					goto End;
-				}
+				p_doc.w_asfile(_code_matePCM);
+				p_w.io_matePCM_w(p_doc);
 				break;
 			case pxtnWOICETYPE.PTV:
-				if (!p_doc.w_asfile(_code_matePTV)) {
-					res = pxtnERR.desc_w;
-					goto End;
-				}
+				p_doc.w_asfile(_code_matePTV);
 				if (!p_w.io_matePTV_w(p_doc)) {
-					res = pxtnERR.desc_w;
-					goto End;
+					throw new PxtoneException("desc w");
 				}
 				break;
 			case pxtnWOICETYPE.PTN:
-				if (!p_doc.w_asfile(_code_matePTN)) {
-					res = pxtnERR.desc_w;
-					goto End;
-				}
-				if (!p_w.io_matePTN_w(p_doc)) {
-					res = pxtnERR.desc_w;
-					goto End;
-				}
+				p_doc.w_asfile(_code_matePTN);
+				p_w.io_matePTN_w(p_doc);
 				break;
 			case pxtnWOICETYPE.OGGV:
 
 				version (pxINCLUDE_OGGVORBIS) {
-					if (!p_doc.w_asfile(_code_mateOGGV)) {
-						res = pxtnERR.desc_w;
-						goto End;
-					}
+					p_doc.w_asfile(_code_mateOGGV);
 					if (!p_w.io_mateOGGV_w(p_doc)) {
-						res = pxtnERR.desc_w;
-						goto End;
+						throw new PxtoneException("desc w");
 					}
 					break;
 				} else {
-					res = pxtnERR.ogg_no_supported;
-					goto End;
+					throw new PxtoneException("Ogg vorbis support is required");
 				}
 			default:
-				res = pxtnERR.inv_data;
-				goto End;
+				throw new PxtoneException("inv data");
 			}
 
 			if (!b_tune && p_w.is_name_buf()) {
-				if (!p_doc.w_asfile(_code_assiWOIC)) {
-					res = pxtnERR.desc_w;
-					goto End;
-				}
+				p_doc.w_asfile(_code_assiWOIC);
 				if (!_io_assiWOIC_w(p_doc, w)) {
-					res = pxtnERR.desc_w;
-					goto End;
+					throw new PxtoneException("desc w");
 				}
 			}
 		}
 
 		// unit
-		if (!p_doc.w_asfile(_code_num_UNIT)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
-		if (!_io_UNIT_num_w(p_doc)) {
-			res = pxtnERR.desc_w;
-			goto End;
-		}
+		p_doc.w_asfile(_code_num_UNIT);
+		_io_UNIT_num_w(p_doc);
 
 		for (int u = 0; u < _unit_num; u++) {
 			if (!b_tune && _units[u].is_name_buf()) {
-				if (!p_doc.w_asfile(_code_assiUNIT)) {
-					res = pxtnERR.desc_w;
-					goto End;
-				}
+				p_doc.w_asfile(_code_assiUNIT);
 				if (!_io_assiUNIT_w(p_doc, u)) {
-					res = pxtnERR.desc_w;
-					goto End;
+					throw new PxtoneException("desc w");
 				}
 			}
 		}
 
 		{
 			int end_size = 0;
-			if (!p_doc.w_asfile(_code_pxtoneND)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
-			if (!p_doc.w_asfile(end_size)) {
-				res = pxtnERR.desc_w;
-				goto End;
-			}
+			p_doc.w_asfile(_code_pxtoneND);
+			p_doc.w_asfile(end_size);
 		}
-
-		res = pxtnERR.OK;
-	End:
-
-		return res;
 	}
 
-	pxtnERR read(ref pxtnDescriptor p_doc) nothrow @system {
+	void read(ref pxtnDescriptor p_doc) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
 		ushort exe_ver = 0;
 		_enum_FMTVER fmt_ver = _enum_FMTVER._enum_FMTVER_unknown;
 		int event_num = 0;
 
 		clear();
 
-		res = _pre_count_event(p_doc, event_num);
-		if (res != pxtnERR.OK) {
-			goto term;
+		scope(failure) {
+			clear();
 		}
+
+		_pre_count_event(p_doc, event_num);
 		p_doc.seek(pxtnSEEK.set, 0);
 
 		if (_b_fix_evels_num) {
 			if (event_num > evels.get_Num_Max()) {
-				res = pxtnERR.too_much_event;
-				goto term;
+				throw new PxtoneException("Too many events");
 			}
 		} else {
-			if (!evels.Allocate(event_num)) {
-				res = pxtnERR.memory;
-				goto term;
-			}
+			evels.Allocate(event_num);
 		}
 
-		res = _ReadVersion(p_doc, fmt_ver, exe_ver);
-		if (res != pxtnERR.OK) {
-			goto term;
-		}
+		_ReadVersion(p_doc, fmt_ver, exe_ver);
 
 		if (fmt_ver >= _enum_FMTVER._enum_FMTVER_v5) {
 			evels.Linear_Start();
@@ -1813,10 +1511,7 @@ public:
 			evels.x4x_Read_Start();
 		}
 
-		res = _ReadTuneItems(p_doc);
-		if (res != pxtnERR.OK) {
-			goto term;
-		}
+		_ReadTuneItems(p_doc);
 
 		if (fmt_ver >= _enum_FMTVER._enum_FMTVER_v5) {
 			evels.Linear_End(true);
@@ -1824,19 +1519,16 @@ public:
 
 		if (fmt_ver <= _enum_FMTVER._enum_FMTVER_x3x) {
 			if (!_x3x_TuningKeyEvent()) {
-				res = pxtnERR.x3x_key;
-				goto term;
+				throw new PxtoneException("x3x key");
 			}
 			if (!_x3x_AddTuningEvent()) {
-				res = pxtnERR.x3x_add_tuning;
-				goto term;
+				throw new PxtoneException("x3x add tuning");
 			}
 			_x3x_SetVoiceNames();
 		}
 
 		if (_b_edit && master.get_beat_clock() != EVENTDEFAULT_BEATCLOCK) {
-			res = pxtnERR.deny_beatclock;
-			goto term;
+			throw new PxtoneException("deny beatclock");
 		}
 
 		{
@@ -1851,14 +1543,6 @@ public:
 		}
 
 		_moo_b_valid_data = true;
-		res = pxtnERR.OK;
-	term:
-
-		if (res != pxtnERR.OK) {
-			clear();
-		}
-
-		return res;
 	}
 
 	bool AdjustMeasNum() nothrow @safe {
@@ -1869,31 +1553,23 @@ public:
 		return true;
 	}
 
-	pxtnERR tones_ready() nothrow @system {
+	void tones_ready() @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 
-		pxtnERR res = pxtnERR.VOID;
 		int beat_num = master.get_beat_num();
 		float beat_tempo = master.get_beat_tempo();
 
 		for (int i = 0; i < _delay_num; i++) {
-			res = _delays[i].Tone_Ready(beat_num, beat_tempo, _dst_sps);
-			if (res != pxtnERR.OK) {
-				return res;
-			}
+			_delays[i].Tone_Ready(beat_num, beat_tempo, _dst_sps);
 		}
 		for (int i = 0; i < _ovdrv_num; i++) {
 			_ovdrvs[i].Tone_Ready();
 		}
 		for (int i = 0; i < _woice_num; i++) {
-			res = _woices[i].Tone_Ready(_ptn_bldr, _dst_sps);
-			if (res != pxtnERR.OK) {
-				return res;
-			}
+			_woices[i].Tone_Ready(_ptn_bldr, _dst_sps);
 		}
-		return pxtnERR.OK;
 	}
 
 	bool tones_clear() nothrow @system {
@@ -1965,14 +1641,14 @@ public:
 		return true;
 	}
 
-	pxtnERR Delay_ReadyTone(int idx) nothrow @system {
+	void Delay_ReadyTone(int idx) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 		if (idx < 0 || idx >= _delay_num) {
-			return pxtnERR.param;
+			throw new PxtoneException("param");
 		}
-		return _delays[idx].Tone_Ready(master.get_beat_num(), master.get_beat_tempo(), _dst_sps);
+		_delays[idx].Tone_Ready(master.get_beat_num(), master.get_beat_tempo(), _dst_sps);
 	}
 
 	pxtnDelay* Delay_Get(int idx) nothrow @system {
@@ -2081,38 +1757,35 @@ public:
 		return _woices[idx];
 	}
 
-	pxtnERR Woice_read(int idx, ref pxtnDescriptor desc, pxtnWOICETYPE type) nothrow @system {
+	void Woice_read(int idx, ref pxtnDescriptor desc, pxtnWOICETYPE type) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 		if (idx < 0 || idx >= _woice_max) {
-			return pxtnERR.param;
+			throw new PxtoneException("param");
 		}
 		if (idx > _woice_num) {
-			return pxtnERR.param;
+			throw new PxtoneException("param");
 		}
 		if (idx == _woice_num) {
 			_woices[idx] = allocate!pxtnWoice();
 			_woice_num++;
 		}
 
-		pxtnERR res = pxtnERR.VOID;
-		res = _woices[idx].read(desc, type);
-		if (res != pxtnERR.OK) {
+		scope(failure) {
 			Woice_Remove(idx);
-			return res;
 		}
-		return res;
+		_woices[idx].read(desc, type);
 	}
 
-	pxtnERR Woice_ReadyTone(int idx) nothrow @system {
+	void Woice_ReadyTone(int idx) @system {
 		if (!_b_init) {
-			return pxtnERR.INIT;
+			throw new PxtoneException("pxtnService not initialized");
 		}
 		if (idx < 0 || idx >= _woice_num) {
-			return pxtnERR.param;
+			throw new PxtoneException("param");
 		}
-		return _woices[idx].Tone_Ready(_ptn_bldr, _dst_sps);
+		_woices[idx].Tone_Ready(_ptn_bldr, _dst_sps);
 	}
 
 	bool Woice_Remove(int idx) nothrow @system {
@@ -2269,45 +1942,36 @@ public:
 	// Quality..
 	// ---------------------------
 
-	bool set_destination_quality(int ch_num, int sps) nothrow @safe {
-		if (!_b_init) {
-			return false;
-		}
+	void set_destination_quality(int ch_num, int sps) @safe {
+		enforce(_b_init, new PxtoneException("pxtnService not initialized"));
 		switch (ch_num) {
 		case 1:
 			break;
 		case 2:
 			break;
 		default:
-			return false;
+			throw new PxtoneException("Unsupported sample rate");
 		}
 
 		_dst_ch_num = ch_num;
 		_dst_sps = sps;
 		_dst_byte_per_smp = pxtnBITPERSAMPLE / 8 * ch_num;
-		return true;
 	}
 
-	bool get_destination_quality(int* p_ch_num, int* p_sps) const nothrow @safe {
-		if (!_b_init) {
-			return false;
-		}
+	void get_destination_quality(int* p_ch_num, int* p_sps) const @safe {
+		enforce(_b_init, new PxtoneException("pxtnService not initialized"));
 		if (p_ch_num) {
 			*p_ch_num = _dst_ch_num;
 		}
 		if (p_sps) {
 			*p_sps = _dst_sps;
 		}
-		return true;
 	}
 
-	bool set_sampled_callback(pxtnSampledCallback proc, void* user) nothrow @safe {
-		if (!_b_init) {
-			return false;
-		}
+	void set_sampled_callback(pxtnSampledCallback proc, void* user) @safe {
+		enforce(_b_init, new PxtoneException("pxtnService not initialized"));
 		_sampled_proc = proc;
 		_sampled_user = user;
-		return true;
 	}
 
 	//////////////
@@ -2318,40 +1982,28 @@ public:
 	// get / set
 	///////////////////////
 
-	bool moo_is_valid_data() const nothrow @safe {
-		if (!_moo_b_init) {
-			return false;
-		}
+	bool moo_is_valid_data() const @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
 		return _moo_b_valid_data;
 	}
 
-	bool moo_is_end_vomit() const nothrow @safe {
-		if (!_moo_b_init) {
-			return true;
-		}
+	bool moo_is_end_vomit() const @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
 		return _moo_b_end_vomit;
 	}
 
-	bool moo_set_mute_by_unit(bool b) nothrow @safe {
-		if (!_moo_b_init) {
-			return false;
-		}
+	void moo_set_mute_by_unit(bool b) @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
 		_moo_b_mute_by_unit = b;
-		return true;
 	}
 
-	bool moo_set_loop(bool b) nothrow @safe {
-		if (!_moo_b_init) {
-			return false;
-		}
+	void moo_set_loop(bool b) @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
 		_moo_b_loop = b;
-		return true;
 	}
 
-	bool moo_set_fade(int fade, float sec) nothrow @safe {
-		if (!_moo_b_init) {
-			return false;
-		}
+	void moo_set_fade(int fade, float sec) @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
 		_moo_fade_max = cast(int)(cast(float) _dst_sps * sec) >> 8;
 		if (fade < 0) {
 			_moo_fade_fade = -1;
@@ -2365,13 +2017,10 @@ public:
 			_moo_fade_fade = 0;
 			_moo_fade_count = 0;
 		} // off
-		return true;
 	}
 
-	bool moo_set_master_volume(float v) nothrow @safe {
-		if (!_moo_b_init) {
-			return false;
-		}
+	void moo_set_master_volume(float v) @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
 		if (v < 0) {
 			v = 0;
 		}
@@ -2379,16 +2028,11 @@ public:
 			v = 1;
 		}
 		_moo_master_vol = v;
-		return true;
 	}
 
-	int moo_get_total_sample() const nothrow @system {
-		if (!_b_init) {
-			return 0;
-		}
-		if (!_moo_b_valid_data) {
-			return 0;
-		}
+	int moo_get_total_sample() const @system {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
+		enforce(_moo_b_valid_data, new PxtoneException("no valid data loaded"));
 
 		int meas_num;
 		int beat_num;
@@ -2397,55 +2041,43 @@ public:
 		return pxtnService_moo_CalcSampleNum(meas_num, beat_num, _dst_sps, master.get_beat_tempo());
 	}
 
-	int moo_get_now_clock() const nothrow @safe {
-		if (!_moo_b_init) {
-			return 0;
-		}
-		if (_moo_clock_rate) {
-			return cast(int)(_moo_smp_count / _moo_clock_rate);
-		}
-		return 0;
+	int moo_get_now_clock() const @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
+		enforce(_moo_clock_rate, new PxtoneException("No clock rate set"));
+		return cast(int)(_moo_smp_count / _moo_clock_rate);
 	}
 
-	int moo_get_end_clock() const nothrow @safe {
-		if (!_moo_b_init) {
-			return 0;
-		}
-		if (_moo_clock_rate) {
-			return cast(int)(_moo_smp_end / _moo_clock_rate);
-		}
-		return 0;
+	int moo_get_end_clock() const @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
+		enforce(_moo_clock_rate, new PxtoneException("No clock rate set"));
+		return cast(int)(_moo_smp_end / _moo_clock_rate);
 	}
 
-	int moo_get_sampling_offset() const nothrow @safe {
-		if (!_moo_b_init) {
-			return 0;
-		}
-		if (_moo_b_end_vomit) {
-			return 0;
-		}
+	int moo_get_sampling_offset() const @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
+		enforce(!_moo_b_end_vomit, new PxtoneException("playback has ended"));
 		return _moo_smp_count;
 	}
 
-	int moo_get_sampling_end() const nothrow @safe {
-		if (!_moo_b_init) {
-			return 0;
-		}
-		if (_moo_b_end_vomit) {
-			return 0;
-		}
+	int moo_get_sampling_end() const @safe {
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
+		enforce(!_moo_b_end_vomit, new PxtoneException("playback has ended"));
 		return _moo_smp_end;
 	}
 
 	// preparation
-	bool moo_preparation() nothrow @system {
+	void moo_preparation() @system {
 		return moo_preparation(pxtnVOMITPREPARATION.init);
 	}
-	bool moo_preparation(in pxtnVOMITPREPARATION p_prep) nothrow @system {
-		if (!_moo_b_init || !_moo_b_valid_data || !_dst_ch_num || !_dst_sps || !_dst_byte_per_smp) {
+	void moo_preparation(in pxtnVOMITPREPARATION p_prep) @system {
+		scope(failure) {
 			_moo_b_end_vomit = true;
-			return false;
 		}
+		enforce(_moo_b_init, new PxtoneException("pxtnService not initialized"));
+		enforce(_moo_b_valid_data, new PxtoneException("no valid data loaded"));
+		enforce(_dst_ch_num, new PxtoneException("invalid channel number specified"));
+		enforce(_dst_sps, new PxtoneException("invalid sample rate specified"));
+		enforce(_dst_byte_per_smp, new PxtoneException("invalid sample size"));
 
 		int meas_end = master.get_play_meas();
 		int meas_repeat = master.get_repeat_meas();
@@ -2506,8 +2138,6 @@ public:
 		_moo_InitUnitTone();
 
 		_moo_b_end_vomit = false;
-
-		return true;
 	}
 
 	////////////////////
