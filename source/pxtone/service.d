@@ -17,8 +17,11 @@ import pxtone.pulse.frequency;
 import pxtone.unit;
 import pxtone.evelist;
 
+import std.algorithm.comparison;
 import std.exception;
 import std.format;
+import std.math;
+import std.stdio;
 import std.typecons;
 
 enum PXTONEERRORSIZE = 64;
@@ -2101,7 +2104,7 @@ public:
 			_moo_b_loop = false;
 		}
 
-		_moo_master_vol = p_prep.master_volume;
+		setVolume(p_prep.master_volume);
 
 		_moo_bt_clock = master.get_beat_clock();
 		_moo_bt_num = master.get_beat_num();
@@ -2131,7 +2134,15 @@ public:
 		} else {
 			moo_set_fade(0, 0);
 		}
+		start();
+	}
 
+	void setVolume(float volume) @system {
+		enforce(!volume.isNaN, "Volume must be a number");
+		_moo_master_vol = clamp(volume, 0.0, 1.0);
+	}
+
+	void start() @system {
 		tones_clear();
 
 		_moo_p_eve = evels.get_Records();
