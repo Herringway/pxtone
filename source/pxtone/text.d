@@ -79,7 +79,7 @@ public:
 		return true;
 	}
 
-	const(char)[] get_comment_buf() const nothrow @system {
+	const(char)[] get_comment_buf() const nothrow @safe {
 		return _p_comment_buf[0 .. _comment_size];
 	}
 
@@ -112,7 +112,7 @@ public:
 		return true;
 	}
 
-	const(char)[] get_name_buf() const nothrow @system {
+	const(char)[] get_name_buf() const nothrow @safe {
 		return _p_name_buf[0 .. _name_size];
 	}
 

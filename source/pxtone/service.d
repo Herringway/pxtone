@@ -100,7 +100,7 @@ enum _enum_Tag {
 
 }
 
-private _enum_Tag _CheckTagCode(const char[] p_code) nothrow @system {
+private _enum_Tag _CheckTagCode(const char[] p_code) nothrow @safe {
 	if (p_code[0 .. _CODESIZE] == _code_antiOPER) {
 		return _enum_Tag.antiOPER;
 	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PROJ) {
@@ -243,7 +243,7 @@ private:
 
 	int _group_num;
 
-	void _ReadVersion(ref pxtnDescriptor p_doc, out _enum_FMTVER p_fmt_ver, out ushort p_exe_ver) @system {
+	void _ReadVersion(ref pxtnDescriptor p_doc, out _enum_FMTVER p_fmt_ver, out ushort p_exe_ver) @safe {
 		if (!_b_init) {
 			throw new PxtoneException("pxtnService not initialized");
 		}
