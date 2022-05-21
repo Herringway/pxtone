@@ -195,7 +195,7 @@ struct pxtnVOMITPREPARATION {
 	float fadein_sec = 0.0;
 
 	uint flags = 0;
-	float master_volume = 0.0;
+	float master_volume = 1.0;
 	invariant {
 		import std.math : isNaN;
 		assert(!master_volume.isNaN, "Master volume should never be NaN!");
