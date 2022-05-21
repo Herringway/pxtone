@@ -2093,16 +2093,8 @@ public:
 			meas_repeat = p_prep.meas_repeat;
 		}
 
-		if (p_prep.flags.unitMute) {
-			_moo_b_mute_by_unit = true;
-		} else {
-			_moo_b_mute_by_unit = false;
-		}
-		if (p_prep.flags.loop) {
-			_moo_b_loop = true;
-		} else {
-			_moo_b_loop = false;
-		}
+		_moo_b_mute_by_unit = p_prep.flags.unitMute;
+		_moo_b_loop = p_prep.flags.loop;
 
 		setVolume(p_prep.master_volume);
 
