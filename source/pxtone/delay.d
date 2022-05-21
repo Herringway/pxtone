@@ -73,7 +73,7 @@ public:
 	}
 
 	bool switch_played() nothrow @safe {
-		_b_played = _b_played ? false : true;
+		_b_played = !_b_played;
 		return _b_played;
 	}
 
