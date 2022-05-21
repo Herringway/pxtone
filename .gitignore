@@ -5,3 +5,7 @@
 *.obj
 *.dll
 dub.selections.json
+*.pdb
+*.bin
+*.ptcop
+*.pttune
