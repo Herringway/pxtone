@@ -19,11 +19,14 @@ import pxtone.evelist;
 
 import std.exception;
 import std.format;
+import std.typecons;
 
 enum PXTONEERRORSIZE = 64;
 
-enum pxtnVOMITPREPFLAG_loop = 0x01;
-enum pxtnVOMITPREPFLAG_unit_mute = 0x02;
+enum pxtnFlags {
+	loop = 1 << 0,
+	unitMute = 1 << 1
+}
 
 enum _VERSIONSIZE = 16;
 enum _CODESIZE = 8;
@@ -194,7 +197,7 @@ struct pxtnVOMITPREPARATION {
 	int meas_repeat = 0;
 	float fadein_sec = 0.0;
 
-	uint flags = 0;
+	BitFlags!pxtnFlags flags;
 	float master_volume = 1.0;
 	invariant {
 		import std.math : isNaN;
@@ -2087,12 +2090,12 @@ public:
 			meas_repeat = p_prep.meas_repeat;
 		}
 
-		if (p_prep.flags & pxtnVOMITPREPFLAG_unit_mute) {
+		if (p_prep.flags.unitMute) {
 			_moo_b_mute_by_unit = true;
 		} else {
 			_moo_b_mute_by_unit = false;
 		}
-		if (p_prep.flags & pxtnVOMITPREPFLAG_loop) {
+		if (p_prep.flags.loop) {
 			_moo_b_loop = true;
 		} else {
 			_moo_b_loop = false;

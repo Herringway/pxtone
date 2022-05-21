@@ -77,7 +77,7 @@ int main(string[] args) {
 	// Prepare to play music
 	{
 		pxtnVOMITPREPARATION prep;
-		prep.flags |= pxtnVOMITPREPFLAG_loop;
+		prep.flags.loop = true;
 		prep.start_pos_float = 0;
 		prep.master_volume = 0.80f;
 
