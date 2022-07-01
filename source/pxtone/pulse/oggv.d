@@ -1,6 +1,7 @@
 ﻿module pxtone.pulse.oggv;
 
 version (pxINCLUDE_OGGVORBIS):
+import core.stdc.config;
 import derelict.vorbis.codec;
 import derelict.vorbis.file;
 
@@ -80,7 +81,7 @@ extern (C) int _mseek(void* p_void, long offset, int mode) nothrow @system {
 	return 0;
 }
 
-extern (C) int _mtell(void* p_void) nothrow @system {
+extern (C) c_long _mtell(void* p_void) nothrow @system {
 	OVMEM* pom = cast(OVMEM*) p_void;
 	if (!pom) {
 		return -1;
@@ -212,7 +213,7 @@ public:
 			int ret = 0;
 			ubyte* p = p_pcm.get_p_buf().ptr;
 			do {
-				ret = ov_read(&vf, cast(byte*) pcmout.ptr, 4096, 0, 2, 1, &current_section);
+				ret = cast(int)ov_read(&vf, cast(byte*) pcmout.ptr, 4096, 0, 2, 1, &current_section);
 				if (ret > 0) {
 					p[0 .. ret] = pcmout[0 .. ret]; //fwrite( pcmout, 1, ret, of );
 				}
