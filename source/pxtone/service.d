@@ -104,54 +104,32 @@ enum _enum_Tag {
 }
 
 private _enum_Tag _CheckTagCode(const char[] p_code) nothrow @safe {
-	if (p_code[0 .. _CODESIZE] == _code_antiOPER) {
-		return _enum_Tag.antiOPER;
-	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PROJ) {
-		return _enum_Tag.x1x_PROJ;
-	} else if (p_code[0 .. _CODESIZE] == _code_x1x_UNIT) {
-		return _enum_Tag.x1x_UNIT;
-	} else if (p_code[0 .. _CODESIZE] == _code_x1x_PCM) {
-		return _enum_Tag.x1x_PCM;
-	} else if (p_code[0 .. _CODESIZE] == _code_x1x_EVEN) {
-		return _enum_Tag.x1x_EVEN;
-	} else if (p_code[0 .. _CODESIZE] == _code_x1x_END) {
-		return _enum_Tag.x1x_END;
-	} else if (p_code[0 .. _CODESIZE] == _code_x3x_pxtnUNIT) {
-		return _enum_Tag.x3x_pxtnUNIT;
-	} else if (p_code[0 .. _CODESIZE] == _code_x4x_evenMAST) {
-		return _enum_Tag.x4x_evenMAST;
-	} else if (p_code[0 .. _CODESIZE] == _code_x4x_evenUNIT) {
-		return _enum_Tag.x4x_evenUNIT;
-	} else if (p_code[0 .. _CODESIZE] == _code_num_UNIT) {
-		return _enum_Tag.num_UNIT;
-	} else if (p_code[0 .. _CODESIZE] == _code_Event_V5) {
-		return _enum_Tag.Event_V5;
-	} else if (p_code[0 .. _CODESIZE] == _code_MasterV5) {
-		return _enum_Tag.MasterV5;
-	} else if (p_code[0 .. _CODESIZE] == _code_matePCM) {
-		return _enum_Tag.matePCM;
-	} else if (p_code[0 .. _CODESIZE] == _code_matePTV) {
-		return _enum_Tag.matePTV;
-	} else if (p_code[0 .. _CODESIZE] == _code_matePTN) {
-		return _enum_Tag.matePTN;
-	} else if (p_code[0 .. _CODESIZE] == _code_mateOGGV) {
-		return _enum_Tag.mateOGGV;
-	} else if (p_code[0 .. _CODESIZE] == _code_effeDELA) {
-		return _enum_Tag.effeDELA;
-	} else if (p_code[0 .. _CODESIZE] == _code_effeOVER) {
-		return _enum_Tag.effeOVER;
-	} else if (p_code[0 .. _CODESIZE] == _code_textNAME) {
-		return _enum_Tag.textNAME;
-	} else if (p_code[0 .. _CODESIZE] == _code_textCOMM) {
-		return _enum_Tag.textCOMM;
-	} else if (p_code[0 .. _CODESIZE] == _code_assiUNIT) {
-		return _enum_Tag.assiUNIT;
-	} else if (p_code[0 .. _CODESIZE] == _code_assiWOIC) {
-		return _enum_Tag.assiWOIC;
-	} else if (p_code[0 .. _CODESIZE] == _code_pxtoneND) {
-		return _enum_Tag.pxtoneND;
+	switch(p_code[0 .. _CODESIZE]) {
+		case _code_antiOPER: return _enum_Tag.antiOPER;
+		case _code_x1x_PROJ: return _enum_Tag.x1x_PROJ;
+		case _code_x1x_UNIT: return _enum_Tag.x1x_UNIT;
+		case _code_x1x_PCM: return _enum_Tag.x1x_PCM;
+		case _code_x1x_EVEN: return _enum_Tag.x1x_EVEN;
+		case _code_x1x_END: return _enum_Tag.x1x_END;
+		case _code_x3x_pxtnUNIT: return _enum_Tag.x3x_pxtnUNIT;
+		case _code_x4x_evenMAST: return _enum_Tag.x4x_evenMAST;
+		case _code_x4x_evenUNIT: return _enum_Tag.x4x_evenUNIT;
+		case _code_num_UNIT: return _enum_Tag.num_UNIT;
+		case _code_Event_V5: return _enum_Tag.Event_V5;
+		case _code_MasterV5: return _enum_Tag.MasterV5;
+		case _code_matePCM: return _enum_Tag.matePCM;
+		case _code_matePTV: return _enum_Tag.matePTV;
+		case _code_matePTN: return _enum_Tag.matePTN;
+		case _code_mateOGGV: return _enum_Tag.mateOGGV;
+		case _code_effeDELA: return _enum_Tag.effeDELA;
+		case _code_effeOVER: return _enum_Tag.effeOVER;
+		case _code_textNAME: return _enum_Tag.textNAME;
+		case _code_textCOMM: return _enum_Tag.textCOMM;
+		case _code_assiUNIT: return _enum_Tag.assiUNIT;
+		case _code_assiWOIC: return _enum_Tag.assiWOIC;
+		case _code_pxtoneND: return _enum_Tag.pxtoneND;
+		default: return _enum_Tag.Unknown;
 	}
-	return _enum_Tag.Unknown;
 }
 
 struct _ASSIST_WOICE {
