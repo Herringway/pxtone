@@ -92,13 +92,17 @@ public:
 		}
 	}
 
-	void w_asfile(T)(const T p) @system if (!is(T : U[], U)) {
-		w_asfile((&p)[0 .. 1]);
+	void w_asfile(T)(const T p) @safe if (!is(T : U[], U)) {
+		union RawAccess {
+			T t;
+			ubyte[T.sizeof] bytes;
+		}
+		w_asfile(RawAccess(p).bytes);
 	}
-	void w_asfile(T)(scope const(T)[] p) @system {
+	void w_asfile(T)(scope const(T)[] p) @safe {
 		enforce(isOpen && _b_file && !_b_read, new PxtoneException("File must be opened for writing"));
 
-		file.rawWrite(p);
+		file.trustedWrite(p);
 		_size += p.length * T.sizeof;
 	}
 
@@ -130,11 +134,11 @@ public:
 	}
 
 	// ..uint
-	void v_w_asfile(int val) @system {
+	void v_w_asfile(int val) @safe {
 		int dummy;
 		v_w_asfile(val, dummy);
 	}
-	void v_w_asfile(int val, ref int p_add) @system {
+	void v_w_asfile(int val, ref int p_add) @safe {
 		enforce(isOpen && _b_file && !_b_read, new PxtoneException("File must be opened for writing"));
 
 		ubyte[5] a = 0;
@@ -142,10 +146,7 @@ public:
 		uint us = cast(uint) val;
 		int bytes = 0;
 
-		a[0] = *(cast(ubyte*)(&us) + 0);
-		a[1] = *(cast(ubyte*)(&us) + 1);
-		a[2] = *(cast(ubyte*)(&us) + 2);
-		a[3] = *(cast(ubyte*)(&us) + 3);
+		(cast(uint[])(a[0 .. uint.sizeof]))[0] = us;
 		a[4] = 0;
 
 		// 1byte(7bit)
@@ -179,7 +180,7 @@ public:
 			b[3] = (a[2] >> 5) | ((a[3] << 3) & 0x7F) | 0x80;
 			b[4] = (a[3] >> 4) | ((a[4] << 4) & 0x7F);
 		}
-		file.rawWrite(b[0 .. bytes]);
+		file.trustedWrite(b[0 .. bytes]);
 		p_add += bytes;
 		_size += bytes;
 	}
@@ -269,4 +270,13 @@ T trustedRead(T)(File file) @safe if (!hasIndirections!T) {
 
 void trustedRead(T)(File file, T[] arr) @trusted if (!hasIndirections!T) {
 	file.rawRead(arr);
+}
+
+void trustedWrite(T)(File file, T val) @safe if (!hasIndirections!T) {
+	T[1] p = [val];
+	file.trustedWrite(p);
+}
+
+void trustedWrite(T)(File file, T[] arr) @trusted if (!hasIndirections!T) {
+	file.rawWrite(arr);
 }
