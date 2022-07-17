@@ -96,9 +96,6 @@ void _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) @system {
 		p_doc.v_r(p_vc.wave.reso);
 		num = p_vc.wave.num;
 		p_vc.wave.points = new pxtnPOINT[](num);
-		if (!p_vc.wave.points) {
-			throw new PxtoneException("Wave point buffer allocation failed");
-		}
 		for (i = 0; i < num; i++) {
 			p_doc.r(uc);
 			p_vc.wave.points[i].x = uc;
@@ -113,9 +110,6 @@ void _Read_Wave(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) @system {
 		p_doc.v_r(p_vc.wave.num);
 		num = p_vc.wave.num;
 		p_vc.wave.points = new pxtnPOINT[](num);
-		if (!p_vc.wave.points) {
-			throw new PxtoneException("Wave point buffer allocation failed");
-		}
 		for (i = 0; i < num; i++) {
 			p_doc.v_r(p_vc.wave.points[i].x);
 			p_doc.v_r(p_vc.wave.points[i].y);
@@ -162,9 +156,6 @@ void _Read_Envelope(ref pxtnDescriptor p_doc, pxtnVOICEUNIT* p_vc) @system {
 
 	num = p_vc.envelope.head_num + p_vc.envelope.body_num + p_vc.envelope.tail_num;
 	p_vc.envelope.points = new pxtnPOINT[](num);
-	if (!p_vc.envelope.points) {
-		throw new PxtoneException("Envelope point buffer allocation failed");
-	}
 	for (i = 0; i < num; i++) {
 		p_doc.v_r(p_vc.envelope.points[i].x);
 		p_doc.v_r(p_vc.envelope.points[i].y);

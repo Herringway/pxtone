@@ -107,9 +107,6 @@ public:
 
 			for (int c = 0; c < pxtnMAX_CHANNEL; c++) {
 				_bufs[c] = new int[](_smp_num);
-				if (!_bufs[c]) {
-					throw new PxtoneException("Buffer allocation failed");
-				}
 			}
 		}
 	}

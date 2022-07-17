@@ -138,9 +138,6 @@ public:
 		scope(exit) {
 			units = null;
 		}
-		if (!units) {
-			throw new PxtoneException("Unit buffer allocation failed");
-		}
 
 		for (int u = 0; u < unit_num; u++) {
 			_UNIT* pU = &units[u];
@@ -161,9 +158,6 @@ public:
 			}
 
 			pU.enves = new _POINT[](pU.enve_num);
-			if (!pU.enves) {
-				throw new PxtoneException("Envelope buffer allocation failed");
-			}
 
 			// envelope
 			for (int e = 0; e < p_du.enve_num; e++) {

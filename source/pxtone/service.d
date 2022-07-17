@@ -208,16 +208,12 @@ private:
 
 	pxtnPulse_NoiseBuilder _ptn_bldr;
 
-	int _delay_max;
 	int _delay_num;
 	pxtnDelay[] _delays;
-	int _ovdrv_max;
 	int _ovdrv_num;
 	pxtnOverDrive*[] _ovdrvs;
-	int _woice_max;
 	int _woice_num;
 	pxtnWoice*[] _woices;
-	int _unit_max;
 	int _unit_num;
 	pxtnUnit[] _units;
 
@@ -413,7 +409,7 @@ private:
 		if (!_delays) {
 			throw new PxtoneException("pxtnService delays not initialized");
 		}
-		if (_delay_num >= _delay_max) {
+		if (_delay_num >= _delays.length) {
 			throw new PxtoneException("fmt unknown");
 		}
 
@@ -431,7 +427,7 @@ private:
 		if (!_ovdrvs) {
 			throw new PxtoneException("pxtnService overdrives not initialized");
 		}
-		if (_ovdrv_num >= _ovdrv_max) {
+		if (_ovdrv_num >= _ovdrvs.length) {
 			throw new PxtoneException("fmt unknown");
 		}
 
@@ -448,7 +444,7 @@ private:
 		if (!_woices) {
 			throw new PxtoneException("pxtnService woices not initialized");
 		}
-		if (_woice_num >= _woice_max) {
+		if (_woice_num >= _woices.length) {
 			throw new PxtoneException("Too many woices");
 		}
 
@@ -486,7 +482,7 @@ private:
 		if (!_units) {
 			throw new PxtoneException("pxtnService units not initialized");
 		}
-		if (_unit_num >= _unit_max) {
+		if (_unit_num >= _units.length) {
 			throw new PxtoneException("fmt unknown");
 		}
 
@@ -651,7 +647,7 @@ private:
 		if (data.rrr) {
 			throw new PxtoneException("fmt unknown");
 		}
-		if (data.num > _unit_max) {
+		if (data.num > _units.length) {
 			throw new PxtoneException("fmt new");
 		}
 		if (data.num < 0) {
@@ -796,19 +792,15 @@ private:
 
 		// delay
 		_delays = new pxtnDelay[](pxtnMAX_TUNEDELAYSTRUCT);
-		_delay_max = pxtnMAX_TUNEDELAYSTRUCT;
 
 		// over-drive
 		_ovdrvs = new pxtnOverDrive*[](pxtnMAX_TUNEOVERDRIVESTRUCT);
-		_ovdrv_max = pxtnMAX_TUNEOVERDRIVESTRUCT;
 
 		// woice
 		_woices = new pxtnWoice*[](pxtnMAX_TUNEWOICESTRUCT);
-		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
 
 		// unit
 		_units = new pxtnUnit[](pxtnMAX_TUNEUNITSTRUCT);
-		_unit_max = pxtnMAX_TUNEUNITSTRUCT;
 
 		_group_num = pxtnMAX_TUNEGROUPNUM;
 
@@ -1533,7 +1525,7 @@ public:
 	}
 
 	int Delay_Max() const nothrow @safe {
-		return _b_init ? _delay_max : 0;
+		return _b_init ? cast(int)_delays.length : 0;
 	}
 
 	bool Delay_Set(int idx, DELAYUNIT unit, float freq, float rate, int group) nothrow @system {
@@ -1551,7 +1543,7 @@ public:
 		if (!_b_init) {
 			return false;
 		}
-		if (_delay_num >= _delay_max) {
+		if (_delay_num >= _delays.length) {
 			return false;
 		}
 		_delays[_delay_num] = pxtnDelay.init;
@@ -1605,7 +1597,7 @@ public:
 	}
 
 	int OverDrive_Max() const nothrow @safe {
-		return _b_init ? _ovdrv_max : 0;
+		return _b_init ? cast(int)_ovdrvs.length : 0;
 	}
 
 	bool OverDrive_Set(int idx, float cut, float amp, int group) nothrow @system {
@@ -1623,7 +1615,7 @@ public:
 		if (!_b_init) {
 			return false;
 		}
-		if (_ovdrv_num >= _ovdrv_max) {
+		if (_ovdrv_num >= _ovdrvs.length) {
 			return false;
 		}
 		_ovdrvs[_ovdrv_num] = new pxtnOverDrive();
@@ -1679,7 +1671,7 @@ public:
 	}
 
 	int Woice_Max() const nothrow @safe {
-		return _b_init ? _woice_max : 0;
+		return _b_init ? cast(int)_woices.length : 0;
 	}
 
 	inout(pxtnWoice)* Woice_Get(int idx) inout nothrow @safe {
@@ -1696,7 +1688,7 @@ public:
 		if (!_b_init) {
 			throw new PxtoneException("pxtnService not initialized");
 		}
-		if (idx < 0 || idx >= _woice_max) {
+		if (idx < 0 || idx >= _woices.length) {
 			throw new PxtoneException("param");
 		}
 		if (idx > _woice_num) {
@@ -1781,7 +1773,7 @@ public:
 	}
 
 	int Unit_Max() const nothrow @safe {
-		return _b_init ? _unit_max : 0;
+		return _b_init ? cast(int)_units.length : 0;
 	}
 
 	inout(pxtnUnit)* Unit_Get(int idx) inout nothrow @safe {
@@ -1838,7 +1830,7 @@ public:
 	}
 
 	bool Unit_AddNew() nothrow @system {
-		if (_unit_num >= _unit_max) {
+		if (_unit_num >= _units.length) {
 			return false;
 		}
 		_units[_unit_num] = pxtnUnit.init;

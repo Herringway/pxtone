@@ -329,9 +329,6 @@ public:
 		size = _smp_body * _bps * _ch / 8;
 
 		_p_smp = new ubyte[](size);
-		if (!(_p_smp)) {
-			throw new PxtoneException("Buffer allocation failed");
-		}
 
 		if (_bps == 8) {
 			_p_smp[0 .. size] = 128;

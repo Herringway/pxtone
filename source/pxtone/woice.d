@@ -325,13 +325,7 @@ public:
 			Voice_Release();
 		}
 		_voices = new pxtnVOICEUNIT[](voice_num);
-		if (!_voices) {
-			throw new PxtoneException("Voice buffer allocation failed");
-		}
 		_voinsts = new pxtnVOICEINSTANCE[](voice_num);
-		if (!_voinsts) {
-			throw new PxtoneException("Instrument buffer allocation failed");
-		}
 		_voice_num = voice_num;
 
 		for (int i = 0; i < voice_num; i++) {
@@ -899,9 +893,6 @@ public:
 					p_vi.smp_body_w = 400;
 					int size = p_vi.smp_body_w * ch * bps / 8;
 					p_vi.p_smp_w = new ubyte[](size);
-					if (!(p_vi.p_smp_w)) {
-						throw new PxtoneException("Sample buffer allocation failed");
-					}
 					p_vi.p_smp_w[0 .. size] = 0x00;
 					_UpdateWavePTV(p_vc, p_vi, ch, sps, bps);
 					break;
@@ -946,13 +937,7 @@ public:
 				}
 
 				p_vi.p_env = new ubyte[](p_vi.env_size);
-				if (!p_vi.p_env) {
-					throw new PxtoneException("Envelope buffer allocation failed");
-				}
 				p_point = new pxtnPOINT[](p_enve.head_num);
-				if (!p_point) {
-					throw new PxtoneException("Envelope buffer allocation failed");
-				}
 
 				// convert points.
 				int offset = 0;

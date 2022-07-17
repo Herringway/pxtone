@@ -282,9 +282,6 @@ public:
 		_unit_num = unit_num;
 
 		_units = new pxNOISEDESIGN_UNIT[](_unit_num);
-		if (!_units) {
-			throw new PxtoneException("Unit buffer allocation failed");
-		}
 
 		for (int u = 0; u < _unit_num; u++) {
 			pU = &_units[u];
@@ -302,9 +299,6 @@ public:
 					throw new PxtoneException("fmt unknown");
 				}
 				pU.enves = new pxtnPOINT[](pU.enve_num);
-				if (!pU.enves) {
-					throw new PxtoneException("Envelope buffer allocation failed");
-				}
 				for (int e = 0; e < pU.enve_num; e++) {
 					p_doc.v_r(pU.enves[e].x);
 					p_doc.v_r(pU.enves[e].y);

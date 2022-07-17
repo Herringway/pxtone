@@ -272,9 +272,6 @@ public:
 			_p_data = null;
 			_size = 0;
 		}
-		if (!(_p_data)) {
-			throw new PxtoneException("Ogg buffer allocation failed");
-		}
 		desc.r(_p_data);
 		if (!_SetInformation()) {
 			throw new PxtoneException("_SetInformation");
@@ -304,9 +301,6 @@ public:
 		}
 
 		_p_data = new ubyte[](_size);
-		if (!_p_data) {
-			throw new PxtoneException("Ogg buffer allocation failed");
-		}
 		scope(failure) {
 			_p_data = null;
 			_size = 0;
