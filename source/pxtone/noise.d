@@ -3,7 +3,6 @@
 // '12/03/29
 
 import pxtone.descriptor;
-import pxtone.mem;
 
 import pxtone.pulse.noisebuilder;
 import pxtone.pulse.noise;

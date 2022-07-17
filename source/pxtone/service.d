@@ -7,7 +7,6 @@ import pxtone.pulse.noisebuilder;
 
 import pxtone.error;
 import pxtone.max;
-import pxtone.mem;
 import pxtone.text;
 import pxtone.delay;
 import pxtone.overdrive;
@@ -436,10 +435,7 @@ private:
 			throw new PxtoneException("fmt unknown");
 		}
 
-		pxtnOverDrive* ovdrv = allocate!pxtnOverDrive();
-		scope(failure) {
-			deallocate(ovdrv);
-		}
+		pxtnOverDrive* ovdrv = new pxtnOverDrive();
 		ovdrv.Read(p_doc);
 		_ovdrvs[_ovdrv_num] = ovdrv;
 		_ovdrv_num++;
@@ -456,10 +452,7 @@ private:
 			throw new PxtoneException("Too many woices");
 		}
 
-		pxtnWoice* woice = allocate!pxtnWoice();
-		scope(failure) {
-			deallocate(woice);
-		}
+		pxtnWoice* woice = new pxtnWoice();
 
 		switch (type) {
 		case pxtnWOICETYPE.PCM:
@@ -497,11 +490,8 @@ private:
 			throw new PxtoneException("fmt unknown");
 		}
 
-		pxtnUnit* unit = allocate!pxtnUnit();
+		pxtnUnit* unit = new pxtnUnit();
 		int group = 0;
-		scope(failure) {
-			deallocate(unit);
-		}
 		switch (ver) {
 		case 1:
 			unit.Read_v1x(p_doc, &group);
@@ -805,31 +795,19 @@ private:
 		}
 
 		// delay
-		_delays = allocate!(pxtnDelay)(pxtnMAX_TUNEDELAYSTRUCT);
-		if (!(_delays)) {
-			throw new PxtoneException("Delays buffer allocation failed");
-		}
+		_delays = new pxtnDelay[](pxtnMAX_TUNEDELAYSTRUCT);
 		_delay_max = pxtnMAX_TUNEDELAYSTRUCT;
 
 		// over-drive
-		_ovdrvs = allocate!(pxtnOverDrive*)(pxtnMAX_TUNEOVERDRIVESTRUCT);
-		if (!(_ovdrvs)) {
-			throw new PxtoneException("Overdrives buffer allocation failed");
-		}
+		_ovdrvs = new pxtnOverDrive*[](pxtnMAX_TUNEOVERDRIVESTRUCT);
 		_ovdrv_max = pxtnMAX_TUNEOVERDRIVESTRUCT;
 
 		// woice
-		_woices = allocate!(pxtnWoice*)(pxtnMAX_TUNEWOICESTRUCT);
-		if (!(_woices)) {
-			throw new PxtoneException("Woice buffer allocation failed");
-		}
+		_woices = new pxtnWoice*[](pxtnMAX_TUNEWOICESTRUCT);
 		_woice_max = pxtnMAX_TUNEWOICESTRUCT;
 
 		// unit
-		_units = allocate!(pxtnUnit)(pxtnMAX_TUNEUNITSTRUCT);
-		if (!(_units)) {
-			throw new PxtoneException("Unit buffer allocation failed");
-		}
+		_units = new pxtnUnit[](pxtnMAX_TUNEUNITSTRUCT);
 		_unit_max = pxtnMAX_TUNEUNITSTRUCT;
 
 		_group_num = pxtnMAX_TUNEGROUPNUM;
@@ -855,28 +833,10 @@ private:
 
 		_moo_destructer();
 
-		if (_delays) {
-			deallocate(_delays);
-			_delays = null;
-		}
-		if (_ovdrvs) {
-			for (int i = 0; i < _ovdrv_num; i++) {
-				deallocate(_ovdrvs[i]);
-			}
-			deallocate(_ovdrvs);
-			_ovdrvs = null;
-		}
-		if (_woices) {
-			for (int i = 0; i < _woice_num; i++) {
-				deallocate(_woices[i]);
-			}
-			deallocate(_woices);
-			_woices = null;
-		}
-		if (_units) {
-			deallocate(_units);
-			_units = null;
-		}
+		_delays = null;
+		_ovdrvs = null;
+		_woices = null;
+		_units = null;
 		return true;
 	}
 
@@ -975,11 +935,11 @@ private:
 	bool _moo_init() nothrow @system {
 		bool b_ret = false;
 
-		_moo_freq = allocate!pxtnPulse_Frequency();
+		_moo_freq = new pxtnPulse_Frequency();
 		if (!_moo_freq) {
 			goto term;
 		}
-		_moo_group_smps = allocate!int(_group_num);
+		_moo_group_smps = new int[](_group_num);
 		if (!_moo_group_smps) {
 			goto term;
 		}
@@ -999,10 +959,7 @@ private:
 			return false;
 		}
 		_moo_b_init = false;
-		deallocate(_moo_freq);
-		if (_moo_group_smps) {
-			deallocate(_moo_group_smps);
-		}
+		_moo_freq = null;
 		_moo_group_smps = null;
 		return true;
 	}
@@ -1317,13 +1274,9 @@ public:
 		evels.Clear();
 
 		_delay_num = 0;
-		for (int i = 0; i < _delay_num; i++) {
-			deallocate(_ovdrvs[i]);
-		}
+		_ovdrvs[0 .. _ovdrv_num] = null;
 		_ovdrv_num = 0;
-		for (int i = 0; i < _woice_num; i++) {
-			deallocate(_woices[i]);
-		}
+		_woices[0 .. _woice_num] = null;
 		_woice_num = 0;
 		_unit_num = 0;
 
@@ -1673,7 +1626,7 @@ public:
 		if (_ovdrv_num >= _ovdrv_max) {
 			return false;
 		}
-		_ovdrvs[_ovdrv_num] = allocate!pxtnOverDrive();
+		_ovdrvs[_ovdrv_num] = new pxtnOverDrive();
 		_ovdrvs[_ovdrv_num].Set(cut, amp, group);
 		_ovdrv_num++;
 		return true;
@@ -1687,7 +1640,7 @@ public:
 			return false;
 		}
 
-		deallocate(_ovdrvs[idx]);
+		_ovdrvs[idx] = null;
 		_ovdrv_num--;
 		for (int i = idx; i < _ovdrv_num; i++) {
 			_ovdrvs[i] = _ovdrvs[i + 1];
@@ -1750,7 +1703,7 @@ public:
 			throw new PxtoneException("param");
 		}
 		if (idx == _woice_num) {
-			_woices[idx] = allocate!pxtnWoice();
+			_woices[idx] = new pxtnWoice();
 			_woice_num++;
 		}
 
@@ -1777,7 +1730,7 @@ public:
 		if (idx < 0 || idx >= _woice_num) {
 			return false;
 		}
-		deallocate(_woices[idx]);
+		_woices[idx] = null;
 		_woice_num--;
 		for (int i = idx; i < _woice_num; i++) {
 			_woices[i] = _woices[i + 1];

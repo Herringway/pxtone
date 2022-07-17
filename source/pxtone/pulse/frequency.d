@@ -1,7 +1,5 @@
 ﻿module pxtone.pulse.frequency;
 
-import pxtone.mem;
-
 enum _OCTAVE_NUM = 16; // octave num.
 enum _KEY_PER_OCTAVE = 12; // key per octave
 enum _FREQUENCY_PER_KEY = 0x10; // sample per key

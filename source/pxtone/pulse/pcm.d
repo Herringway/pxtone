@@ -4,7 +4,6 @@ import pxtone.pxtn;
 
 import pxtone.error;
 import pxtone.descriptor;
-import pxtone.mem;
 
 struct WAVEFORMATCHUNK {
 	ushort formatID; // PCM:0x0001
@@ -47,7 +46,7 @@ private:
 		// mono to stereo --------
 		if (new_ch == 2) {
 			work_size = sample_size * 2;
-			p_work = allocate!ubyte(work_size);
+			p_work = new ubyte[](work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -78,7 +77,7 @@ private:
 		}  // stereo to mono --------
 		else {
 			work_size = sample_size / 2;
-			p_work = allocate!ubyte(work_size);
+			p_work = new ubyte[](work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -107,16 +106,13 @@ private:
 		}
 
 		// release once.
-		deallocate(_p_smp);
 		_p_smp = null;
 
-		_p_smp = allocate!ubyte(work_size);
+		_p_smp = new ubyte[](work_size);
 		if (!(_p_smp)) {
-			deallocate(p_work);
 			return false;
 		}
 		_p_smp[0 .. work_size] = p_work[0 .. work_size];
-		deallocate(p_work);
 
 		// update param.
 		_ch = new_ch;
@@ -145,7 +141,7 @@ private:
 			// 16 to 8 --------
 		case 8:
 			work_size = sample_size / 2;
-			p_work = allocate!ubyte(work_size);
+			p_work = new ubyte[](work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -160,7 +156,7 @@ private:
 			//  8 to 16 --------
 		case 16:
 			work_size = sample_size * 2;
-			p_work = allocate!ubyte(work_size);
+			p_work = new ubyte[](work_size);
 			if (!p_work) {
 				return false;
 			}
@@ -178,16 +174,13 @@ private:
 		}
 
 		// release once.
-		deallocate(_p_smp);
 		_p_smp = null;
 
-		_p_smp = allocate!ubyte(work_size);
+		_p_smp = new ubyte[](work_size);
 		if (!(_p_smp)) {
-			deallocate(p_work);
 			return false;
 		}
 		_p_smp[0 .. work_size] = p_work[0 .. work_size];
-		deallocate(p_work);
 
 		// update param.
 		_bps = new_bps;
@@ -237,7 +230,7 @@ private:
 			sample_num = work_size / 4;
 			work_size = sample_num * 4;
 			p4byte_data = cast(uint[]) _p_smp;
-			p4byte_work = allocate!uint(work_size / uint.sizeof);
+			p4byte_work = new uint[](work_size / uint.sizeof);
 			if (!p4byte_work) {
 				goto End;
 			}
@@ -253,7 +246,7 @@ private:
 			sample_num = work_size / 1;
 			work_size = sample_num * 1;
 			p1byte_data = cast(ubyte[]) _p_smp;
-			p1byte_work = allocate!ubyte(work_size);
+			p1byte_work = new ubyte[](work_size);
 			if (!p1byte_work) {
 				goto End;
 			}
@@ -269,7 +262,7 @@ private:
 			sample_num = work_size / 2;
 			work_size = sample_num * 2;
 			p2byte_data = cast(ushort[]) _p_smp;
-			p2byte_work = allocate!ushort(work_size / ushort.sizeof);
+			p2byte_work = new ushort[](work_size / ushort.sizeof);
 			if (!p2byte_work) {
 				goto End;
 			}
@@ -280,8 +273,7 @@ private:
 		}
 
 		// release once.
-		deallocate(_p_smp);
-		_p_smp = allocate!ubyte(work_size);
+		_p_smp = new ubyte[](work_size);
 		if (!_p_smp) {
 			goto End;
 		}
@@ -303,15 +295,10 @@ private:
 	End:
 
 		if (!b_ret) {
-			deallocate(_p_smp);
 			_smp_head = 0;
 			_smp_body = 0;
 			_smp_tail = 0;
 		}
-
-		deallocate(p2byte_work);
-		deallocate(p1byte_work);
-		deallocate(p4byte_work);
 
 		return b_ret;
 	}
@@ -341,7 +328,7 @@ public:
 		// bit / sample is 8 or 16
 		size = _smp_body * _bps * _ch / 8;
 
-		_p_smp = allocate!ubyte(size);
+		_p_smp = new ubyte[](size);
 		if (!(_p_smp)) {
 			throw new PxtoneException("Buffer allocation failed");
 		}
@@ -354,9 +341,6 @@ public:
 	}
 
 	void Release() nothrow @system {
-		if (_p_smp) {
-			deallocate(_p_smp);
-		}
 		_p_smp = null;
 		_ch = 0;
 		_sps = 0;
@@ -373,10 +357,7 @@ public:
 
 		_p_smp = null;
 		scope(failure) {
-			if (_p_smp) {
-				deallocate(_p_smp);
-				_p_smp = null;
-			}
+			_p_smp = null;
 		}
 
 		// 'RIFFxxxxWAVEfmt '

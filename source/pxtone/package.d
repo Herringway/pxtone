@@ -6,7 +6,6 @@ public import pxtone.error;
 public import pxtone.evelist;
 public import pxtone.master;
 public import pxtone.max;
-public import pxtone.mem;
 public import pxtone.noise;
 public import pxtone.overdrive;
 public import pxtone.pulse.frequency;

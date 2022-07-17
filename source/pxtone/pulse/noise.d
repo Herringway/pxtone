@@ -4,7 +4,6 @@ import pxtone.pxtn;
 
 import pxtone.error;
 import pxtone.descriptor;
-import pxtone.mem;
 import pxtone.pulse.frequency;
 import pxtone.pulse.oscillator;
 import pxtone.pulse.pcm;
@@ -282,7 +281,7 @@ public:
 		}
 		_unit_num = unit_num;
 
-		_units = allocate!pxNOISEDESIGN_UNIT(_unit_num);
+		_units = new pxNOISEDESIGN_UNIT[](_unit_num);
 		if (!_units) {
 			throw new PxtoneException("Unit buffer allocation failed");
 		}
@@ -302,7 +301,7 @@ public:
 				if (pU.enve_num > MAX_NOISEEDITENVELOPENUM) {
 					throw new PxtoneException("fmt unknown");
 				}
-				pU.enves = allocate!pxtnPOINT(pU.enve_num);
+				pU.enves = new pxtnPOINT[](pU.enve_num);
 				if (!pU.enves) {
 					throw new PxtoneException("Envelope buffer allocation failed");
 				}
@@ -331,12 +330,7 @@ public:
 
 	void Release() nothrow @system {
 		if (_units) {
-			for (int u = 0; u < _unit_num; u++) {
-				if (_units[u].enves) {
-					deallocate(_units[u].enves);
-				}
-			}
-			deallocate(_units);
+			_units = null;
 			_unit_num = 0;
 		}
 	}
@@ -347,7 +341,7 @@ public:
 		Release();
 
 		_unit_num = unit_num;
-		_units = allocate!pxNOISEDESIGN_UNIT(unit_num);
+		_units = new pxNOISEDESIGN_UNIT[](unit_num);
 		if (!_units) {
 			goto End;
 		}
@@ -355,7 +349,7 @@ public:
 		for (int u = 0; u < unit_num; u++) {
 			pxNOISEDESIGN_UNIT* p_unit = &_units[u];
 			p_unit.enve_num = envelope_num;
-			p_unit.enves = allocate!pxtnPOINT(p_unit.enve_num);
+			p_unit.enves = new pxtnPOINT[](p_unit.enve_num);
 			if (!p_unit.enves) {
 				goto End;
 			}
@@ -388,7 +382,7 @@ public:
 				p_dst._units[u].main = _units[u].main;
 				p_dst._units[u].pan = _units[u].pan;
 				p_dst._units[u].volu = _units[u].volu;
-				p_dst._units[u].enves = allocate!pxtnPOINT(enve_num);
+				p_dst._units[u].enves = new pxtnPOINT[](enve_num);
 				if (!p_dst._units[u].enves) {
 					goto End;
 				}

@@ -5,7 +5,6 @@ import pxtone.pxtn;
 import pxtone.descriptor;
 import pxtone.error;
 import pxtone.max;
-import pxtone.mem;
 
 enum DELAYUNIT {
 	Beat = 0,
@@ -78,9 +77,7 @@ public:
 	}
 
 	void Tone_Release() nothrow @system {
-		for (int i = 0; i < pxtnMAX_CHANNEL; i++) {
-			deallocate(_bufs[i]);
-		}
+		_bufs = null;
 		_smp_num = 0;
 	}
 
@@ -109,7 +106,7 @@ public:
 			}
 
 			for (int c = 0; c < pxtnMAX_CHANNEL; c++) {
-				_bufs[c] = allocate!int(_smp_num);
+				_bufs[c] = new int[](_smp_num);
 				if (!_bufs[c]) {
 					throw new PxtoneException("Buffer allocation failed");
 				}

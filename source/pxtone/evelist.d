@@ -2,7 +2,6 @@
 
 import pxtone.descriptor;
 import pxtone.error;
-import pxtone.mem;
 import pxtone.util;
 
 ///////////////////////
@@ -176,9 +175,6 @@ private:
 public:
 
 	void Release() nothrow @system {
-		if (_eves) {
-			deallocate(_eves);
-		}
 		_eves = null;
 		_start = null;
 		_eve_allocated_num = 0;
@@ -197,7 +193,7 @@ public:
 
 	void Allocate(int max_event_num) @system {
 		Release();
-		_eves = allocate!EVERECORD(max_event_num);
+		_eves = new EVERECORD[](max_event_num);
 		if (!(_eves)) {
 			throw new PxtoneException("Unable to allocate memory");
 		}

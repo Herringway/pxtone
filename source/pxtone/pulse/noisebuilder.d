@@ -3,7 +3,6 @@
 import pxtone.pxtn;
 
 import pxtone.error;
-import pxtone.mem;
 import pxtone.pulse.frequency;
 import pxtone.pulse.oscillator;
 import pxtone.pulse.pcm;
@@ -135,12 +134,9 @@ public:
 
 		unit_num = p_noise.get_unit_num();
 
-		units = allocate!_UNIT(unit_num);
+		units = new _UNIT[](unit_num);
 		scope(exit) {
-			for (int i = 0; i < unit_num; i++) {
-				deallocate(units[i].enves);
-			}
-			deallocate(units);
+			units = null;
 		}
 		if (!units) {
 			throw new PxtoneException("Unit buffer allocation failed");
@@ -164,7 +160,7 @@ public:
 				pU.pan[0] = cast(double)(100.0f - p_du.pan) / 100;
 			}
 
-			pU.enves = allocate!_POINT(pU.enve_num);
+			pU.enves = new _POINT[](pU.enve_num);
 			if (!pU.enves) {
 				throw new PxtoneException("Envelope buffer allocation failed");
 			}

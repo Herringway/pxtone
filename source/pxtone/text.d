@@ -2,7 +2,6 @@
 // '12/03/03
 
 import pxtone.descriptor;
-import pxtone.mem;
 
 bool _read4_malloc(char[]* pp, int* p_buf_size, ref pxtnDescriptor p_doc) @system {
 	if (!pp) {
@@ -15,7 +14,7 @@ bool _read4_malloc(char[]* pp, int* p_buf_size, ref pxtnDescriptor p_doc) @syste
 
 	bool b_ret = false;
 
-	*pp = allocate!char(*p_buf_size + 1);
+	*pp = new char[](*p_buf_size + 1);
 	if (!(*pp)) {
 		return false;
 	}
@@ -29,7 +28,6 @@ bool _read4_malloc(char[]* pp, int* p_buf_size, ref pxtnDescriptor p_doc) @syste
 	b_ret = true;
 term:
 	if (!b_ret) {
-		deallocate(*pp);
 		*pp = null;
 	}
 
@@ -51,9 +49,9 @@ private:
 
 public:
 	 ~this() nothrow @system {
-		deallocate(_p_comment_buf);
+		_p_comment_buf = null;
 		_comment_size = 0;
-		deallocate(_p_name_buf);
+		_p_name_buf = null;
 		_name_size = 0;
 	}
 
@@ -61,15 +59,12 @@ public:
 		if (!comment) {
 			return false;
 		}
-		if (_p_comment_buf) {
-			deallocate(_p_comment_buf);
-		}
 		_p_comment_buf = null;
 		if (buf_size <= 0) {
 			_comment_size = 0;
 			return true;
 		}
-		_p_comment_buf = allocate!char(buf_size + 1);
+		_p_comment_buf = new char[](buf_size + 1);
 		if (!(_p_comment_buf)) {
 			return false;
 		}
@@ -94,15 +89,12 @@ public:
 		if (!name) {
 			return false;
 		}
-		if (_p_name_buf) {
-			deallocate(_p_name_buf);
-		}
 		_p_name_buf = null;
 		if (buf_size <= 0) {
 			_name_size = 0;
 			return true;
 		}
-		_p_name_buf = allocate!char(buf_size + 1);
+		_p_name_buf = new char[](buf_size + 1);
 		if (!(_p_name_buf)) {
 			return false;
 		}

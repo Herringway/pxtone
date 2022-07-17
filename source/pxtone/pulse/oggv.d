@@ -7,7 +7,6 @@ import derelict.vorbis.file;
 
 import pxtone.descriptor;
 import pxtone.error;
-import pxtone.mem;
 import pxtone.pulse.pcm;
 
 import std.stdio;
@@ -227,9 +226,6 @@ public:
 	}
 
 	void Release() nothrow @system {
-		if (_p_data) {
-			deallocate(_p_data);
-		}
 		_p_data = null;
 		_ch = 0;
 		_sps2 = 0;
@@ -271,11 +267,8 @@ public:
 		if (!(_size)) {
 			throw new PxtoneException("desc r");
 		}
-		_p_data = allocate!ubyte(_size);
+		_p_data = new ubyte[](_size);
 		scope(failure) {
-			if (_p_data) {
-				deallocate(_p_data);
-			}
 			_p_data = null;
 			_size = 0;
 		}
@@ -310,14 +303,11 @@ public:
 			throw new PxtoneException("Invalid size read");
 		}
 
-		_p_data = allocate!ubyte(_size);
+		_p_data = new ubyte[](_size);
 		if (!_p_data) {
 			throw new PxtoneException("Ogg buffer allocation failed");
 		}
 		scope(failure) {
-			if (_p_data) {
-				deallocate(_p_data);
-			}
 			_p_data = null;
 			_size = 0;
 		}
@@ -330,7 +320,7 @@ public:
 			return true;
 		}
 
-		p_dst._p_data = allocate!ubyte(_size);
+		p_dst._p_data = new ubyte[](_size);
 		if (!(p_dst._p_data)) {
 			return false;
 		}

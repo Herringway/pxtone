@@ -6,7 +6,6 @@ import pxtone.pxtn;
 import pxtone.descriptor;
 import pxtone.error;
 import pxtone.evelist;
-import pxtone.mem;
 import pxtone.pulse.noise;
 import pxtone.pulse.noisebuilder;
 import pxtone.pulse.oscillator;
@@ -109,14 +108,14 @@ struct pxtnVOICETONE {
 
 private void _Voice_Release(pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi) nothrow @system {
 	if (p_vc) {
-		deallocate(p_vc.envelope.points);
+		p_vc.envelope.points = null;
 		p_vc.envelope = pxtnVOICEENVELOPE.init;
-		deallocate(p_vc.wave.points);
+		p_vc.wave.points = null;
 		p_vc.wave = pxtnVOICEWAVE.init;
 	}
 	if (p_vi) {
-		deallocate(p_vi.p_env);
-		deallocate(p_vi.p_smp_w);
+		p_vi.p_env = null;
+		p_vi.p_smp_w = null;
 		*p_vi = pxtnVOICEINSTANCE.init;
 	}
 }
@@ -325,11 +324,11 @@ public:
 		scope(failure) {
 			Voice_Release();
 		}
-		_voices = allocate!pxtnVOICEUNIT(voice_num);
+		_voices = new pxtnVOICEUNIT[](voice_num);
 		if (!_voices) {
 			throw new PxtoneException("Voice buffer allocation failed");
 		}
-		_voinsts = allocate!pxtnVOICEINSTANCE(voice_num);
+		_voinsts = new pxtnVOICEINSTANCE[](voice_num);
 		if (!_voinsts) {
 			throw new PxtoneException("Instrument buffer allocation failed");
 		}
@@ -356,8 +355,8 @@ public:
 		for (int v = 0; v < _voice_num; v++) {
 			_Voice_Release(&_voices[v], &_voinsts[v]);
 		}
-		deallocate(_voices);
-		deallocate(_voinsts);
+		_voices = null;
+		_voinsts = null;
 		_voice_num = 0;
 	}
 
@@ -396,7 +395,7 @@ public:
 			p_vc2.envelope.tail_num = p_vc1.envelope.tail_num;
 			num = p_vc2.envelope.head_num + p_vc2.envelope.body_num + p_vc2.envelope.tail_num;
 			size = pxtnPOINT.sizeof * num;
-			p_vc2.envelope.points = allocate!pxtnPOINT(size / pxtnPOINT.sizeof);
+			p_vc2.envelope.points = new pxtnPOINT[](size / pxtnPOINT.sizeof);
 			if (!p_vc2.envelope.points) {
 				goto End;
 			}
@@ -406,7 +405,7 @@ public:
 			p_vc2.wave.num = p_vc1.wave.num;
 			p_vc2.wave.reso = p_vc1.wave.reso;
 			size = pxtnPOINT.sizeof * p_vc2.wave.num;
-			p_vc2.wave.points = allocate!pxtnPOINT(size / pxtnPOINT.sizeof);
+			p_vc2.wave.points = new pxtnPOINT[](size / pxtnPOINT.sizeof);
 			if (!p_vc2.wave.points) {
 				goto End;
 			}
@@ -851,7 +850,7 @@ public:
 
 		for (int v = 0; v < _voice_num; v++) {
 			p_vi = &_voinsts[v];
-			deallocate(p_vi.p_smp_w);
+			p_vi.p_smp_w = null;
 			p_vi.smp_head_w = 0;
 			p_vi.smp_body_w = 0;
 			p_vi.smp_tail_w = 0;
@@ -859,7 +858,7 @@ public:
 		scope (failure) {
 			for (int v = 0; v < _voice_num; v++) {
 				p_vi = &_voinsts[v];
-				deallocate(p_vi.p_smp_w);
+				p_vi.p_smp_w = null;
 				p_vi.smp_head_w = 0;
 				p_vi.smp_body_w = 0;
 				p_vi.smp_tail_w = 0;
@@ -899,7 +898,7 @@ public:
 			case pxtnVOICETYPE.Coodinate: {
 					p_vi.smp_body_w = 400;
 					int size = p_vi.smp_body_w * ch * bps / 8;
-					p_vi.p_smp_w = allocate!ubyte(size);
+					p_vi.p_smp_w = new ubyte[](size);
 					if (!(p_vi.p_smp_w)) {
 						throw new PxtoneException("Sample buffer allocation failed");
 					}
@@ -926,7 +925,7 @@ public:
 
 		scope(failure) {
 			for (int v = 0; v < _voice_num; v++) {
-				deallocate(_voinsts[v].p_env);
+				_voinsts[v].p_env = null;
 			}
 		}
 		for (int v = 0; v < _voice_num; v++) {
@@ -935,7 +934,7 @@ public:
 			pxtnVOICEENVELOPE* p_enve = &p_vc.envelope;
 			int size = 0;
 
-			deallocate(p_vi.p_env);
+			p_vi.p_env = null;
 
 			if (p_enve.head_num) {
 				for (e = 0; e < p_enve.head_num; e++) {
@@ -946,11 +945,11 @@ public:
 					p_vi.env_size = 1;
 				}
 
-				p_vi.p_env = allocate!ubyte(p_vi.env_size);
+				p_vi.p_env = new ubyte[](p_vi.env_size);
 				if (!p_vi.p_env) {
 					throw new PxtoneException("Envelope buffer allocation failed");
 				}
-				p_point = allocate!pxtnPOINT(p_enve.head_num);
+				p_point = new pxtnPOINT[](p_enve.head_num);
 				if (!p_point) {
 					throw new PxtoneException("Envelope buffer allocation failed");
 				}
@@ -983,7 +982,7 @@ public:
 					}
 				}
 
-				deallocate(p_point);
+				p_point = null;
 			}
 
 			if (p_enve.tail_num) {
@@ -992,7 +991,7 @@ public:
 				p_vi.env_release = 0;
 			}
 		}
-		deallocate(p_point);
+		p_point = null;
 	}
 
 	void Tone_Ready(const pxtnPulse_NoiseBuilder ptn_bldr, int sps) @system {
