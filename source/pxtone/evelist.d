@@ -3,6 +3,7 @@
 import pxtone.descriptor;
 import pxtone.error;
 import pxtone.mem;
+import pxtone.util;
 
 ///////////////////////
 // global
@@ -63,7 +64,7 @@ struct EVERECORD {
 	EVERECORD* next;
 }
 
-int _DefaultKindValue(ubyte kind) nothrow @system {
+int _DefaultKindValue(ubyte kind) nothrow @safe {
 	switch (kind) {
 		//	case EVENTKIND.ON        : return ;
 	case EVENTKIND.KEY:
@@ -88,11 +89,8 @@ int _DefaultKindValue(ubyte kind) nothrow @system {
 		return EVENTDEFAULT_VOICENO;
 	case EVENTKIND.GROUPNO:
 		return EVENTDEFAULT_GROUPNO;
-	case EVENTKIND.TUNING: {
-			float tuning;
-			tuning = EVENTDEFAULT_TUNING;
-			return *(cast(int*)&tuning);
-		}
+	case EVENTKIND.TUNING:
+		return reinterpretFloat(EVENTDEFAULT_TUNING);
 	case EVENTKIND.PAN_TIME:
 		return EVENTDEFAULT_PAN_TIME;
 	default:

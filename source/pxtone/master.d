@@ -6,6 +6,7 @@ import pxtone.pxtn;
 import pxtone.descriptor;
 import pxtone.error;
 import pxtone.evelist;
+import pxtone.util;
 
 /////////////////////////////////
 // file io
@@ -149,7 +150,7 @@ public:
 		return _beat_num * _beat_clock * meas + _beat_clock * beat + clock;
 	}
 
-	void io_w_v5(ref pxtnDescriptor p_doc, int rough) const @system {
+	void io_w_v5(ref pxtnDescriptor p_doc, int rough) const @safe {
 
 		uint size = 15;
 		short bclock = cast(short)(_beat_clock / rough);
@@ -165,7 +166,7 @@ public:
 		p_doc.w_asfile(clock_last);
 	}
 
-	void io_r_v5(ref pxtnDescriptor p_doc) @system {
+	void io_r_v5(ref pxtnDescriptor p_doc) @safe {
 		short beat_clock = 0;
 		byte beat_num = 0;
 		float beat_tempo = 0;
@@ -193,7 +194,7 @@ public:
 		set_last_meas(clock_last / (beat_num * beat_clock));
 	}
 
-	int io_r_v5_EventNum(ref pxtnDescriptor p_doc) @system {
+	int io_r_v5_EventNum(ref pxtnDescriptor p_doc) @safe {
 		uint size;
 		p_doc.r(size);
 		if (size != 15) {
@@ -204,7 +205,7 @@ public:
 		return 5;
 	}
 
-	void io_r_x4x(ref pxtnDescriptor p_doc) @system {
+	void io_r_x4x(ref pxtnDescriptor p_doc) @safe {
 		_x4x_MASTER mast;
 		int size = 0;
 		int e = 0;
@@ -250,7 +251,7 @@ public:
 				}
 				break;
 			case EVENTKIND.BEATTEMPO:
-				beat_tempo = *(cast(float*)&volume);
+				beat_tempo = reinterpretInt(volume);
 				if (clock) {
 					throw new PxtoneException("desc broken");
 				}
@@ -290,7 +291,7 @@ public:
 		set_last_meas(last_clock / (beat_num * beat_clock));
 	}
 
-	int io_r_x4x_EventNum(ref pxtnDescriptor p_doc) @system {
+	int io_r_x4x_EventNum(ref pxtnDescriptor p_doc) @safe {
 		_x4x_MASTER mast;
 		int size;
 		int work;
