@@ -307,7 +307,7 @@ public:
 	deprecated bool set_name_buf(const(char)* name, int buf_size) nothrow @system {
 		return setNameBuf(name[0 .. buf_size]);
 	}
-	bool setNameBuf(const(char)[] name) nothrow @safe {
+	bool setNameBuf(scope const char[] name) nothrow @safe {
 		if (!name || name.length > pxtnMAX_TUNEUNITNAME) {
 			return false;
 		}
