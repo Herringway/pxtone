@@ -57,7 +57,7 @@ int main(string[] args) {
 	if (args.length < 2) {
 		return 1;
 	}
-	sharedLog = new FileLogger(stdout, LogLevel.trace);
+	(cast()sharedLog).logLevel = LogLevel.trace;
 
 	auto filePath = args[1];
 	auto file = cast(ubyte[])read(args[1]);
