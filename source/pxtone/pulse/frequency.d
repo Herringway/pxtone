@@ -77,7 +77,7 @@ private double _GetDivideOctaveRate(int divi) nothrow @safe {
 
 	return parameter;
 }
-private float[] genTables() {
+private float[] genTables() @safe {
 	float[] _freq_table;
 	static immutable double[_OCTAVE_NUM] oct_table = [0.00390625, //0  -8
 		0.0078125, //1  -7
